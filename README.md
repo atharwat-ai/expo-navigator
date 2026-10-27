@@ -48,7 +48,7 @@ which are now replaced by npm.
 
 ## Open items noticed in config
 
-- `CFG.publicUrl` points at a claude.ai artifact. Set it to the real hosted address (e.g. `https://map.cairoict.com/`)
+- `CFG.publicUrl` points at the claude.ai artifact https://claude.ai/artifact/VpUe9qimNPX1Nnv3pmVDbg. Set it to the real hosted address (e.g. `https://map.cairoict.com/`)
   or leave it blank so the page uses its own address.
 - `CFG.previewUrl` is a temporary placeholder (`example.com`).
 - `CFG.apps` / `CFG.appLink` are empty until the iOS/Android apps ship.
