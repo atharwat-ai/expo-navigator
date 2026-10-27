@@ -26,6 +26,8 @@ const CASES = [
   { name: "kiosk-landscape", hash: "#kiosk-h1c", viewport: { width: 1920, height: 1080 } },
   { name: "kiosk-portrait", hash: "#kiosk-main.look-day", viewport: { width: 1080, height: 1920 } },
   { name: "phone-route", hash: "#go_H2-36_main.phone", viewport: { width: 390, height: 844 }, mobile: true },
+  { name: "phone-home-ar", hash: "#lang-ar.phone", viewport: { width: 390, height: 844 }, mobile: true },
+  { name: "kiosk-reach", hash: "#kiosk-h1c", viewport: { width: 1920, height: 1080 }, setup: "setReach(true)" },
 ];
 
 const browser = await chromium.launch({ args: ["--use-gl=swiftshader", "--enable-unsafe-swiftshader"] });
@@ -38,6 +40,7 @@ for (const c of CASES) {
   await page.route("**/*", route);
   await page.goto(HOST + c.hash);
   await page.waitForTimeout(4000);
+  if (c.setup) { await page.evaluate(c.setup); await page.waitForTimeout(800); }
   const state = await page.evaluate(() => ({ view: VIEW, kiosk: KIOSK, sel: SELECTED && SELECTED.id, loading: !!document.getElementById("loading") }));
   await page.screenshot({ path: `r/${c.name}.png` });
   const ok = errors.length === 0 && !state.loading;

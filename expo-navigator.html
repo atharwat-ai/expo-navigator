@@ -56,10 +56,12 @@ button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--route);out
 #app{position:fixed;inset:0;display:grid;grid-template-columns:1fr var(--panel-w);
   padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
 #app{--sbo:66px}#app.reach{--reach:1;--sbo:0px}
-.fsearch{position:absolute;z-index:7;left:50%;transform:translateX(-50%);top:max(16px,env(safe-area-inset-top,0px));width:min(560px,calc(100% - 32px));height:54px;display:flex;align-items:center;gap:12px;padding:0 18px;border-radius:99px;color:var(--text);text-align:start;font-size:18px;box-shadow:var(--shadow),0 0 0 1px var(--line-2)}
+.ftop{position:absolute;z-index:7;left:50%;transform:translateX(-50%);top:max(16px,env(safe-area-inset-top,0px));width:min(624px,calc(100% - 32px));height:54px;display:flex;gap:10px}
+.fhome{flex:none;width:54px;height:100%;display:grid;place-items:center;border-radius:99px;color:var(--text);box-shadow:var(--shadow),0 0 0 1px var(--line-2)}.fhome svg{width:24px;height:24px}.fhome:active{transform:scale(.94)}
+.fsearch{flex:1;min-width:0;height:100%;display:flex;align-items:center;gap:12px;padding:0 18px;border-radius:99px;color:var(--text);text-align:start;font-size:18px;box-shadow:var(--shadow),0 0 0 1px var(--line-2)}
 .fsearch svg{width:24px;height:24px;flex:none}.fsearch span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)}
-.fsearch:active{transform:translateX(-50%) scale(.98)}#app.reach .fsearch{display:none}
-#app:not(.reach) #v-home #openSearch{display:none}
+.fsearch:active{transform:scale(.98)}#app.reach .ftop{display:none}
+#v-home #openSearch{display:none}.brand .bsearch{min-height:52px}
 
 /* ---------- Stage ---------- */
 #stage{position:relative;overflow:hidden;min-width:0;background:var(--stage-bg);transition:background .4s}
@@ -603,7 +605,7 @@ html.onphone #reachBtn,html.onphone #attract{display:none!important}
   #app.reach .timebar,#app.reach .tb-hours{display:none}
   #app.reach{grid-template-rows:minmax(0,36%) minmax(0,64%)!important}
 }
-@media (max-height:560px){#stage #attract .at-acts{display:none}#stage #attract .at-qr .plat,#stage #attract .at-qr .ql,#stage #attract .at-qr .qh{display:none}#stage #attract .at-qr .c{width:96px;height:96px}#stage #attract .at-qr .qs{width:96px}#stage #attract{padding:16px 20px;gap:14px}#app.reach .brand{display:none}#app.reach{grid-template-rows:minmax(0,28%) minmax(0,72%)!important}#app.reach .vhead{min-height:46px}}
+@media (max-height:560px){#stage #attract .at-acts{display:none}#stage #attract .at-qr .plat,#stage #attract .at-qr .ql,#stage #attract .at-qr .qh{display:none}#stage #attract .at-qr .c{width:96px;height:96px}#stage #attract .at-qr .qs{width:96px}#stage #attract{padding:16px 20px;gap:14px}#app.reach .brand{display:none}#app.reach #v-home #openSearch{display:flex}#app.reach{grid-template-rows:minmax(0,28%) minmax(0,72%)!important}#app.reach .vhead{min-height:46px}}
 #app.reach .tb-hours{display:flex}
 html.reach #lightbox{top:auto;height:62vh;border-radius:20px 20px 0 0}
 html.reach #admin{align-items:end;padding-bottom:16px}
@@ -625,7 +627,7 @@ html.reach .touch{width:64px;height:64px}html.reach .touch span{width:32px;heigh
 @media (max-width:600px){
   .expo .ex-sub{display:none!important}
   :root{--tap:50px}
-  .hud-tl{left:10px;top:calc(10px + var(--sbo));right:10px}#app{--sbo:58px}.fsearch{top:10px;height:48px;width:calc(100% - 20px)}#app.reach{--sbo:0px}.dock{left:10px;right:10px;bottom:10px}.hud-rail{padding:3px}.rb{width:44px;height:44px}#lookBtn,.hud-rail .sep{display:none}
+  .hud-tl{left:10px;top:calc(10px + var(--sbo));right:10px}#app{--sbo:58px}.ftop{top:10px;height:48px;width:calc(100% - 20px)}.fhome{width:48px}#app.reach{--sbo:0px}.dock{left:10px;right:10px;bottom:10px}.hud-rail{padding:3px}.rb{width:44px;height:44px}#lookBtn,.hud-rail .sep{display:none}
   .seg button{min-height:40px;padding:0 10px;font-size:15px}
   .seg button small,.seg button.soon{display:none}
   .facts{grid-template-columns:1fr 1fr}
@@ -656,13 +658,13 @@ html.reach .touch{width:64px;height:64px}html.reach .touch span{width:32px;heigh
   .rowx{grid-template-columns:minmax(0,1fr) 44px}
   #app{grid-template-columns:1fr clamp(280px,38vw,360px)!important;grid-template-rows:none!important}
   #panel{border-top:0;border-left:1px solid var(--line)}
-  .brand{padding:8px 10px;gap:6px}.tb-hours{display:none}
+  .brand{padding:8px 10px;gap:6px}.brand .bsearch{min-height:42px;font-size:15px}.brand .bsearch svg{width:20px;height:20px}.tb-hours{display:none}
   .expos{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.expo.wide{grid-column:auto}.expo,.expo.wide{min-height:0;padding:9px 6px}.expo img{height:24px}.expo.wide img{height:15px;max-width:96%}.expo .ex-sub{display:none}
   .actionbar{padding:8px 10px}.actionbar .cta,.actionbar .cta.ghost{min-height:48px;font-size:17px}
   .tb-cell{padding:6px 10px}.tb-cell b{font-size:16px}.clock{font-size:19px!important}
   #legendBtn,#legend,.route-chip{display:none!important}
   .rb{width:40px;height:38px}.rb svg{width:20px;height:20px}.dock{left:8px;right:8px;bottom:8px}.hud-rail{padding:3px}#lookBtn,.hud-rail .sep,.compass{display:none}.pill-btn.homeb,.pill-btn.reach{width:40px;min-height:40px}
-  .hud-tl{top:calc(8px + var(--sbo));left:8px;right:8px}#app{--sbo:48px}.fsearch{top:8px;height:40px;font-size:15px;width:calc(100% - 16px)}.fsearch svg{width:20px;height:20px}#app.reach{--sbo:0px}.seg button{min-height:36px;padding:0 10px;font-size:14px}.seg button small,.seg button.soon{display:none}
+  .hud-tl{top:calc(8px + var(--sbo));left:8px;right:8px}#app{--sbo:48px}.ftop{top:8px;height:40px;width:calc(100% - 16px)}.fhome{width:40px}.fhome svg{width:20px;height:20px}.fsearch{font-size:15px}.fsearch svg{width:20px;height:20px}#app.reach{--sbo:0px}.seg button{min-height:36px;padding:0 10px;font-size:14px}.seg button small,.seg button.soon{display:none}
   .scroll{padding:12px 12px 16px;gap:12px}.tiles{gap:8px}.tile{padding:10px;gap:8px}.tile .ti{width:34px;height:34px}.tile span{display:none}.tile b{font-size:15px}
   .row{grid-template-columns:48px minmax(0,1fr) auto;gap:10px;padding:6px 10px 6px 6px;min-height:60px}.row .lg{width:48px;height:42px}.row .lg img{max-width:42px;max-height:32px}.row .nm b{font-size:14px}.row .dist{font-size:15px}
   .kbd button{height:34px;font-size:15px}.kbd{gap:4px;padding:6px}
@@ -678,7 +680,7 @@ html.reach .touch{width:64px;height:64px}html.reach .touch span{width:32px;heigh
   <div id="stage">
     <div class="stars"></div>
     <div id="loading">Building the halls…</div>
-    <button class="glass fsearch" id="fSearch"></button>
+    <div class="ftop" id="fTop"><button class="glass fhome" id="fHome" aria-label="Home"></button><button class="glass fsearch" id="fSearch"></button></div>
     <div class="hud hud-tl" id="focusChip" hidden></div>
     <div class="hud dock" id="dock">
     <div class="hud-bl" id="legendWrap">
@@ -713,6 +715,7 @@ html.reach .touch{width:64px;height:64px}html.reach .touch span{width:32px;heigh
   <aside id="panel">
     <header class="brand">
       <nav class="expos" id="expos" aria-label="Expos"></nav>
+      <button class="searchbar bsearch" id="bSearch"></button>
       <div class="timebar">
         <div class="tb-cell"><small id="nowLbl">Now</small><b class="clock" id="clock">--:--</b></div>
         <div class="tb-cell cd" id="countdown"><small id="cdLbl">Closes in</small><b id="cdVal">–</b></div>
@@ -1549,7 +1552,9 @@ function bindRows(root){root.querySelectorAll(".row,[data-open]").forEach(b=>b.o
 function headHTML(title,count){return `<div class="vhead"><button class="icon-btn flip" data-back aria-label="${t("back")}">${svg("back")}</button><h2>${esc(title)}</h2>${count!=null?`<span class="count">${count}</span>`:""}<button class="icon-btn vh-home" data-home aria-label="${t("home")}">${svg("home")}</button></div>`;}
 document.addEventListener("click",e=>{const h=e.target.closest&&e.target.closest("[data-home]");if(h)goHomeAll();});
 
-function syncFSearch(){const f=$("fSearch"); if(!f)return; f.innerHTML=svg("search")+`<span>${esc(t("search"))}</span>`; f.setAttribute("aria-label",t("search")); f.onclick=()=>openSearch();}
+function syncFSearch(){const f=$("fSearch"); if(!f)return; f.innerHTML=svg("search")+`<span>${esc(t("search"))}</span>`; f.setAttribute("aria-label",t("search")); f.onclick=()=>openSearch();
+  const h=$("fHome"); h.innerHTML=svg("home"); h.setAttribute("aria-label",t("home")); h.onclick=goHomeAll;
+  const b=$("bSearch"); b.innerHTML=svg("search")+`<span class="q" data-ph="${esc(t("search"))}"></span>`; b.setAttribute("aria-label",t("search")); b.dir=LANG==="ar"?"rtl":"ltr"; b.onclick=()=>openSearch();}
 function renderHome(){syncFSearch();
   const ex=named().length;
   const near=named().map(b=>[b,distOf(b)]).filter(a=>a[1]!=null).sort((a,b)=>a[1]-b[1]).slice(0,8).map(a=>a[0]);
