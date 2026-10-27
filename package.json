@@ -1,0 +1,21 @@
+{
+  "name": "cairo-ict-expo-navigator",
+  "version": "1.0.0",
+  "description": "3D wayfinding kiosk + phone map for Cairo ICT 2026 (single-file three.js app)",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "serve": "python3 -m http.server 8080",
+    "test": "node tests/smoke.mjs && python3 tests/qr_e2e.py",
+    "test:smoke": "node tests/smoke.mjs",
+    "test:qr": "python3 tests/qr_e2e.py"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "qrcode-generator": "^1.4.4",
+    "three": "^0.128.0"
+  },
+  "private": true
+}
