@@ -1563,7 +1563,7 @@ function animZoom(f,x,y,dur=280){const t0=performance.now(); let done=0; inertia
 
 const P=new Map(); let G1=null, G2=null, lastTap=null, tapTimer=null, twoTap=null, mouseRot=null;
 function centroid(){const v=[...P.values()];return {x:v.reduce((a,p)=>a+p.x,0)/v.length,y:v.reduce((a,p)=>a+p.y,0)/v.length};}
-function pickAt(x,y){if(PICKING){pickStart(x,y);return;} toNdc(x,y); ray.setFromCamera(ndc,camera); const hit=ray.intersectObjects(pickables,false)[0]; if(hit&&!addByTap(hit.object.userData.id)){const id=hit.object.userData.id,p=BY_ID[id]; if(p&&p.type!=="entr"&&!PLAN.includes(id)){PLAN.push(id);toast(t("addedStop",placeName(p),PLAN.length));} openDetail(id,{fromMap:true});}}
+function pickAt(x,y){if(PICKING){pickStart(x,y);return;} toNdc(x,y); ray.setFromCamera(ndc,camera); const hit=ray.intersectObjects(pickables,false)[0]; if(hit)tapStand(hit.object.userData.id);}
 cv.addEventListener("contextmenu",e=>e.preventDefault());
 cv.addEventListener("pointerdown",e=>{
   if(!P.size&&e.button===0&&nearYou(e.clientX,e.clientY)){startDragYou(e);return;}
@@ -1978,11 +1978,13 @@ function openSession(sid){
 
 /* ---------- My route: several stops, one walk ---------- */
 let PLAN=[], PLAN_ORDER=[], planTags=[];
-/* once a route is on the map, tapping another stand adds it as a stop instead of leaving the route */
-function addByTap(id){const p=BY_ID[id]; if(!p||p.type==="entr")return false;
-  if(VIEW==="plan"&&PLAN.length){ if(PLAN.includes(id))toast(t("alreadyIn",placeName(p))); else togglePlan(id); return true;}
-  if(VIEW==="detail"&&ROUTE_FOR&&id!==ROUTE_FOR){ for(const k of [ROUTE_FOR,id])if(!PLAN.includes(k))PLAN.push(k); toast(t("addedStop",placeName(p),PLAN.length)); openPlan(); return true;}
-  return false;}
+/* tapping a stand on the map makes it a stop and shows the walking route at once; every further tap adds another stop */
+function tapStand(id){const p=BY_ID[id]; if(!p)return;
+  if(p.type==="entr"){openDetail(id,{fromMap:true});return;}
+  if(VIEW==="detail"&&ROUTE_FOR&&!PLAN.includes(ROUTE_FOR))PLAN.push(ROUTE_FOR);
+  if(PLAN.includes(id)){ if(VIEW==="plan"){toast(t("alreadyIn",placeName(p)));return;} }
+  else{PLAN.push(id); toast(t("addedStop",placeName(p),PLAN.length));}
+  openPlan(VIEW!=="plan");}
 function savePlanTouch(){ renderPlanBar(); if(VIEW==="list"&&LISTCTX&&LISTCTX.kind!=="agenda")renderList(LISTCTX,false); }
 function togglePlan(id){ const i=PLAN.indexOf(id); if(i<0)PLAN.push(id); else PLAN.splice(i,1); toast(t(i<0?"addedStop":"removedStop",placeName(BY_ID[id]),PLAN.length)); renderPlanBar(); if(VIEW==="plan")openPlan(false); }
 function savePlan(){if(!ON_PHONE())return; try{localStorage.setItem("expoPlan",JSON.stringify(PLAN));}catch(e){}}
