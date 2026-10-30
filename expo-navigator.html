@@ -1677,8 +1677,9 @@ function buildCisoLounge(grp,b){
   for(const sx of [-1,1])add(art(DL-T,HL,artMat(CISO_ART.band),artMat(CISO_ART.band)),sx*(WL/2-T/2),HL/2+.06,T/2,sx<0?Math.PI/2:-Math.PI/2);
   // front: 2.9 m × 1.2 m walls with the sponsor panels outside, and the arch between them
   const AW=3.2, AH=3, AS=.55, AT=.4, FW=(WL-AW)/2, zf=DL/2-T/2;
-  add(art(FW,HL,black,artMat(CISO_ART.panelA)),-(AW/2+FW/2),HL/2+.06,zf,Math.PI);
-  add(art(FW,HL,black,artMat(CISO_ART.panelB)),AW/2+FW/2,HL/2+.06,zf,Math.PI);
+  // seen from the aisle: the dark panel (Artboard 2 copy 2) left of the arch, the city panel (Artboard 2 copy) right of it
+  add(art(FW,HL,black,printMat(CISO_ART.panelB)),-(AW/2+FW/2),HL/2+.06,zf,Math.PI);
+  add(art(FW,HL,black,printMat(CISO_ART.panelA)),AW/2+FW/2,HL/2+.06,zf,Math.PI);
   const ro=.3, ri=.32, hx=AW/2, ix=hx-AS, iy=AH-AT, sh=new THREE.Shape();
   sh.moveTo(-hx,0); sh.lineTo(-hx,AH-ro); sh.quadraticCurveTo(-hx,AH,-hx+ro,AH); sh.lineTo(hx-ro,AH); sh.quadraticCurveTo(hx,AH,hx,AH-ro); sh.lineTo(hx,0);
   sh.lineTo(ix,0); sh.lineTo(ix,iy-ri); sh.quadraticCurveTo(ix,iy,ix-ri,iy); sh.lineTo(-ix+ri,iy); sh.quadraticCurveTo(-ix,iy,-ix,iy-ri); sh.lineTo(-ix,0); sh.lineTo(-hx,0);
@@ -1686,7 +1687,6 @@ function buildCisoLounge(grp,b){
   add(new THREE.Mesh(ag,black),0,.06,zf);
   const sign=artMat(CISO_ART.archTop);
   for(const [dz,ry] of [[AD/2+.03,0],[-AD/2-.03,Math.PI]]){const t=new THREE.Mesh(new THREE.PlaneGeometry(AW-.3,(AW-.3)*113/908),sign); t.position.set(0,.06+AH-AT/2,zf+dz); t.rotation.y=ry; L.add(t);}
-  add(box(AW-2*AS-.1,.03,.03,glow),0,.06+iy-.05,zf+AD/2+.01);
   // furniture: curved sofas wrapped round low tables, armchairs facing them
   const table=(x,z)=>{add(cyl(.42,.42,.04,top,32),x,.5,z); add(cyl(.08,.22,.46,dark,20),x,.27,z); add(cyl(.06,.06,.08,leaf,10),x,.56,z);};
   const curved=(x,z,ry,R=1.25,span=2.2)=>{const g=new THREE.Group(), n=9;
