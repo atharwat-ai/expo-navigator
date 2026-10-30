@@ -62,4 +62,6 @@ which are now replaced by npm.
   so their position relative to Halls 1 & 2 is approximate; Hall 4's interior comes from the Connecta plan.
 - Round table RT6 (Day 4) only says "Hall 3", so it routes to Hall 3's east entrance. RT3 (Day 2) has no location
   and is shown in the Round Tables & VIP Lounge (Hall 2). RT4 and RT5 overlap (both Mon 9 Nov 11:00–14:00, Hall 2).
-- The conference-room render can be added as the rooms' roof texture and hero image once supplied as a file.
+- 3D models: the CISO Lounge (`buildCisoLounge`, artwork in `CISO_ART`) and Conference Rooms A & B (`buildConfRoom`).
+  The conference rooms' wall graphics are placeholders: put each real design as a data: URL in `CONF_ART`
+  (`stage`, `facadeLeft`, `facadeCentre`, `facadeRight`, `sideWall`) and it replaces the placeholder.
