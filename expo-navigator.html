@@ -717,6 +717,30 @@ html.reach .touch{width:64px;height:64px}html.reach .touch span{width:32px;heigh
 .tag.num .tx{pointer-events:auto;flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(12,21,48,.08);color:var(--paper-ink);border:0;cursor:pointer}
 .tag.num .tx:hover,.tag.num .tx:active{background:#ff3b5c;color:#fff}.tag.num .tx svg{width:16px;height:16px}
 .hint.tapadd{display:flex;align-items:center;gap:8px;margin:0 0 12px}.hint.tapadd svg{width:18px;height:18px;flex:none;color:var(--route)}
+
+/* map remote: arrows move, the ring and its curved arrows turn, + and − zoom, flat/3D buttons tilt. Press and hold to keep going. */
+.joy{position:absolute;z-index:7;right:16px;bottom:96px;display:flex;align-items:center;gap:10px;padding:10px;border-radius:28px;touch-action:none;user-select:none;-webkit-user-select:none}
+.joy[hidden]{display:none}
+.jjoy{}.jpuck{position:relative;width:190px;height:190px;margin-bottom:18px;border-radius:50%;cursor:grab;color:var(--route)}
+.jpuck:active{cursor:grabbing}
+.jring{position:absolute;inset:0;width:100%;height:100%;transition:transform .05s linear}
+.jb{display:grid;place-items:center;border-radius:50%;color:var(--text);background:var(--ink-2);border:1px solid var(--line-2);box-shadow:0 4px 12px rgba(0,0,0,.35);transition:transform .08s,background .15s}
+.jb svg{width:60%;height:60%}
+.jb.on,.jb:active{transform:scale(.92);background:var(--route);color:var(--on-route)}
+.jrot{position:absolute;width:44px;height:44px;top:4px;color:var(--route);border-color:var(--route)}
+.jrot.l{left:4px}.jrot.r{right:4px}
+.jpad{position:absolute;left:50%;top:50%;width:128px;height:128px;transform:translate(-50%,-50%);display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);gap:2px}
+.ja{border-radius:14px;width:100%;height:100%}.ja svg{width:72%;height:72%}
+.jcap{font-family:var(--f-display);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center}
+.jpuck .jcap{position:absolute;left:0;right:0;bottom:-20px}
+.ja.up{grid-area:1/2}.ja.lf{grid-area:2/1}.ja.rt{grid-area:2/3}.ja.dn{grid-area:3/2}
+.jc{grid-area:2/2;width:100%;height:100%;color:var(--route)}
+.jcol{display:flex;flex-direction:column;gap:10px}
+.jz,.jt{width:56px;height:56px;border-radius:16px}
+.jt{color:var(--gold)}
+#app.reach .joy{bottom:16px}
+@media (max-width:600px),(max-height:560px){.joy{transform:scale(.78);transform-origin:right bottom;right:8px}}
+html.onphone .joy:not(.show){display:none}
 </style>
 
 <div id="app">
@@ -736,12 +760,38 @@ html.reach .touch{width:64px;height:64px}html.reach .touch span{width:32px;heigh
       <button class="rb" id="lookBtn" aria-label="Change the look"></button>
       <span class="sep"></span>
       <button class="compass" id="compass" aria-label="Face the way you are standing"><div class="needle"><span>N</span></div></button>
-      <button class="rb" id="zin" aria-label="Zoom in"></button>
-      <button class="rb" id="zout" aria-label="Zoom out"></button>
+      <button class="rb" id="joyBtn" aria-label="Map controls" aria-pressed="true"></button>
+      <button class="rb" id="zin" aria-label="Zoom in" hidden></button>
+      <button class="rb" id="zout" aria-label="Zoom out" hidden></button>
       <button class="rb" id="dimBtn" aria-label="Switch 2D or 3D"></button>
       <button class="rb" id="allBtn" aria-label="Show all halls"></button>
       <button class="rb" id="homeBtn" aria-label="Back to you are here"></button>
     </div>
+    </div>
+    <div class="joy glass" id="joy" role="group">
+      <div class="jpuck" id="jPuck">
+        <svg class="jring" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="88" fill="none" stroke="currentColor" stroke-width="20" stroke-dasharray="5 9" opacity=".35"/></svg>
+        <button class="jb jrot l" data-j="rotL"><svg viewBox="0 0 24 24"><path d="M5.5 13.5A7 7 0 1 0 8 6.5M8 2.5v4.3H3.7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="jb jrot r" data-j="rotR"><svg viewBox="0 0 24 24"><path d="M18.5 13.5A7 7 0 1 1 16 6.5M16 2.5v4.3h4.3" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="jpad">
+          <button class="jb ja up" data-j="up"><svg viewBox="0 0 24 24"><path d="M12 5 4 16h16z" fill="currentColor"/></svg></button>
+          <button class="jb ja lf" data-j="left"><svg viewBox="0 0 24 24"><path d="M5 12 16 4v16z" fill="currentColor"/></svg></button>
+          <button class="jb jc" data-j="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+          <button class="jb ja rt" data-j="right"><svg viewBox="0 0 24 24"><path d="M19 12 8 4v16z" fill="currentColor"/></svg></button>
+          <button class="jb ja dn" data-j="down"><svg viewBox="0 0 24 24"><path d="M12 19 4 8h16z" fill="currentColor"/></svg></button>
+        </div>
+        <span class="jcap" id="jcapMove"></span>
+      </div>
+      <div class="jcol">
+        <button class="jb jz" data-j="in"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg></button>
+        <button class="jb jz" data-j="out"><svg viewBox="0 0 24 24"><path d="M5 12h14" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg></button>
+        <span class="jcap" id="jcapZoom"></span>
+      </div>
+      <div class="jcol">
+        <button class="jb jt" data-j="tiltUp"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M9 9h6v6H9z" fill="currentColor" opacity=".55"/></svg></button>
+        <button class="jb jt" data-j="tiltDn"><svg viewBox="0 0 24 24"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z M4 7.5 12 12l8-4.5M12 12v9" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"/></svg></button>
+        <span class="jcap" id="jcapTilt"></span>
+      </div>
     </div>
     <div class="langmenu glass" id="langMenu" hidden role="menu"><button data-lang="en" lang="en">English</button><button data-lang="ar" lang="ar">العربية</button><button data-lang="zh" lang="zh">中文</button></div>
     <div class="route-chip glass" id="routeChip" hidden></div>
@@ -934,7 +984,7 @@ const T = {
    startFrom:"Starting from",change:"Change",pickTitle:"Where are you starting from?",pickSub:"Directions and walking times are worked out from the point you choose.",
    pickMap:"Point on the map",pickMapSub:"Tap your spot, or drag the You are here marker",tapWhere:"Tap the map where you are standing",cancel:"Cancel",
    thisScreen:"This screen",screens:"Information screens",near:n=>`Next to ${n}`,mapPoint:"Chosen spot",startSet:n=>`Starting from ${n}`,notHere:"That spot is not on a walkway. Tap an aisle or a stand.",
-   organisedBy:"Organised by",tapToAdd:"Tap any stand on the map to add it as a stop.",alreadyIn:n=>`${n} is already in your route`,dragHint:"Drag to move your starting point, or tap to pick one",roomDoors:"Enter through the doors on the open side"},
+   organisedBy:"Organised by",jMap:"Map controls",jcMove:"Move · Turn",jcZoom:"Zoom",jcTilt:"Tilt",jUp:"Move up",jDown:"Move down",jLeft:"Move left",jRight:"Move right",jIn:"Zoom in",jOut:"Zoom out",jRotL:"Turn left",jRotR:"Turn right",jFlat:"Look from above",j3d:"Tilt to 3D",jRing:"Drag the ring round to turn the map",tapToAdd:"Tap any stand on the map to add it as a stop.",alreadyIn:n=>`${n} is already in your route`,dragHint:"Drag to move your starting point, or tap to pick one",roomDoors:"Enter through the doors on the open side"},
  zh:{search:"搜索展商",exhibitors:"展商",categories:"行业",facilities:"休息室与会议室",sponsors:"赞助商",
    exSub:n=>`${n} 家公司`,catSub:n=>`${n} 个行业`,sectors:"行业",facSub:"贵宾室、会议室、媒体",spSub:"展会合作伙伴",
    nearest:"离您最近",youAreHere:"您在这里",showRoute:"带我去",endRoute:"结束导航",stand:"展位",hall:"展馆",area:"面积",walk:"步行",
@@ -966,7 +1016,7 @@ const T = {
    startFrom:"出发地点",change:"更改",pickTitle:"您从哪里出发？",pickSub:"路线和步行时间将从您选择的地点计算。",
    pickMap:"在地图上选择",pickMapSub:"点击您的位置，或拖动“您在这里”标记",tapWhere:"请在地图上点击您所在的位置",cancel:"取消",
    thisScreen:"本屏幕",screens:"信息屏",near:n=>`${n}旁`,mapPoint:"所选位置",startSet:n=>`出发地点：${n}`,notHere:"该位置不在通道上，请点击通道或展位。",
-   organisedBy:"主办",tapToAdd:"点击地图上的任意展位，即可加入路线。",alreadyIn:n=>`${n} 已在路线中`,dragHint:"拖动可移动出发点，点击可选择出发点",roomDoors:"请从开放一侧的门进入"},
+   organisedBy:"主办",jMap:"地图控制",jcMove:"移动 · 旋转",jcZoom:"缩放",jcTilt:"倾斜",jUp:"上移",jDown:"下移",jLeft:"左移",jRight:"右移",jIn:"放大",jOut:"缩小",jRotL:"向左转",jRotR:"向右转",jFlat:"俯视",j3d:"倾斜为3D",jRing:"拖动圆环旋转地图",tapToAdd:"点击地图上的任意展位，即可加入路线。",alreadyIn:n=>`${n} 已在路线中`,dragHint:"拖动可移动出发点，点击可选择出发点",roomDoors:"请从开放一侧的门进入"},
  ar:{search:"ابحث عن العارضين",exhibitors:"العارضون",categories:"القطاعات",facilities:"الصالات",sponsors:"الرعاة",
    exSub:n=>`${n} شركة`,catSub:n=>`${n} قطاعات`,sectors:"القطاعات",facSub:"كبار الزوار، المؤتمرات، الصحافة",spSub:"شركاء المعرض",
    nearest:"الأقرب إليك",youAreHere:"أنت هنا",showRoute:"أرني الطريق",endRoute:"إنهاء المسار",stand:"الجناح",hall:"القاعة",area:"المساحة",walk:"المشي",
@@ -997,7 +1047,7 @@ const T = {
    startFrom:"نقطة البداية",change:"تغيير",pickTitle:"من أين تبدأ؟",pickSub:"تُحسب الاتجاهات وزمن المشي من النقطة التي تختارها.",
    pickMap:"نقطة على الخريطة",pickMapSub:"اضغط على مكانك أو اسحب علامة «أنت هنا»",tapWhere:"اضغط على الخريطة حيث تقف",cancel:"إلغاء",
    thisScreen:"هذه الشاشة",screens:"شاشات المعلومات",near:n=>`بجوار ${n}`,mapPoint:"الموقع المختار",startSet:n=>`البداية من ${n}`,notHere:"هذه النقطة ليست على ممر. اضغط على ممر أو جناح.",
-   organisedBy:"تنظيم",tapToAdd:"اضغط على أي جناح في الخريطة لإضافته كمحطة.",alreadyIn:n=>`${n} موجود بالفعل في مسارك`,dragHint:"اسحب لتحريك نقطة البداية، أو اضغط لاختيارها",roomDoors:"الدخول من الأبواب في الجانب المفتوح"}
+   organisedBy:"تنظيم",jMap:"التحكم في الخريطة",jcMove:"تحريك · تدوير",jcZoom:"تكبير",jcTilt:"إمالة",jUp:"تحريك لأعلى",jDown:"تحريك لأسفل",jLeft:"تحريك لليسار",jRight:"تحريك لليمين",jIn:"تكبير",jOut:"تصغير",jRotL:"دوران لليسار",jRotR:"دوران لليمين",jFlat:"عرض من أعلى",j3d:"إمالة ثلاثية الأبعاد",jRing:"اسحب الحلقة لتدوير الخريطة",tapToAdd:"اضغط على أي جناح في الخريطة لإضافته كمحطة.",alreadyIn:n=>`${n} موجود بالفعل في مسارك`,dragHint:"اسحب لتحريك نقطة البداية، أو اضغط لاختيارها",roomDoors:"الدخول من الأبواب في الجانب المفتوح"}
 };
 let LANG="en";
 const t=(k,...a)=>{const v=T[LANG][k]??T.en[k];return typeof v==="function"?v(...a):v};
@@ -1951,6 +2001,8 @@ function safeInsets(){
   for(const id of ["fSearch","focusChip","routeChip"]){const el=$(id); if(el&&!el.hidden){const r=el.getBoundingClientRect(); if(r.height>0)ins.t=Math.max(ins.t,(r.bottom-st.top)/z+12);}}
   const mq=$("mapQR"); if(mq&&!mq.hidden){const r=mq.getBoundingClientRect(); if(r.width>0)ins.l=Math.max(ins.l,(r.right-st.left)/z+12);}
   const dk=$("dock"); if(dk&&stage.contains(dk)){const r=dk.getBoundingClientRect(); if(r.height>0)ins.b=Math.max(ins.b,(st.bottom-r.top)/z+12);}
+  const jy=$("joy"); if(jy&&jy.offsetParent){const r=jy.getBoundingClientRect(); if(r.width>0){const right=(st.right-r.left)/z+12, bottom=(st.bottom-r.top)/z+12;
+    if(right*stageH<bottom*stageW)ins.r=Math.max(ins.r,right); else ins.b=Math.max(ins.b,bottom);}}
   if(ins.t+ins.b>stageH*.6){const k=stageH*.6/(ins.t+ins.b);ins.t*=k;ins.b*=k;}
   return ins;
 }
@@ -2562,7 +2614,7 @@ function setLang(l){LANG=l;
   $("langBtn").innerHTML=`${svg("globe")}<span>${{en:"EN",ar:"ع",zh:"中"}[l]}</span>`;
   $("langMenu").querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-current",b.dataset.lang===l));
   $("reachBtn").setAttribute("aria-label",t("reach"));
-  renderHallSeg(); syncLegend(); renderHome(); tick();
+  renderHallSeg(); syncLegend(); renderHome(); tick(); syncJoy();
   if(VIEW==="list"&&LISTCTX){if(LISTCTX.kind==="agenda")openAgenda(false);else renderList(LISTCTX,false);}
   if(VIEW==="search")renderSearch(false);
   if(VIEW==="detail"&&SELECTED){const keep=ROUTE_FOR;openDetail(SELECTED.id,{route:!!keep});}
@@ -2693,12 +2745,44 @@ function openAdmin(){const a=$("admin");a.hidden=false;
   $("admX").onclick=()=>a.hidden=true;}
 
 /* hud buttons */
-$("lookBtn").innerHTML=svg("palette");$("zin").innerHTML=svg("plus");$("zout").innerHTML=svg("minus");$("homeBtn").innerHTML=svg("locate");$("dimBtn").innerHTML=svg("flat");$("reachBtn").innerHTML=svg("reach");
+$("lookBtn").innerHTML=svg("palette");$("zin").innerHTML=svg("plus");$("zout").innerHTML=svg("minus");$("homeBtn").innerHTML=svg("locate");$("joyBtn").innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 6.2 14 9h-4zM12 17.8 10 15h4zM6.2 12 9 10v4zM17.8 12 15 14v-4z" fill="currentColor"/></svg>';$("dimBtn").innerHTML=svg("flat");$("reachBtn").innerHTML=svg("reach");
 const zoom=k=>{const off=camera.position.clone().sub(controls.target);const d=THREE.MathUtils.clamp(off.length()*k,controls.minDistance,controls.maxDistance);
   fly={t0:performance.now(),dur:380,p0:camera.position.clone(),t0v:controls.target.clone(),p1:controls.target.clone().add(off.setLength(d)),t1:controls.target.clone()};};
 $("zin").onclick=()=>zoom(.68); $("zout").onclick=()=>zoom(1.45);
 $("homeBtn").onclick=()=>{goHome();};
 $("compass").onclick=()=>resetNorth();
+/* ---------- map remote ---------- */
+const JOY={held:null,last:0,ring:null,ringA:0};
+function joyStep(k,dt){fly=null; inertia=null; controls.autoRotate=false;
+  const r=cv.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height/2, d=camera.position.distanceTo(controls.target);
+  const up=new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion); up.y=0; if(up.lengthSq()<1e-6)up.set(0,0,-1); up.normalize();
+  const right=new THREE.Vector3(-up.z,0,up.x), v=d*.75*dt;
+  if(k==="up")shift(up.x*v,up.z*v); else if(k==="down")shift(-up.x*v,-up.z*v);
+  else if(k==="right")shift(right.x*v,right.z*v); else if(k==="left")shift(-right.x*v,-right.z*v);
+  else if(k==="in")zoomAt(Math.exp(-1.3*dt),cx,cy); else if(k==="out")zoomAt(Math.exp(1.3*dt),cx,cy);
+  else if(k==="rotL")rotateAt(1.3*dt,cx,cy); else if(k==="rotR")rotateAt(-1.3*dt,cx,cy);
+  else if(k==="tiltUp"){if(viewMode==="2d")return; tiltBy(-.9*dt,cx,cy);} else if(k==="tiltDn"){if(viewMode==="2d"){$("dimBtn").click();return;} tiltBy(.9*dt,cx,cy);}}
+function joyLoop(now){const h=JOY.held; if(!h)return; const dt=Math.min(.05,(now-JOY.last)/1000); JOY.last=now; joyStep(h,dt); wake(); requestAnimationFrame(joyLoop);}
+function joyStop(){if(JOY.held){document.querySelectorAll("#joy .jb.on").forEach(b=>b.classList.remove("on"));} JOY.held=null; JOY.ring=null;}
+$("joy").querySelectorAll("[data-j]").forEach(b=>{
+  b.addEventListener("pointerdown",e=>{e.preventDefault(); e.stopPropagation(); const k=b.dataset.j;
+    if(k==="me"){goHome();return;}
+    joyStop(); b.classList.add("on"); JOY.held=k; JOY.last=performance.now(); joyStep(k,.12); requestAnimationFrame(joyLoop);});});
+// drag the ring round to turn the map, like a steering wheel
+$("jPuck").addEventListener("pointerdown",e=>{ if(e.target.closest(".jb"))return; e.preventDefault(); const r=$("jPuck").getBoundingClientRect();
+  JOY.ring={cx:r.left+r.width/2,cy:r.top+r.height/2,a:Math.atan2(e.clientY-r.top-r.height/2,e.clientX-r.left-r.width/2)}; $("jPuck").setPointerCapture(e.pointerId);});
+$("jPuck").addEventListener("pointermove",e=>{const g=JOY.ring; if(!g)return; const a=Math.atan2(e.clientY-g.cy,e.clientX-g.cx); let d=a-g.a; if(d>Math.PI)d-=2*Math.PI; if(d<-Math.PI)d+=2*Math.PI; g.a=a;
+  fly=null; const r=cv.getBoundingClientRect(); rotateAt(-d,r.left+r.width/2,r.top+r.height/2);});
+["pointerup","pointercancel","blur"].forEach(ev=>addEventListener(ev,joyStop));
+document.addEventListener("pointerup",joyStop,true);
+// keyboard: arrows move, + − zoom, Q E turn, W S tilt
+addEventListener("keydown",e=>{ if(e.target.closest&&e.target.closest("input,textarea")||$("sfs")&&!$("sfs").hidden)return;
+  const k={ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right","+":"in","=":"in","-":"out",q:"rotL",e:"rotR",w:"tiltUp",s:"tiltDn"}[e.key]; if(!k)return; e.preventDefault(); joyStep(k,.06);});
+function syncJoy(){const j=$("joy"); const L={up:t("jUp"),down:t("jDown"),left:t("jLeft"),right:t("jRight"),in:t("jIn"),out:t("jOut"),rotL:t("jRotL"),rotR:t("jRotR"),tiltUp:t("jFlat"),tiltDn:t("j3d"),me:t("youAreHere")};
+  j.setAttribute("aria-label",t("jMap")); j.querySelectorAll("[data-j]").forEach(b=>{b.setAttribute("aria-label",L[b.dataset.j]); b.title=L[b.dataset.j];});
+  $("jPuck").title=t("jRing"); $("jcapMove").textContent=t("jcMove"); $("jcapZoom").textContent=t("jcZoom"); $("jcapTilt").textContent=t("jcTilt");}
+function placeJoy(){const j=$("joy"), dk=$("dock"); if(!j)return; if(dk&&stage.contains(dk)){const sr=stage.getBoundingClientRect(), r=dk.getBoundingClientRect(), z=sr.width/Math.max(1,stage.clientWidth); j.style.bottom=Math.max(16,(sr.bottom-r.top)/z+12)+"px";} else j.style.bottom="";}
+$("joyBtn").onclick=()=>{const j=$("joy"), on=ON_PHONE()?j.classList.toggle("show"):!(j.hidden=!j.hidden); $("joyBtn").setAttribute("aria-pressed",on); placeJoy();}; // phones start with it hidden
 function goHomeAll(){ closeSFS(false); $("lightbox").hidden=true; toggleLegend(false); HISTORY=[]; SELECTED=null; pin.visible=false; tagSel.hidden=true; clearPlanTags(); clearRoute(); QUERY="";
   HL=null; applyHighlight(); HALLSEL="all"; renderHallSeg(); show("home",false); renderHome(); fitHall(homeHall()); }
 $("homeAll").innerHTML=svg("home"); $("homeAll").onclick=goHomeAll;
@@ -2742,7 +2826,7 @@ setInterval(()=>{syncLiveTags(); remCheck();
 /* ---------- render loop ---------- */
 let stageW=1,stageH=1;
 const ZOOM=()=>parseFloat(getComputedStyle($("app")).zoom)||1;
-function resize(){stageW=Math.max(1,stage.clientWidth);stageH=Math.max(1,stage.clientHeight);
+function resize(){setTimeout(()=>{if(typeof placeJoy==="function")placeJoy();},0);stageW=Math.max(1,stage.clientWidth);stageH=Math.max(1,stage.clientHeight);
   renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.75)*ZOOM()); renderer.setSize(stageW,stageH,false);camera.aspect=stageW/stageH;camera.updateProjectionMatrix();}
 new ResizeObserver(()=>{if(VIEW==="home")fitHome();}).observe(document.getElementById("views"));
 let refitT; new ResizeObserver(()=>{resize(); clearTimeout(refitT); refitT=setTimeout(()=>{ if(!ROUTE_FOR&&VIEW!=="plan"&&!SELECTED&&typeof fitHall==="function"&&LASTFIT)fitHall(HALLSEL==="all"?homeHall():HALLSEL); },250);}).observe(stage);
@@ -2822,7 +2906,7 @@ function loop(now){
   else if(goto==="__plan"&&PLAN.length){CFG.idleSeconds=Infinity;openPlan();}
   else if(goto&&BY_ID[goto]){CFG.idleSeconds=Infinity;openDetail(goto,{route:true});}
   if(GETAPP)setTimeout(showGetApp,400);
-  if(ON_PHONE())document.documentElement.classList.add("onphone");
+  if(ON_PHONE()){document.documentElement.classList.add("onphone");$("joyBtn").setAttribute("aria-pressed","false");} placeJoy();
   syncLiveTags(); if(ON_PHONE()){loadRem();remCheck();if(goto!=="__plan"){loadPlan();renderPlanBar();}} renderAttractQR();
   requestAnimationFrame(loop);
 })();
