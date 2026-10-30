@@ -57,7 +57,7 @@ which are now replaced by npm.
 - `CFG.previewUrl` is a temporary placeholder (`example.com`).
 - `CFG.apps` / `CFG.appLink` are empty until the iOS/Android apps ship.
 - `AGENDA` conference sessions are sample data (the round tables are real); `CONTACTS` is empty.
-- Hall 3 (AIDC²) has no floor plan yet: the hall is walkable but empty. Halls 3 & 4 are placed from the EIEC site map,
+- Hall 3 (AIDC²) has no floor plan yet: the hall is walkable but empty. The pavement in front of all four halls is walkable; Halls 1 & 2 have no doors onto it. Halls 3 & 4 are placed from the EIEC site map,
   so their position relative to Halls 1 & 2 is approximate; Hall 4's interior comes from the Connecta plan.
 - Round table RT6 (Day 4) only says "Hall 3", so it routes to Hall 3's central east entrance. RT3 (Day 2) has no location
   and is shown in the Round Tables & VIP Lounge (Hall 2). RT4 and RT5 overlap (both Mon 9 Nov 11:00–14:00, Hall 2).

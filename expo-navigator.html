@@ -1086,17 +1086,18 @@ const center=p=>({x:wx(p.x+p.w/2),z:wz(p.y+p.h/2)});
 const HY0=1801, HY1=4957, FRONT=5570, WALKY=5850;
 const H3X0=-3472, H3X1=-893, H4X0=-6051, H4X1=-3472;
 const DOORS_W=[2850,3692,4850];                                        // west building: Hall 4 ↔ Hall 3, Hall 3 ↔ outside
-const FRONT_DOORS={h4:[H4X0+667,H4X0+1972],h3:[H3X1-1972,H3X1-667]};    // hall ↔ its front lobby ↔ outside
+const FRONT_DOORS={h4:[H4X0+667,H4X0+1972],h3:[H3X1-1972,H3X1-667]};    // Halls 3 & 4 ↔ the pavement in front
 const WALKS=[ // walkable floor [x0,y0,x1,y1]
   [1092,HY0,3671,HY1],[4630,HY0,7216,HY1],[3671,HY0,4630,FRONT],[3860,1640,4440,HY0],
-  [H3X0,HY0,H3X1,FRONT],[H4X0,HY0,H4X1,FRONT],
+  [H3X0,HY0,H3X1,HY1],[H4X0,HY0,H4X1,HY1],
+  [H4X0,HY1,H3X1,FRONT],[1092,HY1,3671,FRONT],[4630,HY1,7216,FRONT], // the pavement in front of the halls
   [H3X1,HY0,1092,WALKY],     // outdoor walkway between the two buildings
-  [H4X0,FRONT,4630,WALKY]];  // outdoor walkway along the front of the halls, to the main entrance
+  [H4X0,FRONT,7216,WALKY]];  // outdoor walkway along the front of all four halls, past the main entrance
 const WALLS=[ // [x0,y0,x1,y1,doors along it]
-  [3671,HY0,3671,HY1+20,DOORS_Y],[4630,HY0,4630,HY1+20,DOORS_Y],[1092,HY0,1092,HY1,[2783,3721]],
-  [H3X1,HY0,H3X1,FRONT,DOORS_W],[H4X1,HY0,H4X1,FRONT,DOORS_W],
+  [3671,HY0,3671,FRONT,DOORS_Y],[4630,HY0,4630,FRONT,DOORS_Y],[1092,HY0,1092,HY1,[2783,3721]],
+  [H3X1,HY0,H3X1,HY1,DOORS_W],[H4X1,HY0,H4X1,HY1,DOORS_W],
   [H3X0,HY1,H3X1,HY1,FRONT_DOORS.h3],[H4X0,HY1,H4X1,HY1,FRONT_DOORS.h4],
-  [H3X0,FRONT,H3X1,FRONT,FRONT_DOORS.h3],[H4X0,FRONT,H4X1,FRONT,FRONT_DOORS.h4],
+  [1092,HY1,3671,HY1,[]],[4630,HY1,7216,HY1,[]],   // Halls 1 & 2 have no doors onto the pavement
   [3671,FRONT-5,4630,FRONT-5,[4184]],   // main entrance
   ...KHAYAL_WALLS.map(w=>[...w,[]])];
 const CELL=1;
@@ -1190,7 +1191,7 @@ function orderStops(ids){
   return order;
 }
 const walkMin=m=>Math.max(1,Math.round(m/66)); // ~1.1 m/s in a busy hall
-const HALL_RECTS=[["h4",H4X0,H4X1,FRONT],["h3",H3X0,H3X1,FRONT],["h2",1092,3671,HY1],["h1",4630,7216,HY1]];
+const HALL_RECTS=[["h4",H4X0,H4X1,HY1],["h3",H3X0,H3X1,HY1],["h2",1092,3671,HY1],["h1",4630,7216,HY1]];
 function regionAt(x,z){const X=px(x),Y=py(z);
   for(const [id,a,b,yb] of HALL_RECTS)if(X>=a&&X<=b&&Y>=HY0-1&&Y<=yb)return id;
   return X>=3671&&X<=4630&&Y<=FRONT?"cor":"out";}
@@ -1287,11 +1288,11 @@ function buildVenue(){
   slab(3671,HY0,4630,FRONT,L.cor);
   slab(3860,1640,4440,HY0,L.cor);
   slab(1092,HY1,3671,FRONT,L.aux); slab(4630,HY1,7216,FRONT,L.aux);
-  slab(H3X0,HY1,H3X1,FRONT,L.cor); slab(H4X0,HY1,H4X1,FRONT,L.cor);              // front lobbies of Halls 3 & 4
-  slab(H3X1,HY0,1092,WALKY,L.cor); slab(H4X0,FRONT,H3X1,WALKY,L.cor); slab(1092,FRONT,4630,WALKY,L.cor); // outdoor walkways
+  slab(H4X0,HY1,H3X1,FRONT,L.aux);                                                 // pavement in front of Halls 3 & 4
+  slab(H3X1,HY0,1092,WALKY,L.cor); slab(H4X0,FRONT,H3X1,WALKY,L.cor); slab(1092,FRONT,7216,WALKY,L.cor); // outdoor walkways
   edge(1092,HY0,3671,HY1,0xff8a1f); edge(4630,HY0,7216,HY1,0x1fd19a); edge(H3X0,HY0,H3X1,HY1,0xa78bfa); edge(H4X0,HY0,H4X1,HY1,0xf472b6);
   edge(3671,HY0,4630,FRONT,L.wall[0],.35);
-  edge(H3X1,HY0,1092,WALKY,L.wall[0],.25); edge(H4X0,FRONT,4630,WALKY,L.wall[0],.25);
+  edge(H3X1,HY0,1092,WALKY,L.wall[0],.25); edge(H4X0,FRONT,7216,WALKY,L.wall[0],.25);
   // low glass walls with door gaps
   const wallMat=new THREE.MeshStandardMaterial({color:L.wall[0],transparent:true,opacity:L.wall[1],roughness:.2,depthWrite:false,side:THREE.DoubleSide});
   const wall=(x0,y0,x1,y1)=>{const len=Math.hypot(x1-x0,y1-y0)/PT;if(len<.5)return;const m=new THREE.Mesh(new THREE.PlaneGeometry(len,5),wallMat);
@@ -1305,7 +1306,7 @@ function buildVenue(){
     if(x0===x1){vwall(x0,y0,y1,doors.slice());doors.forEach(d=>doorAt(x0,d));}
     else{hwall(y0,x0,x1,doors.slice());doors.forEach(d=>doorAt(d,y0,false));}}
   vwall(7216,HY0,HY1,[2773,3711,4816]); [2773,3711,4816].forEach(y=>doorAt(7216,y));
-  vwall(H4X0,HY0,FRONT,[2811,3772,4831]);
+  vwall(H4X0,HY0,HY1,[2811,3772,4831]);
   [[1092,3671],[4630,7216],[H4X0,H3X1]].forEach(([a,b])=>{wall(a,HY0,b,HY0);});
   // floor typography
   const hex=c=>"#"+c.toString(16).padStart(6,"0");
