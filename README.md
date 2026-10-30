@@ -1,6 +1,6 @@
 # Cairo ICT Expo Navigator
 
-3D wayfinding map for Cairo ICT 2026 (Halls 1 & 2, plus Pafix). It runs as a touch kiosk, and visitors carry it to their phone by QR.
+3D wayfinding map for EIEC, New Cairo: Cairo ICT (Halls 1 & 2), Pafix (Hall 1), AIDC² Expo (Hall 3) and Connecta (Hall 4). It runs as a touch kiosk, and visitors carry it to their phone by QR.
 Everything lives in **one file**, `expo-navigator.html`. It holds the three.js scene, the UI, the i18n strings (EN / AR / ZH) and the data.
 Logos and stand renders are embedded as data URIs.
 
@@ -31,12 +31,16 @@ Python Playwright's own browser isn't installed.
 | What | Look for |
 |---|---|
 | Stands, from the official plan (1:100, 28.35 pt = 1 m) | `const BOOTHS` |
+| Hall 4 · Connecta stands, zones, Cairo Khayal walls (from the Connecta 26 plan) | `CONNECTA_BOOTHS`, `CONNECTA_FAC`, `KHAYAL_WALLS` |
+| Venue footprint: walkable areas and walls with door gaps | `WALKS`, `WALLS` |
 | Exhibitor stand renders | `const DESIGNS` |
 | Exhibitor contacts (still empty) | `const CONTACTS` |
 | Conference agenda (**sample data**, `sample:true`) | `const AGENDA`, `TRACKS` |
 | Kiosk positions, opening hours, public URL, app links | `const CFG` |
 | Halls, categories, facilities, entrances | `HALLS`, `CATS`, `FAC`, `ENTR` |
-| Routing (walk graph + Dijkstra) | `buildGrid`, `dijkstra`, `pathTo`, `directions` |
+| Routing (walk graph + Dijkstra; walls block everywhere except doors) | `buildGrid`, `dijkstra`, `pathTo`, `directions` |
+| Visitor-chosen starting point (picker, tap on map, drag the marker) | `setOrigin`, `openStartPicker`, `startDragYou` |
+| Round tables (real) appended to the agenda | `AGENDA.sessions.push` (`RT1`–`RT6`) |
 | Native-app bridge for live indoor positioning | `window.ExpoMap` (`setPosition`, `open`, `route`, `places`) |
 | Boot and URL hash parsing | `boot()` at the end of the file |
 
@@ -52,4 +56,9 @@ which are now replaced by npm.
   or leave it blank so the page uses its own address.
 - `CFG.previewUrl` is a temporary placeholder (`example.com`).
 - `CFG.apps` / `CFG.appLink` are empty until the iOS/Android apps ship.
-- `AGENDA` is sample data and `CONTACTS` is empty.
+- `AGENDA` conference sessions are sample data (the round tables are real); `CONTACTS` is empty.
+- Hall 3 (AIDC²) has no floor plan yet: the hall is walkable but empty. Halls 3 & 4 are placed from the EIEC site map,
+  so their position relative to Halls 1 & 2 is approximate; Hall 4's interior comes from the Connecta plan.
+- Round table RT6 (Day 4) only says "Hall 3", so it routes to Hall 3's central east entrance. RT3 (Day 2) has no location
+  and is shown in the Round Tables & VIP Lounge (Hall 2). RT4 and RT5 overlap (both Mon 9 Nov 11:00–14:00, Hall 2).
+- The conference-room render can be added as the rooms' roof texture and hero image once supplied as a file.

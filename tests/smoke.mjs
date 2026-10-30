@@ -43,6 +43,9 @@ for (const c of CASES) {
   if (c.setup) { await page.evaluate(c.setup); await page.waitForTimeout(800); }
   const state = await page.evaluate(() => ({ view: VIEW, kiosk: KIOSK, sel: SELECTED && SELECTED.id, loading: !!document.getElementById("loading") }));
   await page.screenshot({ path: `r/${c.name}.png` });
+  // every stand, room and entrance must be reachable on foot through real doors
+  state.unreachable = await page.evaluate(() => PLACES.filter((p) => !isFinite(goalFor(p).dist)).map((p) => p.id));
+  if (state.unreachable.length) errors.push("unreachable: " + state.unreachable.join(","));
   const ok = errors.length === 0 && !state.loading;
   if (!ok) failed++;
   console.log(`${ok ? "PASS" : "FAIL"} ${c.name}`, JSON.stringify(state), errors.length ? errors : "");
