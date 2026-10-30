@@ -1449,10 +1449,10 @@ function buildConfRoom(grp,b,p){
   // shell: back and side walls, each with its design (or a placeholder panel) on the inside
   add(box(W,HW,T,wallM),0,HW/2,-D/2+T/2); add(box(T,HW,D,wallM),-W/2+T/2,HW/2,0); add(box(T,HW,D,wallM),W/2-T/2,HW/2,0);
   const onWall=(mat,w,h,x,z,ry)=>{const a=new THREE.Mesh(new THREE.PlaneGeometry(w,h),mat); a.position.set(x,h/2+.02,z); a.rotation.y=ry; grp.add(a);};
-  if(ART){const sideW=Math.min(D-.6,HW*(TH.sideAsp||1600/471)), backW=Math.min(W-.6,HW*1600/453);
+  if(ART){const sideW=D-2*T-.04, backW=Math.min(W-.6,HW*1600/453); // side designs stretched to fill the wall
     onWall(printMat(ART.west),sideW,HW-.04,-W/2+T+.01,0,Math.PI/2); onWall(printMat(ART.east),sideW,HW-.04,W/2-T-.01,0,-Math.PI/2);
     if(ART.back)onWall(printMat(ART.back),backW,HW-.04,0,-D/2+T+.01,0);
-    const outW=Math.min(D-.6,HW*1600/453);                                                       // the side walls' outside faces, seen from the aisles
+    const outW=D-.04;                                                       // the side walls' outside faces, seen from the aisles
     if(ART.westOut||TH.sideAsp)onWall(printMat(ART.westOut||ART.west),outW,HW-.04,-W/2-.01,0,-Math.PI/2);
     if(ART.eastOut||TH.sideAsp)onWall(printMat(ART.eastOut||ART.east),outW,HW-.04,W/2+.01,0,Math.PI/2);}
   else for(const sx of [-1,1])onWall(confMat("sideWall",3,HW-.6,sx>0?11:5),3,HW-.6,sx*(W/2-T-.01),.6,-sx*Math.PI/2);
