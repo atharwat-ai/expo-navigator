@@ -64,5 +64,5 @@ which are now replaced by npm.
   and is shown in the Round Tables & VIP Lounge (Hall 2). RT4 and RT5 overlap (both Mon 9 Nov 11:00–14:00, Hall 2).
 - 3D models: the CISO Lounge (`buildCisoLounge`, 9 × 10 m to the organiser's dimensions, artwork in `CISO_ART`) and the conference
   rooms (`buildConfRoom`, colours in `CONF_THEME`). Room B is the green Pafix room with its real wall designs (`PAFIX_ART`).
-  Room A (blue, Cairo ICT) still has placeholder graphics: put each real design as a data: URL in `CONF_ART`
+  Room A (blue, Cairo ICT) has its real designs too (`ICT_ART`); `CONF_ART` placeholders remain only as a fallback
   (`stage`, `facadeLeft`, `facadeCentre`, `facadeRight`, `sideWall`), or give it a full set like `PAFIX_ART`.
