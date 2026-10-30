@@ -526,12 +526,12 @@ html.onphone #reachBtn,html.onphone #attract{display:none!important}
 .kbd button svg{width:22px;height:22px;vertical-align:middle}
 
  /* attract pill (after inactivity) */
-#attract{box-sizing:border-box;position:absolute;left:50%;top:46%;transform:translate(-50%,-44%);z-index:8;width:min(1000px,calc(100% - 48px));display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"tap txt" "acts acts";align-items:center;gap:24px 28px;padding:30px 32px 26px;border-radius:28px;
+#attract{box-sizing:border-box;position:absolute;left:50%;top:46%;transform:translate(-50%,-44%);z-index:8;width:min(1000px,calc(100% - 48px));display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"tap txt";align-items:center;gap:24px 28px;padding:30px 32px 26px;border-radius:28px;
   background:linear-gradient(160deg,color-mix(in srgb,var(--route) 14%,var(--ink-1)),var(--ink-1));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--route) 35%,transparent),0 30px 80px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .4s,transform .4s}
 #attract.on{opacity:1;transform:translate(-50%,-50%)}
 #app:has(#attract.on) .tag{opacity:0!important}
 #attract .touch{grid-area:tap}
-#attract{grid-template-columns:auto minmax(0,1fr) auto!important;grid-template-areas:"tap txt qr" "acts acts qr"!important;column-gap:24px!important}
+#attract{grid-template-columns:auto minmax(0,1fr) auto!important;grid-template-areas:"tap txt qr"!important;column-gap:24px!important}
 #attract .at-acts{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 #attract .at-acts button{grid-template-rows:auto auto!important;row-gap:4px}
 #attract .at-acts svg,#attract .at-acts button::after{grid-row:1/span 2!important}
@@ -750,10 +750,7 @@ html.reach .touch{width:64px;height:64px}html.reach .touch span{width:32px;heigh
     <div class="glass remalert" id="remAlert" hidden role="alert"></div>
     <div id="attract" aria-hidden="true"><div class="touch"><span><svg viewBox="0 0 24 24"><path d="M9 11.5V5.2a1.7 1.7 0 0 1 3.4 0v5.3l4.4.9a2.2 2.2 0 0 1 1.7 2.5l-.8 5a2 2 0 0 1-2 1.7h-5.2a2 2 0 0 1-1.6-.8l-3.5-4.6a1.6 1.6 0 0 1 2.4-2.1Z" fill="currentColor"/></svg></span></div>
   <div class="at-txt"><b>Touch to find your way</b><span class="ar">المس الشاشة لتجد طريقك</span><span class="zh">触摸屏幕，查找路线</span></div>
-  <div class="at-qr" id="attractQR"></div>
-  <div class="at-acts"><button data-act="ex"><svg viewBox="0 0 24 24"><path d="M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14Zm9 16-4.2-4.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><strong>Find exhibitors</strong><em><span lang="ar">ابحث عن العارضين</span><i></i><span lang="zh">查找展商</span></em></button>
-   <button data-act="agenda"><svg viewBox="0 0 24 24"><path d="M3 5h18v10H3zM8 19l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></svg><strong>Conference agenda</strong><em><span lang="ar">برنامج المؤتمرات</span><i></i><span lang="zh">会议日程</span></em></button>
-   <button data-act="go"><svg viewBox="0 0 24 24"><circle cx="6" cy="18" r="2.4" fill="currentColor"/><path d="M6 15.5V12a4 4 0 0 1 4-4h7M14 4.5 17.5 8 14 11.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><strong>Walking directions</strong><em><span lang="ar">اتجاهات المشي</span><i></i><span lang="zh">步行导航</span></em></button></div></div>
+  <div class="at-qr" id="attractQR"></div></div>
   </div>
   <aside id="panel">
     <header class="brand">
@@ -837,8 +834,8 @@ const CFG = {
     main:{x:4150,y:5320,face:"n",en:"Main entrance concourse",ar:"ممر المدخل الرئيسي",zh:"主入口大厅"},
     h2c :{x:3800,y:3721,face:"w",en:"Concourse, at Hall 2 central door",ar:"الممر، عند الباب الأوسط للقاعة 2",zh:"中央通道，2号馆中门"},
     h1c :{x:4500,y:3721,face:"e",en:"Concourse, at Hall 1 central door",ar:"الممر، عند الباب الأوسط للقاعة 1",zh:"中央通道，1号馆中门"},
-    h2w :{x:1240,y:2785,face:"e",en:"Hall 2, west entrance",ar:"القاعة 2، المدخل الغربي",zh:"2号馆西入口"},
-    h1e :{x:7180,y:2800,face:"w",en:"Hall 1, east entrance",ar:"القاعة 1، المدخل الشرقي",zh:"1号馆东入口"},
+    h2w :{x:1240,y:3721,face:"e",en:"Hall 2, west entrance",ar:"القاعة 2، المدخل الغربي",zh:"2号馆西入口"},
+    h1e :{x:7180,y:3711,face:"w",en:"Hall 1, east entrance",ar:"القاعة 1، المدخل الشرقي",zh:"1号馆东入口"},
     h3e :{x:-1043,y:3692,face:"w",en:"Hall 3, east entrance",ar:"القاعة 3، المدخل الشرقي",zh:"3号馆东入口"},
     h4e :{x:-3622,y:3692,face:"w",en:"Hall 4, at the door from Hall 3",ar:"القاعة 4، عند الباب من القاعة 3",zh:"4号馆，3号馆连通门旁"},
   }
@@ -896,16 +893,11 @@ const FAC = [
 ];
 const ENTR = [
   {id:"E-MAIN",x:4184,y:5520,hall:"cor",en:"Main entrance",ar:"المدخل الرئيسي",zh:"主入口",main:true},
-  {id:"E-2W1",x:1125,y:2783,hall:"h2",en:"Hall 2 · west entrance (north)",ar:"القاعة 2 · المدخل الغربي (شمال)",zh:"2号馆 · 西入口（北）"},
-  {id:"E-2W2",x:1125,y:3721,hall:"h2",en:"Hall 2 · west entrance (south)",ar:"القاعة 2 · المدخل الغربي (جنوب)",zh:"2号馆 · 西入口（南）"},
-  {id:"E-1E1",x:7195,y:2773,hall:"h1",en:"Hall 1 · east entrance (north)",ar:"القاعة 1 · المدخل الشرقي (شمال)",zh:"1号馆 · 东入口（北）"},
-  {id:"E-1E2",x:7195,y:3711,hall:"h1",en:"Hall 1 · east entrance (centre)",ar:"القاعة 1 · المدخل الشرقي (وسط)",zh:"1号馆 · 东入口（中）"},
-  {id:"E-1E3",x:7195,y:4816,hall:"h1",en:"Hall 1 · east entrance (south)",ar:"القاعة 1 · المدخل الشرقي (جنوب)",zh:"1号馆 · 东入口（南）"},
-  {id:"E-3E1",x:-926,y:2850,hall:"h3",en:"Hall 3 · east entrance (north)",ar:"القاعة 3 · المدخل الشرقي (شمال)",zh:"3号馆 · 东入口（北）"},
-  {id:"E-3E2",x:-926,y:3692,hall:"h3",en:"Hall 3 · east entrance (centre)",ar:"القاعة 3 · المدخل الشرقي (وسط)",zh:"3号馆 · 东入口（中）"},
-  {id:"E-3E3",x:-926,y:4850,hall:"h3",en:"Hall 3 · east entrance (south)",ar:"القاعة 3 · المدخل الشرقي (جنوب)",zh:"3号馆 · 东入口（南）"},
+  {id:"E-2W2",x:1125,y:3721,hall:"h2",en:"Hall 2 · west entrance",ar:"القاعة 2 · المدخل الغربي",zh:"2号馆 · 西入口"},
+  {id:"E-1E2",x:7195,y:3711,hall:"h1",en:"Hall 1 · east entrance",ar:"القاعة 1 · المدخل الشرقي",zh:"1号馆 · 东入口"},
+  {id:"E-3E2",x:-926,y:3692,hall:"h3",en:"Hall 3 · east entrance",ar:"القاعة 3 · المدخل الشرقي",zh:"3号馆 · 东入口"},
 ];
-const DOORS_Y = [2806,3721,4840]; // concourse ↔ hall doors, both sides
+const DOORS_Y = [3721]; // concourse ↔ hall doors: only the central door on each side is open
 const CORR = {x0:3671,x1:4630,y0:1801,y1:5570};
 FAC.push(...CONNECTA_FAC);
 
@@ -1085,8 +1077,8 @@ const center=p=>({x:wx(p.x+p.w/2),z:wz(p.y+p.h/2)});
    so every route goes through a real doorway. */
 const HY0=1801, HY1=4957, FRONT=5570, WALKY=5850;
 const H3X0=-3472, H3X1=-893, H4X0=-6051, H4X1=-3472;
-const DOORS_W=[2850,3692,4850];                                        // west building: Hall 4 ↔ Hall 3, Hall 3 ↔ outside
-const FRONT_DOORS={h4:[H4X0+667,H4X0+1972],h3:[H3X1-1972,H3X1-667]};    // Halls 3 & 4 ↔ the pavement in front
+const DOORS_W=[3692];                                                  // west building: Hall 4 ↔ Hall 3, Hall 3 ↔ outside (central doors only)
+const FRONT_DOORS={h4:[],h3:[]};                                        // Halls 3 & 4: front doors closed during the show
 const WALKS=[ // walkable floor [x0,y0,x1,y1]
   [1092,HY0,3671,HY1],[4630,HY0,7216,HY1],[3671,HY0,4630,FRONT],[3860,1640,4440,HY0],
   [H3X0,HY0,H3X1,HY1],[H4X0,HY0,H4X1,HY1],
@@ -1094,7 +1086,7 @@ const WALKS=[ // walkable floor [x0,y0,x1,y1]
   [H3X1,HY0,1092,WALKY],     // outdoor walkway between the two buildings
   [H4X0,FRONT,7216,WALKY]];  // outdoor walkway along the front of all four halls, past the main entrance
 const WALLS=[ // [x0,y0,x1,y1,doors along it]
-  [3671,HY0,3671,FRONT,DOORS_Y],[4630,HY0,4630,FRONT,DOORS_Y],[1092,HY0,1092,HY1,[2783,3721]],
+  [3671,HY0,3671,FRONT,DOORS_Y],[4630,HY0,4630,FRONT,DOORS_Y],[1092,HY0,1092,HY1,[3721]],
   [H3X1,HY0,H3X1,HY1,DOORS_W],[H4X1,HY0,H4X1,HY1,DOORS_W],
   [H3X0,HY1,H3X1,HY1,FRONT_DOORS.h3],[H4X0,HY1,H4X1,HY1,FRONT_DOORS.h4],
   [1092,HY1,3671,HY1,[]],[4630,HY1,7216,HY1,[]],   // Halls 1 & 2 have no doors onto the pavement
@@ -1305,8 +1297,8 @@ function buildVenue(){
   for(const [x0,y0,x1,y1,doors] of WALLS){
     if(x0===x1){vwall(x0,y0,y1,doors.slice());doors.forEach(d=>doorAt(x0,d));}
     else{hwall(y0,x0,x1,doors.slice());doors.forEach(d=>doorAt(d,y0,false));}}
-  vwall(7216,HY0,HY1,[2773,3711,4816]); [2773,3711,4816].forEach(y=>doorAt(7216,y));
-  vwall(H4X0,HY0,HY1,[2811,3772,4831]);
+  vwall(7216,HY0,HY1,[3711]); doorAt(7216,3711);
+  vwall(H4X0,HY0,HY1,[3772]); doorAt(H4X0,3772);
   [[1092,3671],[4630,7216],[H4X0,H3X1]].forEach(([a,b])=>{wall(a,HY0,b,HY0);});
   // floor typography
   const hex=c=>"#"+c.toString(16).padStart(6,"0");
@@ -2236,9 +2228,6 @@ function sleep(){closeSFS(false);if(!ON_PHONE()){REM.clear();renderRemBar();} PL
   if(LANG!=="en")setLang("en"); show("home",false); renderHome(); HALLSEL="all";renderHallSeg();
   fitHall("all"); controls.autoRotate=true; controls.autoRotateSpeed=.4;}
 ["pointerdown","keydown","wheel"].forEach(ev=>addEventListener(ev,wake,{capture:true,passive:true}));
-/* the idle card's shortcuts act straight away (the same touch also wakes the kiosk) */
-document.querySelectorAll("#attract [data-act]").forEach(b=>b.addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();const a=b.dataset.act;
-  if(a==="ex")openList({kind:"ex"}); else if(a==="agenda")openAgenda(); else openSearch();}));
 $("attract").addEventListener("pointerdown",e=>{e.stopPropagation();});
 
 /* admin (press & hold the logos) */
