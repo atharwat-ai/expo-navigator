@@ -696,7 +696,7 @@ html.reach .touch{width:64px;height:64px}html.reach .touch span{width:32px;heigh
 /* one Home button: beside the map search; the corner one returns only in the accessible layout, where the top bar is hidden */
 #app:not(.reach) #homeAll{display:none}
 /* "You are here" on the map is also the way to change the starting point */
-.tag.you{pointer-events:auto;cursor:grab;touch-action:none}.tag.you.dragging{cursor:grabbing}.tag.you.dragging .card{transform:scale(1.08);box-shadow:0 10px 30px rgba(0,0,0,.45)}.tag.you .card small{display:flex;align-items:center;justify-content:center;gap:4px;font-size:12px;font-weight:600;opacity:.75;margin-top:2px}.tag.you .card small svg{width:13px;height:13px}
+.tag.you{pointer-events:auto;cursor:grab;touch-action:none}.tag.you.dragging{cursor:grabbing}.tag.you.dragging .card{transform:scale(1.08);box-shadow:0 10px 30px rgba(0,0,0,.45)}.tag.you .card{align-items:center;gap:8px;padding:4px 14px 4px 4px;border-radius:99px;font-size:15px;border:2px solid rgba(255,255,255,.85)}.tag.you .mv{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(4,16,28,.16)}.tag.you .mv svg{width:16px;height:16px}.tag.you .stem{width:3px;background:linear-gradient(var(--route),transparent)}
 /* phones: once a stand or list is open, give the panel to its content (logos and search stay on the home screen and above the map) */
 @media (max-width:600px){#app:not([data-view=home]) .brand{display:none}}
 .qr.qr-after{margin-top:18px}
@@ -942,7 +942,7 @@ const T = {
    startFrom:"Starting from",change:"Change",pickTitle:"Where are you starting from?",pickSub:"Directions and walking times are worked out from the point you choose.",
    pickMap:"Point on the map",pickMapSub:"Tap your spot, or drag the You are here marker",tapWhere:"Tap the map where you are standing",cancel:"Cancel",
    thisScreen:"This screen",screens:"Information screens",near:n=>`Next to ${n}`,mapPoint:"Chosen spot",startSet:n=>`Starting from ${n}`,notHere:"That spot is not on a walkway. Tap an aisle or a stand.",
-   organisedBy:"Organised by",tapToAdd:"Tap any stand on the map to add it as a stop.",alreadyIn:n=>`${n} is already in your route`,roomDoors:"Enter through the doors on the open side"},
+   organisedBy:"Organised by",tapToAdd:"Tap any stand on the map to add it as a stop.",alreadyIn:n=>`${n} is already in your route`,dragHint:"Drag to move your starting point, or tap to pick one",roomDoors:"Enter through the doors on the open side"},
  zh:{search:"搜索展商",exhibitors:"展商",categories:"行业",facilities:"休息室与会议室",sponsors:"赞助商",
    exSub:n=>`${n} 家公司`,catSub:n=>`${n} 个行业`,sectors:"行业",facSub:"贵宾室、会议室、媒体",spSub:"展会合作伙伴",
    nearest:"离您最近",youAreHere:"您在这里",showRoute:"带我去",endRoute:"结束导航",stand:"展位",hall:"展馆",area:"面积",walk:"步行",
@@ -974,7 +974,7 @@ const T = {
    startFrom:"出发地点",change:"更改",pickTitle:"您从哪里出发？",pickSub:"路线和步行时间将从您选择的地点计算。",
    pickMap:"在地图上选择",pickMapSub:"点击您的位置，或拖动“您在这里”标记",tapWhere:"请在地图上点击您所在的位置",cancel:"取消",
    thisScreen:"本屏幕",screens:"信息屏",near:n=>`${n}旁`,mapPoint:"所选位置",startSet:n=>`出发地点：${n}`,notHere:"该位置不在通道上，请点击通道或展位。",
-   organisedBy:"主办",tapToAdd:"点击地图上的任意展位，即可加入路线。",alreadyIn:n=>`${n} 已在路线中`,roomDoors:"请从开放一侧的门进入"},
+   organisedBy:"主办",tapToAdd:"点击地图上的任意展位，即可加入路线。",alreadyIn:n=>`${n} 已在路线中`,dragHint:"拖动可移动出发点，点击可选择出发点",roomDoors:"请从开放一侧的门进入"},
  ar:{search:"ابحث عن العارضين",exhibitors:"العارضون",categories:"القطاعات",facilities:"الصالات",sponsors:"الرعاة",
    exSub:n=>`${n} شركة`,catSub:n=>`${n} قطاعات`,sectors:"القطاعات",facSub:"كبار الزوار، المؤتمرات، الصحافة",spSub:"شركاء المعرض",
    nearest:"الأقرب إليك",youAreHere:"أنت هنا",showRoute:"أرني الطريق",endRoute:"إنهاء المسار",stand:"الجناح",hall:"القاعة",area:"المساحة",walk:"المشي",
@@ -1005,7 +1005,7 @@ const T = {
    startFrom:"نقطة البداية",change:"تغيير",pickTitle:"من أين تبدأ؟",pickSub:"تُحسب الاتجاهات وزمن المشي من النقطة التي تختارها.",
    pickMap:"نقطة على الخريطة",pickMapSub:"اضغط على مكانك أو اسحب علامة «أنت هنا»",tapWhere:"اضغط على الخريطة حيث تقف",cancel:"إلغاء",
    thisScreen:"هذه الشاشة",screens:"شاشات المعلومات",near:n=>`بجوار ${n}`,mapPoint:"الموقع المختار",startSet:n=>`البداية من ${n}`,notHere:"هذه النقطة ليست على ممر. اضغط على ممر أو جناح.",
-   organisedBy:"تنظيم",tapToAdd:"اضغط على أي جناح في الخريطة لإضافته كمحطة.",alreadyIn:n=>`${n} موجود بالفعل في مسارك`,roomDoors:"الدخول من الأبواب في الجانب المفتوح"}
+   organisedBy:"تنظيم",tapToAdd:"اضغط على أي جناح في الخريطة لإضافته كمحطة.",alreadyIn:n=>`${n} موجود بالفعل في مسارك`,dragHint:"اسحب لتحريك نقطة البداية، أو اضغط لاختيارها",roomDoors:"الدخول من الأبواب في الجانب المفتوح"}
 };
 let LANG="en";
 const t=(k,...a)=>{const v=T[LANG][k]??T.en[k];return typeof v==="function"?v(...a):v};
@@ -1043,6 +1043,7 @@ const I = {
  globe:'<circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5s1.2-6.1 3.8-8.5Z" fill="none" stroke="currentColor" stroke-width="1.6"/>',
  person:'<circle cx="12" cy="8" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 20c.9-3.9 3.9-6 7.5-6s6.6 2.1 7.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
  home:'<path d="M3.5 11 12 4l8.5 7M6 9.5V20h4.5v-5.5h3V20H18V9.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>',
+ move:'<path d="M12 3v18M3 12h18M12 3 9.5 5.5M12 3l2.5 2.5M12 21l-2.5-2.5M12 21l2.5-2.5M3 12l2.5-2.5M3 12l2.5 2.5M21 12l-2.5-2.5M21 12l-2.5 2.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
  s_tel:'<path d="M12 10.5v10M8.5 20.5h7M12 10.5l-4 10M12 10.5l4 10M7.8 7.2a6 6 0 0 1 8.4 0M5.3 4.7a9.5 9.5 0 0 1 13.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="9.6" r="1.4" fill="currentColor"/>',
  s_net:'<circle cx="12" cy="5" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="5" cy="18" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="19" cy="18" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M11 6.9 6.1 16M13 6.9l4.9 9.1M7.2 18h9.6" fill="none" stroke="currentColor" stroke-width="1.8"/>',
  s_soft:'<path d="M7 18.5a4.5 4.5 0 0 1-.6-9 6 6 0 0 1 11.5 1.5A3.8 3.8 0 0 1 17.5 18.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m10 12.5-1.8 1.8 1.8 1.8M14 12.5l1.8 1.8-1.8 1.8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
@@ -1562,7 +1563,7 @@ function animZoom(f,x,y,dur=280){const t0=performance.now(); let done=0; inertia
 
 const P=new Map(); let G1=null, G2=null, lastTap=null, tapTimer=null, twoTap=null, mouseRot=null;
 function centroid(){const v=[...P.values()];return {x:v.reduce((a,p)=>a+p.x,0)/v.length,y:v.reduce((a,p)=>a+p.y,0)/v.length};}
-function pickAt(x,y){if(PICKING){pickStart(x,y);return;} toNdc(x,y); ray.setFromCamera(ndc,camera); const hit=ray.intersectObjects(pickables,false)[0]; if(hit&&!addByTap(hit.object.userData.id))openDetail(hit.object.userData.id,{fromMap:true});}
+function pickAt(x,y){if(PICKING){pickStart(x,y);return;} toNdc(x,y); ray.setFromCamera(ndc,camera); const hit=ray.intersectObjects(pickables,false)[0]; if(hit&&!addByTap(hit.object.userData.id)){const id=hit.object.userData.id,p=BY_ID[id]; if(p&&p.type!=="entr"&&!PLAN.includes(id)){PLAN.push(id);toast(t("addedStop",placeName(p),PLAN.length));} openDetail(id,{fromMap:true});}}
 cv.addEventListener("contextmenu",e=>e.preventDefault());
 cv.addEventListener("pointerdown",e=>{
   if(!P.size&&e.button===0&&nearYou(e.clientX,e.clientY)){startDragYou(e);return;}
@@ -1984,9 +1985,11 @@ function addByTap(id){const p=BY_ID[id]; if(!p||p.type==="entr")return false;
   return false;}
 function savePlanTouch(){ renderPlanBar(); if(VIEW==="list"&&LISTCTX&&LISTCTX.kind!=="agenda")renderList(LISTCTX,false); }
 function togglePlan(id){ const i=PLAN.indexOf(id); if(i<0)PLAN.push(id); else PLAN.splice(i,1); toast(t(i<0?"addedStop":"removedStop",placeName(BY_ID[id]),PLAN.length)); renderPlanBar(); if(VIEW==="plan")openPlan(false); }
+function savePlan(){if(!ON_PHONE())return; try{localStorage.setItem("expoPlan",JSON.stringify(PLAN));}catch(e){}}
+function loadPlan(){try{for(const id of JSON.parse(localStorage.getItem("expoPlan")||"[]"))if(BY_ID[id]&&!PLAN.includes(id))PLAN.push(id);}catch(e){}}
 function renderPlanBar(){
   const pb=$("planbar"); if(!pb)return;
-  if(!PLAN.length||VIEW==="plan"||VIEW==="detail"){pb.hidden=true;return;}
+  savePlan(); if(!PLAN.length||VIEW==="plan"){pb.hidden=true;return;}
   pb.hidden=false;
   pb.innerHTML=`<button class="pb-x" id="pbX" aria-label="${t("clearPlan")}">${svg("close")}</button><div class="pb-count">${PLAN.length}</div><div class="pb-txt"><b>${t("myRoute")}</b><span>${t("stopsN",PLAN.length)}</span></div><button class="cta" id="pbGo" style="--hc:var(--route)">${svg("route")}${t("showMyRoute")}</button>`;
   $("pbGo").onclick=()=>openPlan();
@@ -2119,7 +2122,7 @@ function setLang(l){LANG=l;
   if(VIEW==="list"&&LISTCTX){if(LISTCTX.kind==="agenda")openAgenda(false);else renderList(LISTCTX,false);}
   if(VIEW==="search")renderSearch(false);
   if(VIEW==="detail"&&SELECTED){const keep=ROUTE_FOR;openDetail(SELECTED.id,{route:!!keep});}
-  tagYou.innerHTML=`<div class="card">${t("youAreHere")}<small>${svg("locate")}${t("change")}</small></div><div class="stem"></div>`; tagYou.setAttribute("role","button"); tagYou.setAttribute("aria-label",`${t("youAreHere")} · ${t("change")}`);
+  tagYou.innerHTML=`<div class="card"><span class="mv">${svg("move")}</span>${t("youAreHere")}</div><div class="stem"></div>`; tagYou.setAttribute("role","button"); tagYou.setAttribute("aria-label",t("dragHint")); tagYou.title=t("dragHint");
 }
 
 /* ---------- looks: three visual directions, switchable live ---------- */
@@ -2379,7 +2382,7 @@ function loop(now){
   else if(goto&&BY_ID[goto]){CFG.idleSeconds=Infinity;openDetail(goto,{route:true});}
   if(GETAPP)setTimeout(showGetApp,400);
   if(ON_PHONE())document.documentElement.classList.add("onphone");
-  syncLiveTags(); if(ON_PHONE()){loadRem();remCheck();} renderAttractQR();
+  syncLiveTags(); if(ON_PHONE()){loadRem();remCheck();if(goto!=="__plan"){loadPlan();renderPlanBar();}} renderAttractQR();
   requestAnimationFrame(loop);
 })();
 </script>
