@@ -700,6 +700,23 @@ html.reach .touch{width:64px;height:64px}html.reach .touch span{width:32px;heigh
 /* phones: once a stand or list is open, give the panel to its content (logos and search stay on the home screen and above the map) */
 @media (max-width:600px){#app:not([data-view=home]) .brand{display:none}}
 .qr.qr-after{margin-top:18px}
+
+/* timings: one even row at the foot of the panel */
+#panel>.timebar{flex:none;margin:0 16px max(14px,env(safe-area-inset-bottom,0px));order:9}
+.timebar{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(max-content,1fr)}
+.timebar>.tb-cell,.timebar>.tb-hours{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:4px;padding:10px 14px;text-align:start;border:0;border-inline-start:1px solid var(--line);min-width:0}
+.timebar>:first-child{border-inline-start:0}
+.timebar>.tb-cell small,.timebar>.tb-hours small{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.timebar>.tb-cell b,.timebar>.tb-hours b{font-family:var(--f-display);font-weight:700;font-size:clamp(17px,1.1vw + 6px,22px)!important;line-height:1.1;white-space:nowrap;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+/* Home: the same gold button wherever it appears */
+.fhome,.vh-home,.pill-btn.homeb{background:linear-gradient(160deg,#ffd27a,#f0a020)!important;color:#2a1604!important;border:2px solid #fff!important;box-shadow:0 0 0 3px rgba(240,160,32,.45),0 6px 18px rgba(240,160,32,.4)!important}
+.fhome svg,.vh-home svg{stroke-width:2.2}
+/* stop labels on the map: name, number and a remove button */
+.tag.num .card{display:flex;align-items:center;gap:8px;padding:5px 5px 5px 5px;max-width:300px}
+.tag.num .card b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+.tag.num .tx{pointer-events:auto;flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(12,21,48,.08);color:var(--paper-ink);border:0;cursor:pointer}
+.tag.num .tx:hover,.tag.num .tx:active{background:#ff3b5c;color:#fff}.tag.num .tx svg{width:16px;height:16px}
+.hint.tapadd{display:flex;align-items:center;gap:8px;margin:0 0 12px}.hint.tapadd svg{width:18px;height:18px;flex:none;color:var(--route)}
 </style>
 
 <div id="app">
@@ -925,7 +942,7 @@ const T = {
    startFrom:"Starting from",change:"Change",pickTitle:"Where are you starting from?",pickSub:"Directions and walking times are worked out from the point you choose.",
    pickMap:"Point on the map",pickMapSub:"Tap your spot, or drag the You are here marker",tapWhere:"Tap the map where you are standing",cancel:"Cancel",
    thisScreen:"This screen",screens:"Information screens",near:n=>`Next to ${n}`,mapPoint:"Chosen spot",startSet:n=>`Starting from ${n}`,notHere:"That spot is not on a walkway. Tap an aisle or a stand.",
-   organisedBy:"Organised by",roomDoors:"Enter through the doors on the open side"},
+   organisedBy:"Organised by",tapToAdd:"Tap any stand on the map to add it as a stop.",alreadyIn:n=>`${n} is already in your route`,roomDoors:"Enter through the doors on the open side"},
  zh:{search:"搜索展商",exhibitors:"展商",categories:"行业",facilities:"休息室与会议室",sponsors:"赞助商",
    exSub:n=>`${n} 家公司`,catSub:n=>`${n} 个行业`,sectors:"行业",facSub:"贵宾室、会议室、媒体",spSub:"展会合作伙伴",
    nearest:"离您最近",youAreHere:"您在这里",showRoute:"带我去",endRoute:"结束导航",stand:"展位",hall:"展馆",area:"面积",walk:"步行",
@@ -957,7 +974,7 @@ const T = {
    startFrom:"出发地点",change:"更改",pickTitle:"您从哪里出发？",pickSub:"路线和步行时间将从您选择的地点计算。",
    pickMap:"在地图上选择",pickMapSub:"点击您的位置，或拖动“您在这里”标记",tapWhere:"请在地图上点击您所在的位置",cancel:"取消",
    thisScreen:"本屏幕",screens:"信息屏",near:n=>`${n}旁`,mapPoint:"所选位置",startSet:n=>`出发地点：${n}`,notHere:"该位置不在通道上，请点击通道或展位。",
-   organisedBy:"主办",roomDoors:"请从开放一侧的门进入"},
+   organisedBy:"主办",tapToAdd:"点击地图上的任意展位，即可加入路线。",alreadyIn:n=>`${n} 已在路线中`,roomDoors:"请从开放一侧的门进入"},
  ar:{search:"ابحث عن العارضين",exhibitors:"العارضون",categories:"القطاعات",facilities:"الصالات",sponsors:"الرعاة",
    exSub:n=>`${n} شركة`,catSub:n=>`${n} قطاعات`,sectors:"القطاعات",facSub:"كبار الزوار، المؤتمرات، الصحافة",spSub:"شركاء المعرض",
    nearest:"الأقرب إليك",youAreHere:"أنت هنا",showRoute:"أرني الطريق",endRoute:"إنهاء المسار",stand:"الجناح",hall:"القاعة",area:"المساحة",walk:"المشي",
@@ -988,7 +1005,7 @@ const T = {
    startFrom:"نقطة البداية",change:"تغيير",pickTitle:"من أين تبدأ؟",pickSub:"تُحسب الاتجاهات وزمن المشي من النقطة التي تختارها.",
    pickMap:"نقطة على الخريطة",pickMapSub:"اضغط على مكانك أو اسحب علامة «أنت هنا»",tapWhere:"اضغط على الخريطة حيث تقف",cancel:"إلغاء",
    thisScreen:"هذه الشاشة",screens:"شاشات المعلومات",near:n=>`بجوار ${n}`,mapPoint:"الموقع المختار",startSet:n=>`البداية من ${n}`,notHere:"هذه النقطة ليست على ممر. اضغط على ممر أو جناح.",
-   organisedBy:"تنظيم",roomDoors:"الدخول من الأبواب في الجانب المفتوح"}
+   organisedBy:"تنظيم",tapToAdd:"اضغط على أي جناح في الخريطة لإضافته كمحطة.",alreadyIn:n=>`${n} موجود بالفعل في مسارك`,roomDoors:"الدخول من الأبواب في الجانب المفتوح"}
 };
 let LANG="en";
 const t=(k,...a)=>{const v=T[LANG][k]??T.en[k];return typeof v==="function"?v(...a):v};
@@ -1545,7 +1562,7 @@ function animZoom(f,x,y,dur=280){const t0=performance.now(); let done=0; inertia
 
 const P=new Map(); let G1=null, G2=null, lastTap=null, tapTimer=null, twoTap=null, mouseRot=null;
 function centroid(){const v=[...P.values()];return {x:v.reduce((a,p)=>a+p.x,0)/v.length,y:v.reduce((a,p)=>a+p.y,0)/v.length};}
-function pickAt(x,y){if(PICKING){pickStart(x,y);return;} toNdc(x,y); ray.setFromCamera(ndc,camera); const hit=ray.intersectObjects(pickables,false)[0]; if(hit)openDetail(hit.object.userData.id,{fromMap:true});}
+function pickAt(x,y){if(PICKING){pickStart(x,y);return;} toNdc(x,y); ray.setFromCamera(ndc,camera); const hit=ray.intersectObjects(pickables,false)[0]; if(hit&&!addByTap(hit.object.userData.id))openDetail(hit.object.userData.id,{fromMap:true});}
 cv.addEventListener("contextmenu",e=>e.preventDefault());
 cv.addEventListener("pointerdown",e=>{
   if(!P.size&&e.button===0&&nearYou(e.clientX,e.clientY)){startDragYou(e);return;}
@@ -1830,6 +1847,7 @@ function startRoute(p){
   const share=phoneLink(`go_${p.id}`);
   const qrSvg=share?qrSvgOf(share):noLinkHTML();
   $("routeOut").innerHTML=`${fromRowHTML()}<div class="eyebrow" style="margin-bottom:12px"><span>${t("steps")}</span><span>${t("aboutWalk",m,walkMin(r.len))}</span></div>
+    <p class="hint tapadd">${svg("plus")}${t("tapToAdd")}</p>
     <ol class="steps">${steps.map(s=>`<li><span class="ic">${svg(s.ic)}</span><p>${esc(s.text)}${s.sub?`<small>${esc(s.sub)}</small>`:""}</p></li>`).join("")}</ol>
 `; showMapQR(qrSvg,t("takePhone"),t("scan"));
   $("goBtn").hidden=true; $("endBtn").hidden=false;
@@ -1959,6 +1977,11 @@ function openSession(sid){
 
 /* ---------- My route: several stops, one walk ---------- */
 let PLAN=[], PLAN_ORDER=[], planTags=[];
+/* once a route is on the map, tapping another stand adds it as a stop instead of leaving the route */
+function addByTap(id){const p=BY_ID[id]; if(!p||p.type==="entr")return false;
+  if(VIEW==="plan"&&PLAN.length){ if(PLAN.includes(id))toast(t("alreadyIn",placeName(p))); else togglePlan(id); return true;}
+  if(VIEW==="detail"&&ROUTE_FOR&&id!==ROUTE_FOR){ for(const k of [ROUTE_FOR,id])if(!PLAN.includes(k))PLAN.push(k); toast(t("addedStop",placeName(p),PLAN.length)); openPlan(); return true;}
+  return false;}
 function savePlanTouch(){ renderPlanBar(); if(VIEW==="list"&&LISTCTX&&LISTCTX.kind!=="agenda")renderList(LISTCTX,false); }
 function togglePlan(id){ const i=PLAN.indexOf(id); if(i<0)PLAN.push(id); else PLAN.splice(i,1); toast(t(i<0?"addedStop":"removedStop",placeName(BY_ID[id]),PLAN.length)); renderPlanBar(); if(VIEW==="plan")openPlan(false); }
 function renderPlanBar(){
@@ -1990,7 +2013,7 @@ function openPlan(push=true){
   const qrSvg=share?qrSvgOf(share):noLinkHTML();
   views.plan.innerHTML=headHTML(t("myRoute"),t("stopsN",PLAN.length))+`<div class="scroll">
     <div class="facts" style="grid-template-columns:repeat(3,1fr)"><div><small>${t("stops")}</small><b>${PLAN.length}</b></div><div><small>${t("walk")}</small><b>${walkMin(total)}<small style="font-size:13px;letter-spacing:0;text-transform:none"> ${t("min")}</small></b></div><div><small>${t("distance")}</small><b>${Math.round(total)}<small style="font-size:13px;letter-spacing:0;text-transform:none"> ${t("m")}</small></b></div></div>
-    ${fromRowHTML()}<p class="hint">${t("planHint")}</p>
+    ${fromRowHTML()}<p class="hint">${t("planHint")} ${t("tapToAdd")}</p>
     <ol class="stops">${PLAN_ORDER.map((id,i)=>{const p=BY_ID[id],r=legs[i];return `<li>
       <div class="st-head"><span class="st-n">${i+1}</span>${logoBox(p)}<button class="st-nm" data-open="${id}"><b>${esc(placeName(p))}</b><span><span class="mono">${p.type==="booth"||p.type==="tba"?p.id:""}</span> ${p.hall==="cor"?"":hallName(p.hall)}</span></button><button class="st-x" data-rm="${id}" aria-label="${t("removeStop")}">${svg("close")}</button></div>
       <div class="st-leg">${svg("walk")}${r?`${t("mins",walkMin(r.len))} · ${Math.round(r.len)} ${t("m")} ${i?t("fromPrev"):t("fromHere")}`:"—"}</div>
@@ -2008,7 +2031,9 @@ function openPlan(push=true){
   HL={ids:new Set(PLAN)}; applyHighlight(); syncLegend();
   if(all.length>1){drawRoute({pts:all,len:total});
     $("routeChip").hidden=true;
-    PLAN_ORDER.forEach((id,i)=>{const el=document.createElement("div");el.className="tag num";el.innerHTML=`<div class="card"><span>${i+1}</span>${esc(placeName(BY_ID[id]))}</div><div class="stem"></div>`;stage.appendChild(el);el._p=BY_ID[id];planTags.push(el);});
+    PLAN_ORDER.forEach((id,i)=>{const el=document.createElement("div");el.className="tag num";el.innerHTML=`<div class="card"><span>${i+1}</span><b>${esc(placeName(BY_ID[id]))}</b><button class="tx" aria-label="${esc(t("removeStop"))}: ${esc(placeName(BY_ID[id]))}">${svg("close")}</button></div><div class="stem"></div>`;
+      el.querySelector(".tx").addEventListener("pointerdown",e=>e.stopPropagation()); el.querySelector(".tx").onclick=e=>{e.stopPropagation();togglePlan(id);};
+      stage.appendChild(el);el._p=BY_ID[id];planTags.push(el);});
     const xs=all.map(q=>q.x),zs=all.map(q=>q.z);fitBounds(Math.min(...xs)-10,Math.min(...zs)-10,Math.max(...xs)+10,Math.max(...zs)+10,{polar:.72});}
 }
 
@@ -2237,8 +2262,9 @@ $("allBtn").innerHTML=svg("layers"); $("allBtn").onclick=()=>setHall("all");
 $("dimBtn").onclick=()=>{viewMode=viewMode==="3d"?"2d":"3d"; $("dimBtn").innerHTML=svg(viewMode==="3d"?"flat":"cube");
   controls.maxPolarAngle=viewMode==="2d"?0.02:1.18; controls.minPolarAngle=0;
   const off=camera.position.clone().sub(controls.target); flyTo(controls.target,off.length(),{keepAz:true,dur:700});};
+function placeTimebar(){const tb=document.querySelector(".timebar"); if($("app").classList.contains("reach"))document.querySelector(".brand").append(tb); else $("panel").append(tb);}
 function setReach(on){closeSFS(false);if(on&&matchMedia("(max-height:560px),(max-width:600px)").matches)return; const dk=$("dock"); if(on){$("panel").prepend(dk);}else{stage.appendChild(dk);}
-  $("app").classList.toggle("reach",on);document.documentElement.classList.toggle("reach",on);$("reachBtn").setAttribute("aria-pressed",on);
+  $("app").classList.toggle("reach",on);document.documentElement.classList.toggle("reach",on);placeTimebar();$("reachBtn").setAttribute("aria-pressed",on);
   $("reachBtn").setAttribute("aria-label",t(on?"reachOff":"reach")); setTimeout(()=>{resize(); if(!ROUTE_FOR&&VIEW!=="plan"&&!SELECTED)fitHall(HALLSEL==="all"?homeHall():HALLSEL);},60); toast(t(on?"reachOnToast":"reachOffToast"));}
 $("reachBtn").onclick=()=>setReach(!$("app").classList.contains("reach"));
 $("langBtn").onclick=e=>{e.stopPropagation();const m=$("langMenu");m.hidden=!m.hidden;};
@@ -2281,6 +2307,15 @@ const v3=new THREE.Vector3();
 function place(el,pos,yOff){v3.set(pos.x,pos.y+yOff,pos.z).project(camera);
   if(v3.z>1){el.style.opacity=0;return;} el.style.opacity=1;
   el.style.transform=`translate(${(v3.x*.5+.5)*stageW}px,${(-v3.y*.5+.5)*stageH}px) translate(-50%,-100%)`;}
+/* numbered stop labels: anchored on their stands, lifted on longer stems so they never cover each other */
+function placeStacked(items){const vis=[],placed=[];
+  for(const it of items){v3.set(it.pos.x,it.pos.y+it.yOff,it.pos.z).project(camera); if(v3.z>1){it.el.style.opacity=0;continue;}
+    const c=it.el.firstChild; vis.push({el:it.el,x:(v3.x*.5+.5)*stageW,y:(-v3.y*.5+.5)*stageH,w:c.offsetWidth,h:c.offsetHeight});}
+  vis.sort((a,b)=>b.y-a.y);
+  for(const v of vis){let lift=0;
+    for(let k=0;k<12;k++){const y1=v.y-26-lift,y0=y1-v.h; const hit=placed.find(r=>v.x-v.w/2<r.x1+6&&v.x+v.w/2>r.x0-6&&y0<r.y1+4&&y1>r.y0-4); if(!hit)break; lift=v.y-26-(hit.y0-4);}
+    placed.push({x0:v.x-v.w/2,x1:v.x+v.w/2,y0:v.y-26-lift-v.h,y1:v.y-26-lift});
+    v.el.style.opacity=1; v.el.lastChild.style.height=(26+lift)+"px"; v.el.style.transform=`translate(${v.x}px,${v.y}px) translate(-50%,-100%)`;}}
 const BOUND={x0:wx(H4X0-200),x1:wx(7400),z0:wz(1500),z1:wz(WALKY+150)};
 function loop(now){
   requestAnimationFrame(loop);
@@ -2312,7 +2347,7 @@ function loop(now){
   renderer.render(scene,camera);
   place(tagYou,{x:KPOS.x,y:0,z:KPOS.z},3);
   for(const el of Object.values(liveTags)){const p=el._p,c=center(p),g=boothObj[p.id];place(el,{x:c.x,y:(g?g.userData.H*g.scale.y:0),z:c.z},2);}
-  for(const el of planTags){const p=el._p,c=center(p),g=boothObj[p.id];place(el,{x:c.x,y:(g?g.userData.H*g.scale.y:0),z:c.z},2.5);}
+  placeStacked(planTags.map(el=>{const p=el._p,c=center(p),g=boothObj[p.id];return {el,pos:{x:c.x,y:(g?g.userData.H*g.scale.y:0),z:c.z},yOff:2.5};}));
   if(!tagSel.hidden&&SELECTED){const c=center(SELECTED);place(tagSel,{x:c.x,y:(boothObj[SELECTED.id]?boothObj[SELECTED.id].userData.H:0)+.5,z:c.z},8.2);}
 }
 
@@ -2334,7 +2369,7 @@ function loop(now){
     else if(BY_ID[tok])goto=tok;
   }
   LOOK=LOOKS[look]||LOOKS.midnight; LOOK_ID=LOOKS[look]?look:"midnight";
-  resize(); buildBooths(); applyLook(LOOK_ID,true);
+  placeTimebar(); resize(); buildBooths(); applyLook(LOOK_ID,true);
   setKiosk(KIOSK); setLang(startLang);
   camera.position.copy(camFor({x:0,z:0},360,.95,heading())); controls.target.set(0,0,0);
   fitHall(homeHall());
