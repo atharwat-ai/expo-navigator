@@ -749,6 +749,7 @@ html.onphone .joy:not(.show){display:none}
 .cta.sendbtn svg{width:18px;height:18px;flex:none}
 .mapqr .cta.sendbtn span,.qr .cta.sendbtn span{display:inline;margin:0;color:var(--on-route);font-size:14px;font-weight:700;line-height:1.15}.cta.sendbtn{color:var(--on-route)}
 .qr .cta.sendbtn{margin-top:10px;width:auto}
+.cta.sendbtn.phonepdf{min-height:52px;margin-top:16px;font-size:16px;justify-content:center}.cta.sendbtn.phonepdf span{color:var(--on-route)}
 #sendBox{position:fixed;inset:0;z-index:46;display:grid;place-items:center;background:rgba(3,6,14,.7)}#sendBox[hidden]{display:none}
 .sendcard{width:min(640px,calc(100% - 32px));max-height:92vh;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
 .sendcard>p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
@@ -986,7 +987,7 @@ const T = {
    nearest:"Closest to you",youAreHere:"You are here",showRoute:"Show me the way",endRoute:"End route",stand:"Stand",hall:"Hall",area:"Area",walk:"Walk",
    min:"min",m:"m",allHalls:"All halls",soon:"Soon",back:"Back",found:n=>`${n} found`,
    noResults:"No match yet. Try a company name, a stand number such as H1-12, or a topic like banking.",
-   takePhone:"Take the route with you",scan:"Scan with your phone camera to open this stand and route on your phone.",
+   takePhone:"Take the route with you",scan:"Scan with your phone camera to open this route on your phone, then save it as a PDF or share it.",
    steps:"Directions",tba:"Exhibitor to be announced",entrances:"Entrances",rooms:"Lounges, rooms & press",
    date:"7 – 10 November 2026",venue:"Egypt International Exhibition Center · New Cairo",tagline:"<b>AI in Action</b> · Turning intelligence into impact",
    startAt:r=>`Start here, in ${r}`,exitTo:(h,d,i)=>`Leave ${h} through its ${d} door ${i}`,enter:(h,d)=>`Enter ${h} through the ${d} door`,
@@ -1012,13 +1013,13 @@ const T = {
    startFrom:"Starting from",change:"Change",pickTitle:"Where are you starting from?",pickSub:"Directions and walking times are worked out from the point you choose.",
    pickMap:"Point on the map",pickMapSub:"Tap your spot, or drag the You are here marker",tapWhere:"Tap the map where you are standing",cancel:"Cancel",
    thisScreen:"This screen",screens:"Information screens",near:n=>`Next to ${n}`,mapPoint:"Chosen spot",startSet:n=>`Starting from ${n}`,notHere:"That spot is not on a walkway. Tap an aisle or a stand.",
-   organisedBy:"Organised by",parking:"Car parks",sendRoute:"Send to my phone or email",sendSub:"We send this route as a PDF with a 3D view, a flat map and the directions.",send:"Send",dlPdf:"Download PDF",making:"Preparing your PDF…",sentEmail:"Sent. Check your email.",sentPhone:"Sent. Check your messages.",sentOk:"Done.",dlDone:"PDF downloaded.",badEmail:"Please enter a full email address.",badPhone:"Please enter a phone number with its country code.",noSend:"Sending is not switched on yet. Scan the QR code, or download the PDF.",sendFail:"That did not work. Please try again or scan the QR code.",jMap:"Map controls",jcMove:"Move · Turn",jcZoom:"Zoom",jcTilt:"Tilt",jUp:"Move up",jDown:"Move down",jLeft:"Move left",jRight:"Move right",jIn:"Zoom in",jOut:"Zoom out",jRotL:"Turn left",jRotR:"Turn right",jFlat:"Look from above",j3d:"Tilt to 3D",jRing:"Drag the ring round to turn the map",tapToAdd:"Tap any stand on the map to add it as a stop.",alreadyIn:n=>`${n} is already in your route`,dragHint:"Drag to move your starting point, or tap to pick one",roomDoors:"Enter through the doors on the open side"},
+   organisedBy:"Organised by",parking:"Car parks",sendRoute:"Send to my phone or email",savePdf:"Save or share as PDF",sendSub:"We send this route as a PDF with a 3D view, a flat map and the directions.",send:"Send",dlPdf:"Download PDF",making:"Preparing your PDF…",sentEmail:"Sent. Check your email.",sentPhone:"Sent. Check your messages.",sentOk:"Done.",dlDone:"PDF downloaded.",badEmail:"Please enter a full email address.",badPhone:"Please enter a phone number with its country code.",noSend:"Sending is not switched on yet. Scan the QR code, or download the PDF.",sendFail:"That did not work. Please try again or scan the QR code.",jMap:"Map controls",jcMove:"Move · Turn",jcZoom:"Zoom",jcTilt:"Tilt",jUp:"Move up",jDown:"Move down",jLeft:"Move left",jRight:"Move right",jIn:"Zoom in",jOut:"Zoom out",jRotL:"Turn left",jRotR:"Turn right",jFlat:"Look from above",j3d:"Tilt to 3D",jRing:"Drag the ring round to turn the map",tapToAdd:"Tap any stand on the map to add it as a stop.",alreadyIn:n=>`${n} is already in your route`,dragHint:"Drag to move your starting point, or tap to pick one",roomDoors:"Enter through the doors on the open side"},
  zh:{search:"搜索展商",exhibitors:"展商",categories:"行业",facilities:"休息室与会议室",sponsors:"赞助商",
    exSub:n=>`${n} 家公司`,catSub:n=>`${n} 个行业`,sectors:"行业",facSub:"贵宾室、会议室、媒体",spSub:"展会合作伙伴",
    nearest:"离您最近",youAreHere:"您在这里",showRoute:"带我去",endRoute:"结束导航",stand:"展位",hall:"展馆",area:"面积",walk:"步行",
    min:"分钟",m:"米",allHalls:"全部展馆",soon:"即将开放",back:"返回",found:n=>`找到 ${n} 个`,
    noResults:"暂无结果。请尝试公司名称、展位号（如 H1-12）或主题（如 银行）。",
-   takePhone:"把路线带走",scan:"用手机相机扫码，在手机上打开此展位和路线。",
+   takePhone:"把路线带走",scan:"用手机相机扫码，在手机上打开此路线，并可保存为PDF或分享。",
    steps:"路线指引",tba:"展商待公布",entrances:"入口",rooms:"休息室、会议室与媒体中心",
    date:"2026年11月7日至10日",venue:"埃及国际展览中心 · 新开罗",tagline:"<b>AI in Action</b>",
    startAt:r=>`从这里出发，位于${r}`,exitTo:(h,d,i)=>`从${h}的${d}门离开，${i}`,enter:(h,d)=>`从${d}门进入${h}`,
@@ -1044,13 +1045,13 @@ const T = {
    startFrom:"出发地点",change:"更改",pickTitle:"您从哪里出发？",pickSub:"路线和步行时间将从您选择的地点计算。",
    pickMap:"在地图上选择",pickMapSub:"点击您的位置，或拖动“您在这里”标记",tapWhere:"请在地图上点击您所在的位置",cancel:"取消",
    thisScreen:"本屏幕",screens:"信息屏",near:n=>`${n}旁`,mapPoint:"所选位置",startSet:n=>`出发地点：${n}`,notHere:"该位置不在通道上，请点击通道或展位。",
-   organisedBy:"主办",parking:"停车场",sendRoute:"发送到我的手机或邮箱",sendSub:"我们会将此路线以PDF发送，包含3D视图、平面图和路线指引。",send:"发送",dlPdf:"下载PDF",making:"正在生成PDF…",sentEmail:"已发送，请查收邮件。",sentPhone:"已发送，请查看短信。",sentOk:"完成。",dlDone:"PDF已下载。",badEmail:"请输入完整的邮箱地址。",badPhone:"请输入带国家代码的电话号码。",noSend:"发送功能尚未开通。请扫描二维码或下载PDF。",sendFail:"发送失败，请重试或扫描二维码。",jMap:"地图控制",jcMove:"移动 · 旋转",jcZoom:"缩放",jcTilt:"倾斜",jUp:"上移",jDown:"下移",jLeft:"左移",jRight:"右移",jIn:"放大",jOut:"缩小",jRotL:"向左转",jRotR:"向右转",jFlat:"俯视",j3d:"倾斜为3D",jRing:"拖动圆环旋转地图",tapToAdd:"点击地图上的任意展位，即可加入路线。",alreadyIn:n=>`${n} 已在路线中`,dragHint:"拖动可移动出发点，点击可选择出发点",roomDoors:"请从开放一侧的门进入"},
+   organisedBy:"主办",parking:"停车场",sendRoute:"发送到我的手机或邮箱",savePdf:"保存或分享PDF",sendSub:"我们会将此路线以PDF发送，包含3D视图、平面图和路线指引。",send:"发送",dlPdf:"下载PDF",making:"正在生成PDF…",sentEmail:"已发送，请查收邮件。",sentPhone:"已发送，请查看短信。",sentOk:"完成。",dlDone:"PDF已下载。",badEmail:"请输入完整的邮箱地址。",badPhone:"请输入带国家代码的电话号码。",noSend:"发送功能尚未开通。请扫描二维码或下载PDF。",sendFail:"发送失败，请重试或扫描二维码。",jMap:"地图控制",jcMove:"移动 · 旋转",jcZoom:"缩放",jcTilt:"倾斜",jUp:"上移",jDown:"下移",jLeft:"左移",jRight:"右移",jIn:"放大",jOut:"缩小",jRotL:"向左转",jRotR:"向右转",jFlat:"俯视",j3d:"倾斜为3D",jRing:"拖动圆环旋转地图",tapToAdd:"点击地图上的任意展位，即可加入路线。",alreadyIn:n=>`${n} 已在路线中`,dragHint:"拖动可移动出发点，点击可选择出发点",roomDoors:"请从开放一侧的门进入"},
  ar:{search:"ابحث عن العارضين",exhibitors:"العارضون",categories:"القطاعات",facilities:"الصالات",sponsors:"الرعاة",
    exSub:n=>`${n} شركة`,catSub:n=>`${n} قطاعات`,sectors:"القطاعات",facSub:"كبار الزوار، المؤتمرات، الصحافة",spSub:"شركاء المعرض",
    nearest:"الأقرب إليك",youAreHere:"أنت هنا",showRoute:"أرني الطريق",endRoute:"إنهاء المسار",stand:"الجناح",hall:"القاعة",area:"المساحة",walk:"المشي",
    min:"د",m:"م",allHalls:"كل القاعات",soon:"قريبًا",back:"رجوع",found:n=>`${n} نتيجة`,
    noResults:"لا توجد نتائج بعد. جرّب اسم شركة أو رقم جناح مثل H1-12 أو مجالًا مثل البنوك.",
-   takePhone:"خذ المسار معك",scan:"امسح الرمز بكاميرا هاتفك لفتح الجناح والمسار على هاتفك.",
+   takePhone:"خذ المسار معك",scan:"امسح الرمز بكاميرا هاتفك لفتح المسار على هاتفك، ثم احفظه كملف PDF أو شاركه.",
    steps:"الاتجاهات",tba:"سيتم الإعلان عن العارض",entrances:"المداخل",rooms:"الصالات والقاعات والصحافة",
    date:"٧ – ١٠ نوفمبر ٢٠٢٦",venue:"مركز مصر الدولي للمعارض · القاهرة الجديدة",tagline:"<b>AI in Action</b>",
    startAt:r=>`ابدأ من هنا، في ${r}`,exitTo:(h,d,i)=>`اخرج من ${h} عبر الباب ${d} ${i}`,enter:(h,d)=>`ادخل ${h} عبر الباب ${d}`,
@@ -1075,7 +1076,7 @@ const T = {
    startFrom:"نقطة البداية",change:"تغيير",pickTitle:"من أين تبدأ؟",pickSub:"تُحسب الاتجاهات وزمن المشي من النقطة التي تختارها.",
    pickMap:"نقطة على الخريطة",pickMapSub:"اضغط على مكانك أو اسحب علامة «أنت هنا»",tapWhere:"اضغط على الخريطة حيث تقف",cancel:"إلغاء",
    thisScreen:"هذه الشاشة",screens:"شاشات المعلومات",near:n=>`بجوار ${n}`,mapPoint:"الموقع المختار",startSet:n=>`البداية من ${n}`,notHere:"هذه النقطة ليست على ممر. اضغط على ممر أو جناح.",
-   organisedBy:"تنظيم",parking:"مواقف السيارات",sendRoute:"أرسل إلى هاتفي أو بريدي",sendSub:"نرسل هذا المسار كملف PDF يتضمن عرضًا ثلاثي الأبعاد وخريطة مسطحة والاتجاهات.",send:"إرسال",dlPdf:"تنزيل PDF",making:"جارٍ تجهيز الملف…",sentEmail:"تم الإرسال. راجع بريدك.",sentPhone:"تم الإرسال. راجع رسائلك.",sentOk:"تم.",dlDone:"تم تنزيل الملف.",badEmail:"أدخل بريدًا إلكترونيًا كاملًا.",badPhone:"أدخل رقم الهاتف مع رمز الدولة.",noSend:"الإرسال غير مفعّل بعد. امسح الرمز أو نزّل الملف.",sendFail:"تعذّر الإرسال. حاول مرة أخرى أو امسح الرمز.",jMap:"التحكم في الخريطة",jcMove:"تحريك · تدوير",jcZoom:"تكبير",jcTilt:"إمالة",jUp:"تحريك لأعلى",jDown:"تحريك لأسفل",jLeft:"تحريك لليسار",jRight:"تحريك لليمين",jIn:"تكبير",jOut:"تصغير",jRotL:"دوران لليسار",jRotR:"دوران لليمين",jFlat:"عرض من أعلى",j3d:"إمالة ثلاثية الأبعاد",jRing:"اسحب الحلقة لتدوير الخريطة",tapToAdd:"اضغط على أي جناح في الخريطة لإضافته كمحطة.",alreadyIn:n=>`${n} موجود بالفعل في مسارك`,dragHint:"اسحب لتحريك نقطة البداية، أو اضغط لاختيارها",roomDoors:"الدخول من الأبواب في الجانب المفتوح"}
+   organisedBy:"تنظيم",parking:"مواقف السيارات",sendRoute:"أرسل إلى هاتفي أو بريدي",savePdf:"احفظ أو شارك كملف PDF",sendSub:"نرسل هذا المسار كملف PDF يتضمن عرضًا ثلاثي الأبعاد وخريطة مسطحة والاتجاهات.",send:"إرسال",dlPdf:"تنزيل PDF",making:"جارٍ تجهيز الملف…",sentEmail:"تم الإرسال. راجع بريدك.",sentPhone:"تم الإرسال. راجع رسائلك.",sentOk:"تم.",dlDone:"تم تنزيل الملف.",badEmail:"أدخل بريدًا إلكترونيًا كاملًا.",badPhone:"أدخل رقم الهاتف مع رمز الدولة.",noSend:"الإرسال غير مفعّل بعد. امسح الرمز أو نزّل الملف.",sendFail:"تعذّر الإرسال. حاول مرة أخرى أو امسح الرمز.",jMap:"التحكم في الخريطة",jcMove:"تحريك · تدوير",jcZoom:"تكبير",jcTilt:"إمالة",jUp:"تحريك لأعلى",jDown:"تحريك لأسفل",jLeft:"تحريك لليسار",jRight:"تحريك لليمين",jIn:"تكبير",jOut:"تصغير",jRotL:"دوران لليسار",jRotR:"دوران لليمين",jFlat:"عرض من أعلى",j3d:"إمالة ثلاثية الأبعاد",jRing:"اسحب الحلقة لتدوير الخريطة",tapToAdd:"اضغط على أي جناح في الخريطة لإضافته كمحطة.",alreadyIn:n=>`${n} موجود بالفعل في مسارك`,dragHint:"اسحب لتحريك نقطة البداية، أو اضغط لاختيارها",roomDoors:"الدخول من الأبواب في الجانب المفتوح"}
 };
 let LANG="en";
 const t=(k,...a)=>{const v=T[LANG][k]??T.en[k];return typeof v==="function"?v(...a):v};
@@ -2355,8 +2356,8 @@ function buildKbd(){
 
 /* ---------- the route as a PDF: 3D view, flat view, directions and the phone QR; sent by email or text message ---------- */
 let ROUTE_DOC=null;
-const sendBtnHTML=()=>`<button class="cta sendbtn" data-sendroute>${svg("mail")}<span>${esc(t("sendRoute"))}</span></button>`;
-document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-sendroute]"); if(b){e.stopPropagation(); openSend();}});
+const sendBtnHTML=()=>ON_PHONE()?`<button class="cta sendbtn phonepdf" data-sendroute>${svg("phone")}<span>${esc(t("savePdf"))}</span></button>`:"";
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-sendroute]"); if(b){e.stopPropagation(); savePDF(b);}});
 function snapRoute(polar,W,H){ // render the route from a chosen angle into an image, then put the camera back
   if(!ROUTE_DOC||!ROUTE_DOC.pts.length)return null;
   const xs=ROUTE_DOC.pts.map(q=>q.x), zs=ROUTE_DOC.pts.map(q=>q.z), pad=14;
@@ -2404,6 +2405,14 @@ async function routePDF(){
   return pdf.output("blob");}
 const blobB64=b=>new Promise(r=>{const f=new FileReader(); f.onload=()=>r(String(f.result).split(",")[1]); f.readAsDataURL(b);});
 function pdfName(){return `Cairo-ICT-route-${(ROUTE_DOC.title||"route").replace(/[^\w؀-ۿ一-鿿]+/g,"-").slice(0,40)}.pdf`;}
+async function savePDF(btn){ if(!ROUTE_DOC)return; const lab=btn.querySelector("span"), was=lab.textContent; lab.textContent=t("making"); btn.disabled=true;
+  try{const b=await routePDF(); const f=new File([b],pdfName(),{type:"application/pdf"});
+    let dlc=null; try{dlc=window.claude&&window.claude.use?await Promise.race([window.claude.use("downloads"),new Promise(r=>setTimeout(()=>r(null),1500))]):null;}catch(e){}
+    if(dlc){await dlc.save({filename:f.name,data:b}).catch(()=>{});}
+    else if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:ROUTE_DOC.title}).catch(()=>{});}
+    else{const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=f.name; document.body.appendChild(a); a.click(); a.remove();}}
+  catch(e){toast(t("sendFail"));}
+  lab.textContent=was; btn.disabled=false;}
 function openSend(){ if(!ROUTE_DOC)return; let o=$("sendBox"); if(!o){o=document.createElement("div");o.id="sendBox";$("app").appendChild(o);}
   const S={ch:"email",val:""}; o.hidden=false; o.dir=LANG==="ar"?"rtl":"ltr";
   const keys=()=>S.ch==="phone"?["123","456","789","+0⌫"]:["1234567890","qwertyuiop","asdfghjkl","zxcvbnm⌫","@._-"];
@@ -2500,7 +2509,7 @@ function startRoute(p){
   $("routeOut").innerHTML=`${fromRowHTML()}<div class="eyebrow" style="margin-bottom:12px"><span>${t("steps")}</span><span>${t("aboutWalk",m,walkMin(r.len))}</span></div>
     <p class="hint tapadd">${svg("plus")}${t("tapToAdd")}</p>
     <ol class="steps">${steps.map(s=>`<li><span class="ic">${svg(s.ic)}</span><p>${esc(s.text)}${s.sub?`<small>${esc(s.sub)}</small>`:""}</p></li>`).join("")}</ol>
-`; ROUTE_DOC={title:placeName(p),stops:[{name:placeName(p),sub:p.type==="booth"||p.type==="tba"?`${t("stand")} ${p.id} · ${hallName(p.hall)}`:hallName(p.hall)}],len:r.len,pts:r.pts,steps,link:share};
+    ${sendBtnHTML()}`; ROUTE_DOC={title:placeName(p),stops:[{name:placeName(p),sub:p.type==="booth"||p.type==="tba"?`${t("stand")} ${p.id} · ${hallName(p.hall)}`:hallName(p.hall)}],len:r.len,pts:r.pts,steps,link:share};
   showMapQR(qrSvg,t("takePhone"),t("scan"));
   $("goBtn").hidden=true; $("endBtn").hidden=false;
   const chip=$("routeChip");
@@ -2674,7 +2683,7 @@ function openPlan(push=true){
       <div class="st-head"><span class="st-n">${i+1}</span>${logoBox(p)}<button class="st-nm" data-open="${id}"><b>${esc(placeName(p))}</b><span><span class="mono">${p.type==="booth"||p.type==="tba"?p.id:""}</span> ${p.hall==="cor"?"":hallName(p.hall)}</span></button><button class="st-x" data-rm="${id}" aria-label="${t("removeStop")}">${svg("close")}</button></div>
       <div class="st-leg">${svg("walk")}${r?`${t("mins",walkMin(r.len))} · ${Math.round(r.len)} ${t("m")} ${i?t("fromPrev"):t("fromHere")}`:"—"}</div>
       ${contactHTML(p)||(p.type==="booth"?`<div class="ct-none">${t("noContact")}</div>`:"")}</li>`;}).join("")}</ol>
-    <div id="planQR"></div>
+    ${sendBtnHTML()}<div id="planQR"></div>
   </div>
   <div class="actionbar"><button class="cta ghost" id="planClear">${svg("close")}${t("clearPlan")}</button></div>`;
   views.plan.querySelector("[data-back]").onclick=back;
@@ -2696,9 +2705,9 @@ function openPlan(push=true){
 
 /* the take-it-with-you QR sits on the map where it is seen straight away; on narrow screens it goes to the top of the page instead */
 function showMapQR(qr,title,sub){const el=$("mapQR"); if(!qr||ON_PHONE()){el.hidden=true;return;}
-  el.innerHTML=`<div class="mq-code">${qr}</div><div class="mq-txt"><b>${esc(title)}</b><span>${esc(sub)}</span></div>${sendBtnHTML()}`; el.hidden=false;
+  el.innerHTML=`<div class="mq-code">${qr}</div><div class="mq-txt"><b>${esc(title)}</b><span>${esc(sub)}</span></div>`; el.hidden=false;
   const narrow=stage.clientWidth<560||innerHeight>innerWidth||$("app").classList.contains("reach"); // portrait screens: the QR goes in the panel so it never covers the route
-  if(narrow){el.hidden=true; const ro=VIEW==="detail"&&$("routeOut"), host=ro||(views[VIEW]&&views[VIEW].querySelector(".scroll")); if(host){const q=document.createElement("div");q.className="qr "+(ro?"qr-after":"qr-top");q.innerHTML=`<div class="code">${qr}</div><div><b>${esc(title)}</b><span>${esc(sub)}</span>${sendBtnHTML()}</div>`;ro?host.append(q):host.prepend(q);}}}
+  if(narrow){el.hidden=true; const ro=VIEW==="detail"&&$("routeOut"), host=ro||(views[VIEW]&&views[VIEW].querySelector(".scroll")); if(host){const q=document.createElement("div");q.className="qr "+(ro?"qr-after":"qr-top");q.innerHTML=`<div class="code">${qr}</div><div><b>${esc(title)}</b><span>${esc(sub)}</span></div>`;ro?host.append(q):host.prepend(q);}}}
 function renderAttractQR(){const el=$("attractQR"); if(!el)return; el.hidden=false;
   const lk=phoneLink("get");
   el.innerHTML=`<div class="qh">${svg("phone")}Take the map with you</div><div class="qs"><div class="c">${lk?qrSvgOf(lk):`<div class="nolink">${t("noLink")}</div>`}</div></div>
