@@ -1638,7 +1638,10 @@ function topCanvas(p,img){
   const w=asp>=1?base:Math.max(96,Math.round(base*asp)), h=asp>=1?Math.max(96,Math.round(base/asp)):base;
   return canvasTex(w,h,(g)=>{
     g.fillStyle="#f6f8fc";g.fillRect(0,0,w,h);
-    if(img){const s=Math.min(w*.8/img.width,h*.74/img.height); const iw=img.width*s,ih=img.height*s; g.drawImage(img,(w-iw)/2,(h-ih)/2,iw,ih);}
+    if(img){const s=Math.min(w*.8/img.width,h*.74/img.height), sr=Math.min(h*.8/img.width,w*.74/img.height);
+      if(sr>s*1.25){ // a wide logo on a long narrow stand (or the reverse): turn it to run along the stand, reading upwards
+        const iw=img.width*sr,ih=img.height*sr; g.save(); g.translate(w/2,h/2); g.rotate(-Math.PI/2); g.drawImage(img,-iw/2,-ih/2,iw,ih); g.restore();}
+      else{const iw=img.width*s,ih=img.height*s; g.drawImage(img,(w-iw)/2,(h-ih)/2,iw,ih);}}
     else{g.fillStyle="#7d89a6";g.textAlign="center";g.textBaseline="middle";const fs=Math.min(h*.24,w*.16);
       g.font=`700 ${fs}px 'Saira Semi Condensed'`;g.fillText(p.id,w/2,h/2-fs*.45);g.font=`500 ${fs*.7}px 'IBM Plex Sans'`;g.fillText(`${p.area} m²`,w/2,h/2+fs*.55);}
     g.strokeStyle="rgba(12,21,48,.10)";g.lineWidth=Math.max(3,w/90);g.strokeRect(0,0,w,h);
