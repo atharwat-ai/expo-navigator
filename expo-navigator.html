@@ -975,11 +975,11 @@ FAC.push(...CONNECTA_FAC);
 /* car parks, from the EIEC satellite view; walkable, so a visitor can start a route from where they parked */
 /* main roads around EIEC, traced from the street map and placed by fitting the halls: El-Moshir Tantawy Axis (north),
    Samira Moussa bridge road (east), De Media Square (south-east roundabout), the southern dual carriageway and site access roads */
-const ROADS={"roads":[{"w":11,"lines":true,"pts":[[-11317,7833],[-8293,7821],[-5537,8128],[-1930,8160],[1666,8161],[5077,8173],[8858,8162],[11235,7920],[12398,7450],[12941,6557]]},{"w":11,"lines":true,"pts":[[-11021,8690],[-7600,8733],[-4374,8757],[-778,8757],[2633,8770],[6218,8739],[9836,8802],[12157,8945]]},{"w":11,"lines":true,"pts":[[11708,-2774],[12090,-1009],[12422,938],[12914,3353],[13135,4651],[13154,5913],[12941,6557]]},{"w":11,"lines":true,"pts":[[12554,-4163],[12749,-1676],[13140,1101],[13457,3389],[13679,4856],[13987,6133],[14484,7025],[15224,7689],[16051,8163]]},{"w":9,"lines":true,"pts":[[-9802,8054],[-10483,6193],[-11110,4318],[-11330,3189],[-11010,2688],[-8583,2045],[-7023,1630],[-4579,1034],[-1679,663],[1722,644],[4316,484],[6217,510],[8304,524],[11998,535],[12663,541]]},{"w":7,"lines":false,"pts":[[566,5523],[626,6353],[720,7175],[761,7841],[871,8490]]},{"w":16,"lines":true,"pts":[[-14299,-699],[-11197,-1034],[-8770,-1678],[-7210,-2092],[-4766,-2689],[-1865,-3059],[1535,-3078],[4129,-3239],[6030,-3213],[8117,-3198],[11811,-3188],[12836,-3235],[13951,-3406]]}],"rings":[{"c":[12955,8243],"r":1078.0,"w":10},{"c":[572,5538],"r":431.20000000000005,"w":6}],"labels":[{"t":"EL-MOSHIR TANTAWY AXIS","at":[-606,-2809],"rot":-0.25,"w":130},{"t":"SAMIRA MOUSSA BRIDGE","at":[13134,2454],"rot":1.35,"w":90},{"t":"DE MEDIA SQUARE","at":[12955,8243],"rot":0,"w":60}]};
+const ROADS={"roads":[{"w":30,"lines":true,"pts":[[-16900,-3136],[-13851,-3255],[-8669,-2887],[-2879,-2548],[1925,-2440],[6499,-2042],[12769,-1640],[16686,-1163],[19920,-822]]},{"w":12,"lines":true,"pts":[[10983,-10302],[11436,-8326],[12049,-4321],[12234,-1336],[12202,1414],[12205,4296],[12288,6613],[12205,7452]]},{"w":12,"lines":true,"pts":[[12084,-10503],[12464,-8514],[13003,-4496],[13115,-1497],[13083,1253],[13128,3715],[13319,6150],[13380,7237]]},{"w":11,"lines":true,"pts":[[-13445,6867],[-11173,6725],[-7362,6576]]},{"w":11,"lines":true,"pts":[[-5628,6437],[1135,6666],[7359,6899],[11816,7551]]},{"w":11,"lines":true,"pts":[[-5548,7136],[1321,7360],[7545,7592],[11996,8108]]},{"w":10,"lines":true,"pts":[[-7350,-2278],[-7156,-118],[-6932,2723],[-6891,5460],[-6752,6094]]},{"w":10,"lines":true,"pts":[[13123,8862],[12701,9585],[12604,10947]]},{"w":9,"lines":true,"pts":[[-9802,8054],[-10483,6193],[-11110,4318],[-11330,3189],[-11010,2688],[-8583,2045],[-7023,1630],[-4579,1034],[-1679,663],[1722,644],[4316,484],[6217,510],[8304,524],[11998,535],[12663,541]]},{"w":7,"lines":false,"pts":[[566,5523],[626,6353],[720,7175],[761,7841],[871,8490]]}],"rings":[{"c":[12996,8103],"r":1074.4756860906625,"w":11},{"c":[-6375,6807],"r":835.7541504533496,"w":10},{"c":[572,5538],"r":431.20000000000005,"w":6}],"labels":[{"t":"EL-MOSHIR TANTAWY AXIS","at":[170,-2667],"rot":0,"w":110},{"t":"SAMIRA MOUSSA BRIDGE","at":[12859,-902],"rot":0,"w":80},{"t":"DE MEDIA SQUARE","at":[12996,8103],"rot":0,"w":50}]};
 const PARKING=[
   {id:"F-P1",x:7800,y:2600,w:4000,h:4700,cap:"P1",en:"Car park P1 · east of Hall 1",ar:"موقف السيارات P1 · شرق القاعة 1",zh:"停车场 P1 · 1号馆东侧",link:[7216,FRONT,7800,WALKY]},
   {id:"F-P2",x:4700,y:6300,w:2600,h:1900,cap:"P2",en:"Car park P2 · in front of Hall 1",ar:"موقف السيارات P2 · أمام القاعة 1",zh:"停车场 P2 · 1号馆前",link:[5800,WALKY-10,6200,6300]},
-  {id:"F-P3",x:-7000,y:6300,w:3000,h:1500,cap:"P3",en:"Car park P3 · in front of Halls 3 & 4",ar:"موقف السيارات P3 · أمام القاعتين 3 و4",zh:"停车场 P3 · 3号和4号馆前",link:[-5600,WALKY-10,-5200,6300]},
+  {id:"F-P3",x:-5100,y:6300,w:2900,h:1400,cap:"P3",en:"Car park P3 · in front of Halls 3 & 4",ar:"موقف السيارات P3 · أمام القاعتين 3 و4",zh:"停车场 P3 · 3号和4号馆前",link:[-3900,WALKY-10,-3500,6300]},
   {id:"F-P4",x:-11000,y:3300,w:3700,h:4000,cap:"P4",en:"Car park P4 · west of Hall 4",ar:"موقف السيارات P4 · غرب القاعة 4",zh:"停车场 P4 · 4号馆西侧",link:[-7300,FRONT,H4X0_,WALKY]}];
 PARKING.forEach(q=>FAC.push({...q,hall:"out",kind:"parking",model:true}));
 
@@ -1701,7 +1701,7 @@ const box=(x0,y0,x1,y1)=>({cx:wx((x0+x1)/2),cz:wz((y0+y1)/2),w:(x1-x0)/PT,d:(y1-
 
 const world=new THREE.Group(); scene.add(world);
 // ground
-const groundMesh=new THREE.Mesh(new THREE.PlaneGeometry(1400,1000),new THREE.MeshStandardMaterial({color:0x060c1c,roughness:1}));
+const groundMesh=new THREE.Mesh(new THREE.PlaneGeometry(4000,3000),new THREE.MeshStandardMaterial({color:0x060c1c,roughness:1}));
 groundMesh.rotation.x=-Math.PI/2; groundMesh.position.y=-.4; groundMesh.receiveShadow=true; world.add(groundMesh);
 let gridMesh=null;
 let venue=new THREE.Group(); world.add(venue);
@@ -1724,7 +1724,7 @@ function buildVenue(){
   const L=LOOK;
   world.remove(venue); venue.traverse(o=>{o.geometry&&o.geometry.dispose();}); venue=new THREE.Group(); world.add(venue);
   scene.fog.color.setHex(L.fog); groundMesh.material.color.setHex(L.ground);
-  if(gridMesh){world.remove(gridMesh);} gridMesh=new THREE.GridHelper(1000,100,L.grid[0],L.grid[1]); gridMesh.position.y=-.38; gridMesh.material.transparent=true; gridMesh.material.opacity=L.grid[2]; world.add(gridMesh);
+  if(gridMesh){world.remove(gridMesh);} gridMesh=new THREE.GridHelper(3000,300,L.grid[0],L.grid[1]); gridMesh.position.y=-.38; gridMesh.material.transparent=true; gridMesh.material.opacity=L.grid[2]; world.add(gridMesh);
   hemi.color.setHex(L.hemi[0]); hemi.groundColor.setHex(L.hemi[1]); hemi.intensity=L.hemi[2]; sun.intensity=L.sun; rim.intensity=L.rim;
   hallMeshes.h2=slab(1092,HY0,3671,HY1,L.h2,L.emis?0x0b1a44:0);
   hallMeshes.h1=slab(4630,HY0,7216,HY1,L.h1,L.emis?0x06281f:0);
@@ -3154,7 +3154,7 @@ function placeStacked(items){const vis=[],placed=[];
     for(let k=0;k<12;k++){const y1=v.y-26-lift,y0=y1-v.h; const hit=placed.find(r=>v.x-v.w/2<r.x1+6&&v.x+v.w/2>r.x0-6&&y0<r.y1+4&&y1>r.y0-4); if(!hit)break; lift=v.y-26-(hit.y0-4);}
     placed.push({x0:v.x-v.w/2,x1:v.x+v.w/2,y0:v.y-26-lift-v.h,y1:v.y-26-lift});
     v.el.style.opacity=1; v.el.lastChild.style.height=(26+lift)+"px"; v.el.style.transform=`translate(${v.x}px,${v.y}px) translate(-50%,-100%)`;}}
-const BOUND={x0:wx(-13500),x1:wx(13500),z0:wz(-3200),z1:wz(9200)};
+const BOUND={x0:wx(-20000),x1:wx(17000),z0:wz(-5000),z1:wz(12000)};
 function loop(now){
   requestAnimationFrame(loop);
   stepInertia();
