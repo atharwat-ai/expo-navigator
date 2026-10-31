@@ -1695,8 +1695,14 @@ function topCanvas(p,img){
 function facCanvas(p){const asp=p.w/p.h;const w=asp>=1?640:Math.round(640*asp),h=asp>=1?Math.round(640/asp):640;const F=LOOK.fac;
   return canvasTex(w,h,(g)=>{const gr=g.createLinearGradient(0,0,w,h);gr.addColorStop(0,F[0]);gr.addColorStop(1,F[1]);g.fillStyle=gr;g.fillRect(0,0,w,h);
     g.strokeStyle=F[2];g.globalAlpha=.45;g.lineWidth=6;g.strokeRect(3,3,w-6,h-6);g.globalAlpha=1;
-    g.fillStyle=F[2];g.textAlign="center";g.textBaseline="middle";const fs=Math.min(h*.3,w*.085);g.font=`700 ${fs}px 'Saira Semi Condensed'`;
-    const words=p.en.toUpperCase();g.fillText(words,w/2,h/2);});}
+    g.fillStyle=F[2];g.textAlign="center";g.textBaseline="middle";
+    // the name always fits the roof: one line if it can, otherwise two balanced lines, shrunk to 86% of the width
+    const txt=p.en.toUpperCase(), font=fs=>`700 ${fs}px 'Saira Semi Condensed'`; let fs=Math.min(h*.3,w*.12); g.font=font(fs);
+    let lines=[txt]; const wd=s=>g.measureText(s).width;
+    if(wd(txt)>w*.86){const ws=txt.split(" "); let best=null; for(let i=1;i<ws.length;i++){const a=ws.slice(0,i).join(" "),b=ws.slice(i).join(" "),m=Math.max(wd(a),wd(b)); if(!best||m<best[0])best=[m,[a,b]];}
+      if(best&&h>w*.28){lines=best[1]; fs=Math.min(fs*w*.86/best[0],h*.34);} else fs*=w*.86/wd(txt);}
+    g.font=font(fs); fs=Math.min(fs,fs*w*.86/Math.max(...lines.map(wd))); g.font=font(fs);
+    lines.forEach((ln,i)=>g.fillText(ln,w/2,h/2+(i-(lines.length-1)/2)*fs*1.1));});}
 function boothHeight(p){return p.type==="fac"?(p.kind==="press"?1.6:3.2):2.6+Math.min(p.area,600)/600*3.4;}
 
 /* CISO Lounge (Hall 1), built to the organiser's dimensions with the black artwork. 9 m wide × 10 m deep, entered from the aisle (west):
@@ -2419,6 +2425,9 @@ function openSend(){ if(!ROUTE_DOC)return; let o=$("sendBox"); if(!o){o=document
   const dl=async()=>{paint(t("making")); const b=await routePDF(); if(!b){paint(t("sendFail"));return;}
     const f=new File([b],pdfName(),{type:"application/pdf"});
     if(ON_PHONE()&&navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:ROUTE_DOC.title});paint(t("sentOk"),1);return;}catch(e){}}
+    // inside the claude.ai viewer, files are handed over through its downloads capability (the viewer confirms); elsewhere, a normal download
+    let dlc=null; try{dlc=window.claude&&window.claude.use?await Promise.race([window.claude.use("downloads"),new Promise(r=>setTimeout(()=>r(null),1500))]):null;}catch(e){}
+    if(dlc){try{await dlc.save({filename:f.name,data:b}); paint(t("dlDone"),1);}catch(e){paint(e&&e.code==="declined"?"":t("sendFail"));} return;}
     const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=f.name; document.body.appendChild(a); a.click(); a.remove(); paint(t("dlDone"),1);};
   const go=async()=>{ if(!valid()){paint(t(S.ch==="email"?"badEmail":"badPhone"));return;}
     if(!CFG.sendUrl){paint(t("noSend"));return;}
@@ -2934,7 +2943,7 @@ function syncJoy(){const j=$("joy"); const L={up:t("jUp"),down:t("jDown"),left:t
 function placeJoy(){const j=$("joy"), dk=$("dock"); if(!j)return; if(dk&&stage.contains(dk)){const sr=stage.getBoundingClientRect(), r=dk.getBoundingClientRect(), z=sr.width/Math.max(1,stage.clientWidth); j.style.bottom=Math.max(16,(sr.bottom-r.top)/z+12)+"px";} else j.style.bottom="";}
 $("joyBtn").onclick=()=>{const j=$("joy"), on=ON_PHONE()?j.classList.toggle("show"):!(j.hidden=!j.hidden); $("joyBtn").setAttribute("aria-pressed",on); placeJoy();}; // phones start with it hidden
 function goHomeAll(){ closeSFS(false); $("lightbox").hidden=true; toggleLegend(false); HISTORY=[]; SELECTED=null; pin.visible=false; tagSel.hidden=true; clearPlanTags(); clearRoute(); QUERY="";
-  HL=null; applyHighlight(); HALLSEL="all"; renderHallSeg(); show("home",false); renderHome(); fitHall(homeHall()); }
+  HL=null; applyHighlight(); HALLSEL="all"; renderHallSeg(); show("home",false); renderHome(); fitHall("all"); }   // Home frames the four halls; car parks sit at the edges
 $("homeAll").innerHTML=svg("home"); $("homeAll").onclick=goHomeAll;
 $("allBtn").innerHTML=svg("layers"); $("allBtn").onclick=()=>setHall("all");
 $("dimBtn").onclick=()=>{viewMode=viewMode==="3d"?"2d":"3d"; $("dimBtn").innerHTML=svg(viewMode==="3d"?"flat":"cube");
