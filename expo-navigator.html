@@ -2276,7 +2276,7 @@ function renderSearch(push){
     <div class="scroll" id="sres"></div>
     ${native?"":`<div class="kbd" id="kbd"></div>`}`;
   views.search.querySelector("[data-back]").onclick=back;
-  if(native){const i=$("qin");i.value=QUERY;i.oninput=()=>{QUERY=i.value;fillResults();};setTimeout(()=>i.focus(),250);}
+  if(native){const i=$("qin");i.value=QUERY;i.oninput=()=>{QUERY=i.value;fillResults();};i.onkeydown=e=>{if(e.key==="Enter"){const f=$("sres").querySelector(".row"); if(f)f.click();} else if(e.key==="Escape")back();};setTimeout(()=>i.focus(),250);}
   else{buildKbd();}
   fillResults(); if(push)show("search");
 }
@@ -2300,6 +2300,23 @@ function buildKbd(){
     if(c==="⌫")QUERY=QUERY.slice(0,-1); else if(c==="clr")QUERY=""; else if(QUERY.length<28)QUERY+=c.toLowerCase();
     fillResults();});
 }
+
+/* a computer keyboard types into the search too: into the on-screen-keyboard search, or, from anywhere on the map, it opens search with the first letter */
+const kbdOpen=()=>{const k=$("kbd"); return !!(k&&k.offsetParent);};
+addEventListener("keydown",e=>{
+  if(e.ctrlKey||e.metaKey||e.altKey||e.isComposing)return;
+  if(e.target.closest&&e.target.closest("input,textarea,[contenteditable]"))return;
+  const ch=e.key.length===1?e.key:null;
+  if(kbdOpen()){
+    if(e.key==="Backspace"){QUERY=QUERY.slice(0,-1);}
+    else if(e.key==="Escape"){e.preventDefault(); const o=$("sfs"); if(o&&!o.hidden)closeSFS(true); else back(); return;}
+    else if(e.key==="Enter"){const f=$("sres")&&$("sres").querySelector(".row"); if(f){e.preventDefault(); f.click();} return;}
+    else if(ch&&QUERY.length<28){if(ch===" "&&!QUERY)return; QUERY+=ch.toLowerCase();}
+    else return;
+    e.preventDefault(); fillResults(); return;}
+  if(ch&&ch.trim()&&!/[+=\-]/.test(ch)&&(!$("lightbox")||$("lightbox").hidden)&&$("admin").hidden&&(!$("startPick")||$("startPick").hidden)&&VIEW!=="search"){
+    e.preventDefault(); openSearch(); if(kbdOpen()){QUERY=ch.toLowerCase(); fillResults();} else {const i=$("qin"); if(i){i.value=ch; QUERY=ch; fillResults(); i.focus();}}}
+});
 
 /* detail */
 let ROUTE_FOR=null;
@@ -2779,9 +2796,9 @@ $("jPuck").addEventListener("pointermove",e=>{const g=JOY.ring; if(!g)return; co
   fly=null; const r=cv.getBoundingClientRect(); rotateAt(-d,r.left+r.width/2,r.top+r.height/2);});
 ["pointerup","pointercancel","blur"].forEach(ev=>addEventListener(ev,joyStop));
 document.addEventListener("pointerup",joyStop,true);
-// keyboard: arrows move, + − zoom, Q E turn, W S tilt
+// keyboard: arrows move, + − zoom (letters start a search)
 addEventListener("keydown",e=>{ if(e.target.closest&&e.target.closest("input,textarea")||$("sfs")&&!$("sfs").hidden)return;
-  const k={ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right","+":"in","=":"in","-":"out",q:"rotL",e:"rotR",w:"tiltUp",s:"tiltDn"}[e.key]; if(!k)return; e.preventDefault(); joyStep(k,.06);});
+  if(kbdOpen())return; const k={ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right","+":"in","=":"in","-":"out"}[e.key]; if(!k)return; e.preventDefault(); joyStep(k,.06);});
 function syncJoy(){const j=$("joy"); const L={up:t("jUp"),down:t("jDown"),left:t("jLeft"),right:t("jRight"),in:t("jIn"),out:t("jOut"),rotL:t("jRotL"),rotR:t("jRotR"),tiltUp:t("jFlat"),tiltDn:t("j3d"),me:t("youAreHere")};
   j.setAttribute("aria-label",t("jMap")); j.querySelectorAll("[data-j]").forEach(b=>{b.setAttribute("aria-label",L[b.dataset.j]); b.title=L[b.dataset.j];});
   $("jPuck").title=t("jRing"); $("jcapMove").textContent=t("jcMove"); $("jcapZoom").textContent=t("jcZoom"); $("jcapTilt").textContent=t("jcTilt");}
