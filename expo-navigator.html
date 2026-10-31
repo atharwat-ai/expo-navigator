@@ -973,6 +973,9 @@ const DOORS_Y = [3721]; // concourse ↔ hall doors: only the central door on ea
 const CORR = {x0:3671,x1:4630,y0:1801,y1:5570}, FRONT=5570, WALKY=5850, H4X0_=-5930;
 FAC.push(...CONNECTA_FAC);
 /* car parks, from the EIEC satellite view; walkable, so a visitor can start a route from where they parked */
+/* main roads around EIEC, traced from the street map and placed by fitting the halls: El-Moshir Tantawy Axis (north),
+   Samira Moussa bridge road (east), De Media Square (south-east roundabout), the southern dual carriageway and site access roads */
+const ROADS={"roads":[{"w":11,"lines":true,"pts":[[-11317,7833],[-8293,7821],[-5537,8128],[-1930,8160],[1666,8161],[5077,8173],[8858,8162],[11235,7920],[12398,7450],[12941,6557]]},{"w":11,"lines":true,"pts":[[-11021,8690],[-7600,8733],[-4374,8757],[-778,8757],[2633,8770],[6218,8739],[9836,8802],[12157,8945]]},{"w":11,"lines":true,"pts":[[11708,-2774],[12090,-1009],[12422,938],[12914,3353],[13135,4651],[13154,5913],[12941,6557]]},{"w":11,"lines":true,"pts":[[12554,-4163],[12749,-1676],[13140,1101],[13457,3389],[13679,4856],[13987,6133],[14484,7025],[15224,7689],[16051,8163]]},{"w":9,"lines":true,"pts":[[-9802,8054],[-10483,6193],[-11110,4318],[-11330,3189],[-11010,2688],[-8583,2045],[-7023,1630],[-4579,1034],[-1679,663],[1722,644],[4316,484],[6217,510],[8304,524],[11998,535],[12663,541]]},{"w":7,"lines":false,"pts":[[566,5523],[626,6353],[720,7175],[761,7841],[871,8490]]},{"w":16,"lines":true,"pts":[[-14299,-699],[-11197,-1034],[-8770,-1678],[-7210,-2092],[-4766,-2689],[-1865,-3059],[1535,-3078],[4129,-3239],[6030,-3213],[8117,-3198],[11811,-3188],[12836,-3235],[13951,-3406]]}],"rings":[{"c":[12955,8243],"r":1078.0,"w":10},{"c":[572,5538],"r":431.20000000000005,"w":6}],"labels":[{"t":"EL-MOSHIR TANTAWY AXIS","at":[-606,-2809],"rot":-0.25,"w":130},{"t":"SAMIRA MOUSSA BRIDGE","at":[13134,2454],"rot":1.35,"w":90},{"t":"DE MEDIA SQUARE","at":[12955,8243],"rot":0,"w":60}]};
 const PARKING=[
   {id:"F-P1",x:7800,y:2600,w:4000,h:4700,cap:"P1",en:"Car park P1 · east of Hall 1",ar:"موقف السيارات P1 · شرق القاعة 1",zh:"停车场 P1 · 1号馆东侧",link:[7216,FRONT,7800,WALKY]},
   {id:"F-P2",x:4700,y:6300,w:2600,h:1900,cap:"P2",en:"Car park P2 · in front of Hall 1",ar:"موقف السيارات P2 · أمام القاعة 1",zh:"停车场 P2 · 1号馆前",link:[5800,WALKY-10,6200,6300]},
@@ -1777,6 +1780,21 @@ function buildVenue(){
     const pole=new THREE.Mesh(new THREE.CylinderGeometry(.18,.18,9,10),new THREE.MeshStandardMaterial({color:0xcfd6e3})); pole.position.set(b.cx,4.5,b.cz-b.d/2+3); venue.add(pole);
     const sg=new THREE.Mesh(new THREE.BoxGeometry(4,4,.25),[signM,signM,signM,signM,new THREE.MeshBasicMaterial({map:pTex}),new THREE.MeshBasicMaterial({map:pTex})]); sg.position.set(b.cx,9.5,b.cz-b.d/2+3); venue.add(sg);
     floorText(q.cap,"",q.x+q.w/2,q.y+q.h/2+380,12,"#ffffff");}
+  // roads: asphalt bands just above the ground, white edge lines and dashed centre lines
+  { const roadM=new THREE.MeshStandardMaterial({color:LOOK_ID==="day"?0x8a92a0:0x141a28,roughness:1}), edgeM=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.35}), dashM=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.5});
+    const seg=(a,b,w,y,mat,h=.04)=>{const ax=wx(a[0]),az=wz(a[1]),bx=wx(b[0]),bz=wz(b[1]),L=Math.hypot(bx-ax,bz-az); if(L<.01)return;
+      const m=new THREE.Mesh(new THREE.BoxGeometry(L+(mat===roadM?w*.5:0),h,w),mat); m.position.set((ax+bx)/2,y,(az+bz)/2); m.rotation.y=-Math.atan2(bz-az,bx-ax); m.receiveShadow=mat===roadM; venue.add(m);};
+    for(const r of ROADS.roads){ for(let i=1;i<r.pts.length;i++){const a=r.pts[i-1],b=r.pts[i]; seg(a,b,r.w,-.33,roadM);
+        if(r.lines){const ax=wx(a[0]),az=wz(a[1]),bx=wx(b[0]),bz=wz(b[1]),L=Math.hypot(bx-ax,bz-az),ux=(bx-ax)/L,uz=(bz-az)/L;
+          for(let d=2;d<L-2;d+=9){const p0=[px(ax+ux*d),py(az+uz*d)],p1=[px(ax+ux*(d+4)),py(az+uz*(d+4))]; seg(p0,p1,.25,-.3,dashM,.02);}
+          for(const sd of [-1,1]){const ox=-uz*sd*(r.w/2-.6), oz=ux*sd*(r.w/2-.6); seg([px(ax+ox),py(az+oz)],[px(bx+ox),py(bz+oz)],.2,-.3,edgeM,.02);}}}}
+    for(const g of ROADS.rings){const r=g.r/PT, ring=new THREE.Mesh(new THREE.RingGeometry(r-g.w/2,r+g.w/2,64),roadM); ring.rotation.x=-Math.PI/2; ring.position.set(wx(g.c[0]),-.31,wz(g.c[1])); venue.add(ring);
+      const isl=new THREE.Mesh(new THREE.CircleGeometry(r-g.w/2,48),new THREE.MeshStandardMaterial({color:0x2f6b3c,roughness:1})); isl.rotation.x=-Math.PI/2; isl.position.set(wx(g.c[0]),-.3,wz(g.c[1])); venue.add(isl);}
+    // road names, laid along the nearest road
+    for(const lb of ROADS.labels){let best=null,bd=Infinity; for(const r of ROADS.roads)for(let i=1;i<r.pts.length;i++){const a=r.pts[i-1],b=r.pts[i],mx=(a[0]+b[0])/2-lb.at[0],my=(a[1]+b[1])/2-lb.at[1],d=mx*mx+my*my; if(d<bd){bd=d;best=[a,b];}}
+      let th=lb.rot; if(best&&lb.t!=="DE MEDIA SQUARE"){th=Math.atan2(-(best[1][1]-best[0][1]),best[1][0]-best[0][0]); if(th>Math.PI/2)th-=Math.PI; if(th<-Math.PI/2)th+=Math.PI;}
+      const m=floorText(lb.t,"",lb.at[0],lb.at[1],lb.w,"#dfe6f3",th); m.position.y=-.26; m.material.opacity=.75;}
+  }
 }
 
 /* Expo logos laid into the floor in front of each hall, quiet enough to read as part of the venue */
@@ -3136,7 +3154,7 @@ function placeStacked(items){const vis=[],placed=[];
     for(let k=0;k<12;k++){const y1=v.y-26-lift,y0=y1-v.h; const hit=placed.find(r=>v.x-v.w/2<r.x1+6&&v.x+v.w/2>r.x0-6&&y0<r.y1+4&&y1>r.y0-4); if(!hit)break; lift=v.y-26-(hit.y0-4);}
     placed.push({x0:v.x-v.w/2,x1:v.x+v.w/2,y0:v.y-26-lift-v.h,y1:v.y-26-lift});
     v.el.style.opacity=1; v.el.lastChild.style.height=(26+lift)+"px"; v.el.style.transform=`translate(${v.x}px,${v.y}px) translate(-50%,-100%)`;}}
-const BOUND={x0:wx(-11200),x1:wx(12000),z0:wz(1500),z1:wz(8400)};
+const BOUND={x0:wx(-13500),x1:wx(13500),z0:wz(-3200),z1:wz(9200)};
 function loop(now){
   requestAnimationFrame(loop);
   stepInertia();
