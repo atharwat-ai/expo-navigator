@@ -1401,7 +1401,70 @@ const C4_MODEL=(()=>{
       faces.push({key:ar.key+":"+(f.twinOf||f.id), a:T(...f.a), b:T(...f.b), H:f.H*s, y0:f.y0!=null?f.y0*s:undefined, artL:f.artL?f.artL*s:undefined,
         pieces:(f.pieces||[[0,L,0,f.H]]).map(q=>q.map(v=>v*s)), screen:!!f.screen, title:ar.name, pal:ar.key});});
   }
-  return {boxes,inlays,faces};
+
+  /* ---- dressing from the Connecta Branding presentation (Oct 2026): zone colours, stages, seating, furniture, carpets ---- */
+  const cyls=[], W="#f2f3f6", G=k=>"glow:"+k;
+  const zoneTint={"connecta-play":"#1f4fd8","innovation-arena":"#5a3aa0","cyberzone":"#17171c","ai-innovation-factory":"#36c3d8"};
+  const zoneNeon={"connecta-play":"#7fc8ff","innovation-arena":"#c9a8ff","cyberzone":"#ff2d3d","ai-innovation-factory":"#eaffff"};
+  const tint={}; // structural boxes take their zone's colour; tall walls get a light strip along the top
+  for(const [id] of Object.entries(H.place)){const zn=H.zones.find(z=>z.link===id); tint[id]=zn;}
+  const inZone=b=>{const cx=(b[0]+b[1])/2, cz=(b[2]+b[3])/2; for(const [id,zn] of Object.entries(tint))if(cx>=zn.x0-.4&&cx<=zn.x1+.4&&cz>=zn.z0-.4&&cz<=zn.z1+.4)return id; return null;};
+  const strips=[];
+  boxes.forEach(b=>{ if(b[6])return; const id=inZone(b); if(!id)return; b[6]=zoneTint[id];
+    if(b[5]>=2.9&&Math.min(b[1]-b[0],b[3]-b[2])<.7)strips.push([b[0],b[1],b[2],b[3],b[5],b[5]+.06,G(zoneNeon[id])]);});
+  boxes.push(...strips);
+  const dress=(id,fn)=>{const ar=C4_ARENAS.list[id], pl=H.place[id], s=pl.s, T=(x,z)=>{const q=ar.map(x,z); return [pl.ox+s*q[0],pl.oz+s*q[1]];};
+    const B=(x0,x1,z0,z1,y0,y1,c)=>{const a=T(x0,z0),d=T(x1,z1); boxes.push([Math.min(a[0],d[0]),Math.max(a[0],d[0]),Math.min(a[1],d[1]),Math.max(a[1],d[1]),y0*s,y1*s,c]);};
+    const C=(x,z,r,y0,y1,c)=>{const a=T(x,z); cyls.push([a[0],a[1],r*s,y0*s,y1*s,c]);};
+    const chair=(x,z,dir,c=W)=>{B(x-.22,x+.22,z-.22,z+.22,.3,.45,c); B(x-.04,x+.04,z-.04,z+.04,0,.3,"#9aa0aa");   // dir = way the back sits: N +z, S -z, E +x, W -x
+      if(dir==="N")B(x-.22,x+.22,z+.18,z+.24,.45,.9,c); if(dir==="S")B(x-.22,x+.22,z-.24,z-.18,.45,.9,c);
+      if(dir==="E")B(x+.18,x+.24,z-.22,z+.22,.45,.9,c); if(dir==="W")B(x-.24,x-.18,z-.22,z+.22,.45,.9,c);};
+    const arm=(x,z,dir,c="#f4f4f6")=>{B(x-.4,x+.4,z-.4,z+.4,0,.45,c);
+      if(dir==="N")B(x-.4,x+.4,z+.26,z+.4,.45,.85,c); if(dir==="S")B(x-.4,x+.4,z-.4,z-.26,.45,.85,c);
+      if(dir==="E")B(x+.26,x+.4,z-.4,z+.4,.45,.85,c); if(dir==="W")B(x-.4,x-.26,z-.4,z+.4,.45,.85,c);};
+    const plant=(x,z)=>{C(x,z,.26,0,.5,"#2a2f38"); C(x,z,.34,.5,1.0,"#2f6b3c"); C(x,z,.24,1.0,1.45,"#3b7d45");};
+    const ROUND=(x,z,n=3,c=W)=>{C(x,z,.4,.72,.76,"#f6f6f6"); C(x,z,.06,0,.72,"#c9ccd3"); for(let k=0;k<n;k++){const a=k*2*Math.PI/n; chair(x+Math.cos(a)*.85,z+Math.sin(a)*.85,Math.abs(Math.cos(a))>Math.abs(Math.sin(a))?(Math.cos(a)>0?"E":"W"):(Math.sin(a)>0?"N":"S"),c);}};
+    fn({B,C,chair,arm,plant,ROUND,s});};
+  // Innovation Arena (purple): main stage + LED, two seating blocks, café tables, lounge chairs, meeting room, pod counters
+  dress("innovation-arena",({B,C,chair,arm,plant,ROUND})=>{
+    B(.42,3.4,-9.4,-2.4,0,.6,"#3b2470"); B(3.38,3.42,-9.4,-2.4,.55,.6,G("#c9a8ff")); B(3.0,3.4,-2.2,-1.8,.6,1.75,"#ece7f7");
+    for(let x=5.2;x<=10.6;x+=.95)for(let z=-9.6;z<=-1.4;z+=.62){if(Math.abs(z+5.5)<.5)continue; chair(x,z,"E");}
+    for(let z=-8.2;z<=-3.6;z+=.95)for(let x=24.4;x<=36.6;x+=.62){if(Math.abs(x-30.5)<.5)continue; chair(x,z,"S");}
+    B(37,37.4,-2.1,-1.7,0,1.15,"#ece7f7");
+    for(const x of [14,17.2,20.2])for(const z of [-2.8,-6,-9.2]){C(x,z,.45,1.0,1.05,"#f3f3f3"); C(x,z,.05,0,1,"#c9ccd3"); for(const a of [0,2.1,4.2])C(x+Math.cos(a)*.8,z+Math.sin(a)*.8,.2,.72,.78,"#c9a46a");}
+    for(const x of [25.2,30.5,35.8]){C(x,-15.6,.38,0,.42,"#f3f3f3"); arm(x-1,-15.6,"W"); arm(x+1,-15.6,"E"); arm(x,-16.6,"S"); arm(x,-14.6,"N");}
+    B(1.1,1.9,-16.6,-14.1,0,.75,"#f3f3f3"); for(let x=3.4;x<=8.4;x+=.95)for(let z=-17.4;z<=-13.2;z+=.62)chair(x,z,"E");
+    for(const [z0,z1] of [[-2.48,-.41],[-5.12,-3.06],[-8.18,-6.12],[-11.24,-9.18],[-14.3,-12.23],[-17.36,-15.29]]){B(45.3,45.9,z0+.25,z1-.25,0,1.05,"#f4f4f6"); C(44.8,(z0+z1)/2,.2,0,.75,"#ece7f7");}
+    for(const [x,z] of [[11.2,-1.2],[21,-1.2],[38,-10.5],[12,-18.6],[44,-18.4]])plant(x,z);});
+  // Cyber Zone (black, red neon): stage + leaderboard, lounge tables, registration desk
+  dress("cyberzone",({B,C,ROUND,plant})=>{
+    B(2,8,.15,2.3,0,.5,"#1b1b21"); B(2,8,2.28,2.33,.44,.5,G("#ff2d3d")); B(2.6,3.0,1.5,1.9,.5,1.65,"#dcdce2");
+    for(const [x,z] of [[2.6,6.2],[5,7.8],[7.4,6.2],[2.6,10.4],[5,12],[7.4,10.4]])ROUND(x,z,3);
+    B(3.4,6.6,14.2,14.8,0,1.05,"#f4f4f6"); B(3.4,6.6,14.8,14.83,.45,.62,G("#ff2d3d"));
+    for(const z of [3,5.6,8.2,10.8,13.4]){B(.1,.14,z,z+.06,.2,2.9,G("#ff2d3d")); B(9.86,9.9,z,z+.06,.2,2.9,G("#ff2d3d"));}
+    plant(.7,15.9); plant(9.3,15.9);});
+  // Connecta Play (blue, red carpets): arcade row, stage + bean bags, PC rows, café, registration
+  dress("connecta-play",({B,C,chair,ROUND,plant})=>{
+    for(let z=2;z<=19.5;z+=1.45){B(.4,1.15,z,z+.8,0,1.8,"#15151c"); B(1.15,1.17,z+.1,z+.7,1.0,1.55,G("#3fa9ff"));}
+    B(.4,3.6,22.6,31.4,0,.6,"#eef2f8"); B(3.58,3.62,22.6,31.4,.54,.6,G("#7fc8ff"));
+    const bb=["#f2d23a","#3cd0d6","#d9c9a8","#53565e"]; let k=0; for(let x=4.8;x<=8.8;x+=1)for(let z=23.4;z<=30.6;z+=1.05)C(x+(k%2)*.3,z,.38,0,.38,bb[(k++)%4]);
+    const pcRowZ=(x0,x1,z0,z1)=>{B(x0,x1,z0,z1,.72,.76,"table"); for(let z=z0+.5;z<z1-.3;z+=1.05){B((x0+x1)/2-.03,(x0+x1)/2+.03,z-.28,z+.28,.78,1.15,"#1d2430"); chair(x0-.45,z,"W"); chair(x1+.45,z,"E");}};
+    const pcRowX=(x0,x1,z0,z1)=>{B(x0,x1,z0,z1,.72,.76,"table"); for(let x=x0+.5;x<x1-.3;x+=1.05){B(x-.28,x+.28,(z0+z1)/2-.03,(z0+z1)/2+.03,.78,1.15,"#1d2430"); chair(x,z0-.45,"S"); chair(x,z1+.45,"N");}};
+    pcRowZ(12.4,13.2,23.4,33.6); pcRowZ(15.2,16,23.4,33.6); pcRowX(9.4,17.2,44.4,45.2); pcRowX(9.4,17.2,46.9,47.7);
+    for(const x of [2,4.8])for(const z of [35,38.6,42.2,45.6])ROUND(x,z,4);
+    B(1.4,3.6,2.2,2.8,0,1.05,"#f4f6f8"); plant(17.3,13.4); plant(17.3,21); plant(17.3,35.4); plant(17.3,42.6);});
+  // AI Innovation Factory (cyan): pod TVs, robot on grass, registration desk
+  dress("ai-innovation-factory",({B,C,plant})=>{
+    for(const [a,b] of [[1.01,3.51],[3.86,6.37],[6.74,9.22]]){B(a+.55,b-.55,10.74,10.79,1.15,1.85,"#1d2a40"); B(a+.62,b-.62,10.795,10.8,1.2,1.8,G("#3d8bff"));}
+    C(15.34,12.53,.95,.15,.2,"#111318"); C(15.34,12.53,.32,.2,1.35,"#f4f6f8"); C(15.34,12.53,.36,1.35,1.5,"#f4f6f8");
+    B(3.3,5.2,14.4,15.0,0,1.05,"#f4f6f8"); B(3.3,5.2,15.0,15.03,.4,.55,G("#36c3d8")); plant(1,16.6); plant(19,16.6); plant(19,1);});
+  // carpets: Connecta Play's plan colours become the red carpets of the render; the robotics area gets its grass and navy rug
+  const cpPl=H.place["connecta-play"], cpZn=H.zones.find(z=>z.link==="connecta-play");
+  for(let i=inlays.length-1;i>=0;i--){const q=inlays[i]; if(q[4]!=="#22324a"&&q[0]>=cpZn.x0-.1&&q[1]<=cpZn.x1+.1&&q[2]>=cpZn.z0-.1&&q[3]<=cpZn.z1+.1)inlays.splice(i,1);}
+  for(const r of [[.4,6.4,1.2,21.4],[11,17.4,22.6,34.4],[.4,6.6,33.6,47.2],[8.6,17.4,43.4,48.6]])inlays.push([cpPl.ox+r[0],cpPl.ox+r[1],cpPl.oz+r[2],cpPl.oz+r[3],"#d4222c"]);
+  inlays.forEach(q=>{if(q[4]==="#2a8f86")q[4]="#1c2b6a";});
+  boxes.forEach(b=>{if(b[6]==="#1f6f68")b[6]="#3f9a3a"; if(b[6]==="stage"&&inZone(b)==="ai-innovation-factory")b[6]="#eef2f6";});
+  return {boxes,inlays,faces,cyls};
 })();
 
 /* ============================================================
@@ -1899,23 +1962,31 @@ function buildBooths(){
 
 const C4_PAL={cz:["#1b0306","#ff2d3d","#ff8a8f"],ia:["#090522","#7b5cff","#2fd6ff"],cp:["#10052a","#c13cff","#ffb000"],aif:["#06101f","#3d7bff","#35e0c8"],hall:["#04121c","#29b6f6","#ffb547"]};
 function c4Screen(title,pal,w,h){const P=C4_PAL[pal]||C4_PAL.hall; return canvasTex(1024,Math.max(128,Math.round(1024*h/w)),(g,W,Hh)=>{
-  const gr=g.createLinearGradient(0,0,W,Hh); gr.addColorStop(0,P[0]); gr.addColorStop(1,"#000"); g.fillStyle=gr; g.fillRect(0,0,W,Hh);
-  const rg=g.createRadialGradient(W/2,Hh*.55,0,W/2,Hh*.55,Math.max(W,Hh)*.6); rg.addColorStop(0,P[2]+"44"); rg.addColorStop(1,"rgba(0,0,0,0)"); g.fillStyle=rg; g.fillRect(0,0,W,Hh);
+  const gr=g.createLinearGradient(0,0,W,Hh); gr.addColorStop(0,"#0a2a8a"); gr.addColorStop(.55,"#1f6fe6"); gr.addColorStop(1,"#0b1f66"); g.fillStyle=gr; g.fillRect(0,0,W,Hh);
+  const rg=g.createRadialGradient(W*.7,Hh*.4,0,W*.7,Hh*.4,Math.max(W,Hh)*.5); rg.addColorStop(0,"rgba(140,200,255,.55)"); rg.addColorStop(1,"rgba(0,0,0,0)"); g.fillStyle=rg; g.fillRect(0,0,W,Hh);
+  const tile=Math.min(W,Hh)*.12, tc=["#2b8cff","#e84c3d","#2fbf71","#f2b632","#8e5cf7","#19a7c9"]; for(let r=0;r<3;r++)for(let c=0;c<3;c++){g.fillStyle=tc[(r*3+c)%6]; g.fillRect(W*.08+c*tile*1.1,Hh*.22+r*tile*1.1,tile,tile);}
+  g.strokeStyle="rgba(0,0,0,.35)"; g.lineWidth=2; for(let x=W/4;x<W;x+=W/4){g.beginPath();g.moveTo(x,0);g.lineTo(x,Hh);g.stroke();} for(let y=Hh/3;y<Hh;y+=Hh/3){g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke();}
   const fs=Math.min(Hh*.22,W*.09); g.textAlign="center"; g.textBaseline="middle"; g.font=`700 ${fs}px 'Saira Semi Condensed'`; g.fillStyle="#fff"; g.shadowColor=P[1]; g.shadowBlur=fs*.5;
-  g.fillText(String(title).toUpperCase(),W/2,Hh/2); g.shadowBlur=0; g.fillStyle="rgba(0,0,0,.25)"; for(let x=0;x<W;x+=4)g.fillRect(x,0,1,Hh);});}
-const C4_MAT={hallwall:[0x3b424d,.9],shell:[0xd9dce2,.8],white:[0xeceef1,.7],stage:[0x1b2029,.6],chair:[0x23262d,.7],table:[0xcfc8bd,.6],column:[0x4a515c,.9]};
+  g.fillText(String(title).toUpperCase(),W*.62,Hh/2); g.shadowBlur=0; g.fillStyle="rgba(0,0,0,.25)"; for(let x=0;x<W;x+=4)g.fillRect(x,0,1,Hh);});}
+const C4_MAT={hallwall:[0x3b424d,.9],shell:[0xd9dce2,.8],white:[0xeceef1,.7],stage:[0x1b2029,.6],chair:[0xe6e8ec,.7],table:[0xcfc8bd,.6],column:[0x4a515c,.9]};
 function buildConnecta(){
   const grp=new THREE.Group(), ox=wx(H4X0), oz=wz(H4Y0), cache={};
-  const mat=k=>cache[k||"_"]||(cache[k||"_"]=new THREE.MeshStandardMaterial(k&&C4_MAT[k]?{color:C4_MAT[k][0],roughness:C4_MAT[k][1]}:{color:k?new THREE.Color(k):0x2a2f38,roughness:.85,metalness:.05}));
+  const mat=k=>cache[k||"_"]||(cache[k||"_"]=k&&k.startsWith("glow:")?new THREE.MeshBasicMaterial({color:new THREE.Color(k.slice(5))}):new THREE.MeshStandardMaterial(k&&C4_MAT[k]?{color:C4_MAT[k][0],roughness:C4_MAT[k][1]}:{color:k?new THREE.Color(k):0x2a2f38,roughness:.85,metalness:.05}));
   // boxes: one instanced mesh per material
   const byMat={}; C4_MODEL.boxes.forEach(b=>(byMat[b[6]||"_"]||(byMat[b[6]||"_"]=[])).push(b));
   const M=new THREE.Matrix4(), Q=new THREE.Quaternion(), unit=new THREE.BoxGeometry(1,1,1);
   for(const [k,list] of Object.entries(byMat)){const im=new THREE.InstancedMesh(unit,mat(k==="_"?null:k),list.length);
     list.forEach((b,i)=>im.setMatrixAt(i,M.compose(new THREE.Vector3(ox+(b[0]+b[1])/2,(b[4]+b[5])/2,oz+(b[2]+b[3])/2),Q,new THREE.Vector3(Math.max(.01,b[1]-b[0]),Math.max(.01,b[5]-b[4]),Math.max(.01,b[3]-b[2])))));
     im.castShadow=k!=="chair"; im.receiveShadow=true; grp.add(im);}
+  // round furniture: tables, stools, bean bags, plants, the robot
+  const byC={}; (C4_MODEL.cyls||[]).forEach(c=>(byC[c[5]]||(byC[c[5]]=[])).push(c));
+  const cylG=new THREE.CylinderGeometry(1,1,1,20);
+  for(const [k,list] of Object.entries(byC)){const im=new THREE.InstancedMesh(cylG,mat(k),list.length);
+    list.forEach((c,i)=>im.setMatrixAt(i,M.compose(new THREE.Vector3(ox+c[0],(c[3]+c[4])/2,oz+c[1]),Q,new THREE.Vector3(c[2],Math.max(.01,c[4]-c[3]),c[2]))));
+    im.castShadow=true; im.receiveShadow=true; grp.add(im);}
   // floor inlays (zone footprints lowest)
   C4_MODEL.inlays.forEach(([x0,x1,z0,z1,col],i)=>{const h=col==="#22324a"?.02:.03+(i%3)*.004;
-    const m=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,h,z1-z0),new THREE.MeshStandardMaterial({color:new THREE.Color(col||"#2b3443").multiplyScalar(.6),roughness:.8}));
+    const m=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,h,z1-z0),new THREE.MeshStandardMaterial({color:new THREE.Color(col||"#2b3443").multiplyScalar(col==="#d4222c"?.9:.6),roughness:.9}));
     m.position.set(ox+(x0+x1)/2,h/2+.01,oz+(z0+z1)/2); m.receiveShadow=true; grp.add(m);});
   // printed faces and LED screens
   C4_MODEL.faces.forEach(f=>{const L=Math.hypot(f.b[0]-f.a[0],f.b[1]-f.a[1]); if(L<.01)return;
