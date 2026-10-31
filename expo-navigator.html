@@ -741,6 +741,25 @@ html.reach .touch{width:64px;height:64px}html.reach .touch span{width:32px;heigh
 #app.reach .joy{bottom:16px}
 @media (max-width:600px),(max-height:560px){.joy{transform:scale(.78);transform-origin:right bottom;right:8px}}
 html.onphone .joy:not(.show){display:none}
+
+/* QR card: title never overflows; send button underneath */
+.mapqr b{font-size:15px;line-height:1.25;text-wrap:balance;overflow-wrap:anywhere}
+.mapqr{max-height:calc(100% - 140px);overflow:auto}
+.cta.sendbtn{width:100%;min-height:44px;margin-top:2px;padding:0 10px;font-size:14px;gap:8px;border-radius:12px;box-shadow:none;--hc:var(--route);line-height:1.15;text-align:start}
+.cta.sendbtn svg{width:18px;height:18px;flex:none}
+.mapqr .cta.sendbtn span,.qr .cta.sendbtn span{display:inline;margin:0;color:var(--on-route);font-size:14px;font-weight:700;line-height:1.15}.cta.sendbtn{color:var(--on-route)}
+.qr .cta.sendbtn{margin-top:10px;width:auto}
+#sendBox{position:fixed;inset:0;z-index:46;display:grid;place-items:center;background:rgba(3,6,14,.7)}#sendBox[hidden]{display:none}
+.sendcard{width:min(640px,calc(100% - 32px));max-height:92vh;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
+.sendcard>p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:6px}.seg2 button{min-height:52px;border-radius:12px;border:1px solid var(--line-2);background:var(--ink-2);color:var(--text);display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:16px}
+.seg2 button svg{width:20px;height:20px}.seg2 button[aria-selected=true]{background:var(--route);color:var(--on-route);border-color:var(--route)}
+.sendin{all:unset;box-sizing:border-box;width:100%;min-height:60px;padding:0 18px;border-radius:14px;background:var(--ink-2);border:2px solid var(--route);color:var(--text);font-size:22px;font-weight:600}
+.sendkbd{display:flex;flex-direction:column;gap:6px;border:0;padding:0}.sendkbd .kr{display:flex;gap:6px;justify-content:center}
+.sendkbd button{flex:1;max-width:64px;height:52px;border-radius:10px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--text);font-size:20px;font-weight:600;display:grid;place-items:center}.sendkbd button svg{width:22px;height:22px}
+.sendmsg{padding:12px 14px;border-radius:12px;background:rgba(255,90,110,.14);color:#ffb3bd;font-size:15px}.sendmsg.ok{background:var(--route-soft);color:var(--route)}
+.sendacts{display:grid;grid-template-columns:1fr 1.3fr;gap:10px}.sendacts .cta{min-height:58px;font-size:18px}
+@media (max-width:600px){#sendBox{place-items:end stretch}.sendcard{width:auto;border-radius:20px 20px 0 0}}
 </style>
 
 <div id="app">
@@ -875,6 +894,7 @@ const CFG = {
   idleSeconds: 75,
   look: "midnight",
   previewUrl: "https://example.com/cairo-ict-map",   // TEMPORARY: lets the QR codes show while the map has no web address. Clear it (or set publicUrl) when finalised.
+  sendUrl: "",               // web address of the service that emails / texts the route PDF (POST JSON {channel,to,filename,pdf,link,lang}); blank = offer the download instead
   apps: { ios:"", android:"", mac:"" },   // store links, filled in when the apps are published; the single QR then offers them
   appLink: "",               // one link that sends iPhones to the App Store and Android phones to Google Play (fill in when the apps are published)          // midnight | day | graphite
   hours: {open:"10:00", close:"19:00", tz:"Africa/Cairo"},
@@ -913,6 +933,7 @@ const HALL = Object.fromEntries(HALLS.map(h=>[h.id,h]));
 /* Expos are not halls: Cairo ICT runs across Halls 1 and 2, Pafix shares Hall 1 with it */
 HALL.ict={id:"ict",expo:true,brand:"Cairo ICT",logo:"ict",c:"#ff8a1f",halls:["h2","h1"],en:"Halls 1 & 2",ar:"القاعتان 1 و2",zh:"1号馆和2号馆"};
 HALL.pfx={id:"pfx",expo:true,brand:"Pafix",logo:"pfx",c:"#1fd19a",halls:["h1"],en:"Hall 1",ar:"القاعة 1",zh:"1号馆"};
+HALL.out={id:"out",c:"#1f6feb",brand:"",en:"Outdoors",ar:"خارج القاعات",zh:"室外"};
 HALL.aidc={id:"aidc",expo:true,brand:"AIDC² Expo",logo:"aidc",c:"#a78bfa",halls:["h3"],en:"Hall 3",ar:"القاعة 3",zh:"3号馆"};
 HALL.connecta={id:"connecta",expo:true,brand:"Connecta",logo:"connecta",c:"#f472b6",halls:["h4"],en:"Hall 4",ar:"القاعة 4",zh:"4号馆"};
 const hallMatch=(p,sel)=>!sel||sel==="all"||p.hall===sel||!!(HALL[sel]&&HALL[sel].halls&&HALL[sel].halls.includes(p.hall));
@@ -948,13 +969,20 @@ const ENTR = [
   {id:"E-3E2",x:-926,y:3692,hall:"h3",en:"Hall 3 · east entrance",ar:"القاعة 3 · المدخل الشرقي",zh:"3号馆 · 东入口"},
 ];
 const DOORS_Y = [3721]; // concourse ↔ hall doors: only the central door on each side is open
-const CORR = {x0:3671,x1:4630,y0:1801,y1:5570};
+const CORR = {x0:3671,x1:4630,y0:1801,y1:5570}, FRONT=5570, WALKY=5850, H4X0_=-5930;
 FAC.push(...CONNECTA_FAC);
+/* car parks, from the EIEC satellite view; walkable, so a visitor can start a route from where they parked */
+const PARKING=[
+  {id:"F-P1",x:7800,y:2600,w:4000,h:4700,cap:"P1",en:"Car park P1 · east of Hall 1",ar:"موقف السيارات P1 · شرق القاعة 1",zh:"停车场 P1 · 1号馆东侧",link:[7216,FRONT,7800,WALKY]},
+  {id:"F-P2",x:4700,y:6300,w:2600,h:1900,cap:"P2",en:"Car park P2 · in front of Hall 1",ar:"موقف السيارات P2 · أمام القاعة 1",zh:"停车场 P2 · 1号馆前",link:[5800,WALKY-10,6200,6300]},
+  {id:"F-P3",x:-7000,y:6300,w:3000,h:1500,cap:"P3",en:"Car park P3 · in front of Halls 3 & 4",ar:"موقف السيارات P3 · أمام القاعتين 3 و4",zh:"停车场 P3 · 3号和4号馆前",link:[-5600,WALKY-10,-5200,6300]},
+  {id:"F-P4",x:-11000,y:3300,w:3700,h:4000,cap:"P4",en:"Car park P4 · west of Hall 4",ar:"موقف السيارات P4 · غرب القاعة 4",zh:"停车场 P4 · 4号馆西侧",link:[-7300,FRONT,H4X0_,WALKY]}];
+PARKING.forEach(q=>FAC.push({...q,hall:"out",kind:"parking",model:true}));
 
 /* ---------- i18n ---------- */
 const T = {
  en:{search:"Search exhibitors",exhibitors:"Exhibitors",categories:"Sectors",facilities:"Lounges & Rooms",sponsors:"Sponsors",
-   exSub:n=>`${n} companies`,catSub:n=>`${n} sectors`,sectors:"Sectors",facSub:"VIP, conference, press",spSub:"Partners of the show",
+   exSub:n=>`${n} companies`,catSub:n=>`${n} sectors`,sectors:"Sectors",facSub:"VIP, conference, press, parking",spSub:"Partners of the show",
    nearest:"Closest to you",youAreHere:"You are here",showRoute:"Show me the way",endRoute:"End route",stand:"Stand",hall:"Hall",area:"Area",walk:"Walk",
    min:"min",m:"m",allHalls:"All halls",soon:"Soon",back:"Back",found:n=>`${n} found`,
    noResults:"No match yet. Try a company name, a stand number such as H1-12, or a topic like banking.",
@@ -984,7 +1012,7 @@ const T = {
    startFrom:"Starting from",change:"Change",pickTitle:"Where are you starting from?",pickSub:"Directions and walking times are worked out from the point you choose.",
    pickMap:"Point on the map",pickMapSub:"Tap your spot, or drag the You are here marker",tapWhere:"Tap the map where you are standing",cancel:"Cancel",
    thisScreen:"This screen",screens:"Information screens",near:n=>`Next to ${n}`,mapPoint:"Chosen spot",startSet:n=>`Starting from ${n}`,notHere:"That spot is not on a walkway. Tap an aisle or a stand.",
-   organisedBy:"Organised by",jMap:"Map controls",jcMove:"Move · Turn",jcZoom:"Zoom",jcTilt:"Tilt",jUp:"Move up",jDown:"Move down",jLeft:"Move left",jRight:"Move right",jIn:"Zoom in",jOut:"Zoom out",jRotL:"Turn left",jRotR:"Turn right",jFlat:"Look from above",j3d:"Tilt to 3D",jRing:"Drag the ring round to turn the map",tapToAdd:"Tap any stand on the map to add it as a stop.",alreadyIn:n=>`${n} is already in your route`,dragHint:"Drag to move your starting point, or tap to pick one",roomDoors:"Enter through the doors on the open side"},
+   organisedBy:"Organised by",parking:"Car parks",sendRoute:"Send to my phone or email",sendSub:"We send this route as a PDF with a 3D view, a flat map and the directions.",send:"Send",dlPdf:"Download PDF",making:"Preparing your PDF…",sentEmail:"Sent. Check your email.",sentPhone:"Sent. Check your messages.",sentOk:"Done.",dlDone:"PDF downloaded.",badEmail:"Please enter a full email address.",badPhone:"Please enter a phone number with its country code.",noSend:"Sending is not switched on yet. Scan the QR code, or download the PDF.",sendFail:"That did not work. Please try again or scan the QR code.",jMap:"Map controls",jcMove:"Move · Turn",jcZoom:"Zoom",jcTilt:"Tilt",jUp:"Move up",jDown:"Move down",jLeft:"Move left",jRight:"Move right",jIn:"Zoom in",jOut:"Zoom out",jRotL:"Turn left",jRotR:"Turn right",jFlat:"Look from above",j3d:"Tilt to 3D",jRing:"Drag the ring round to turn the map",tapToAdd:"Tap any stand on the map to add it as a stop.",alreadyIn:n=>`${n} is already in your route`,dragHint:"Drag to move your starting point, or tap to pick one",roomDoors:"Enter through the doors on the open side"},
  zh:{search:"搜索展商",exhibitors:"展商",categories:"行业",facilities:"休息室与会议室",sponsors:"赞助商",
    exSub:n=>`${n} 家公司`,catSub:n=>`${n} 个行业`,sectors:"行业",facSub:"贵宾室、会议室、媒体",spSub:"展会合作伙伴",
    nearest:"离您最近",youAreHere:"您在这里",showRoute:"带我去",endRoute:"结束导航",stand:"展位",hall:"展馆",area:"面积",walk:"步行",
@@ -1016,7 +1044,7 @@ const T = {
    startFrom:"出发地点",change:"更改",pickTitle:"您从哪里出发？",pickSub:"路线和步行时间将从您选择的地点计算。",
    pickMap:"在地图上选择",pickMapSub:"点击您的位置，或拖动“您在这里”标记",tapWhere:"请在地图上点击您所在的位置",cancel:"取消",
    thisScreen:"本屏幕",screens:"信息屏",near:n=>`${n}旁`,mapPoint:"所选位置",startSet:n=>`出发地点：${n}`,notHere:"该位置不在通道上，请点击通道或展位。",
-   organisedBy:"主办",jMap:"地图控制",jcMove:"移动 · 旋转",jcZoom:"缩放",jcTilt:"倾斜",jUp:"上移",jDown:"下移",jLeft:"左移",jRight:"右移",jIn:"放大",jOut:"缩小",jRotL:"向左转",jRotR:"向右转",jFlat:"俯视",j3d:"倾斜为3D",jRing:"拖动圆环旋转地图",tapToAdd:"点击地图上的任意展位，即可加入路线。",alreadyIn:n=>`${n} 已在路线中`,dragHint:"拖动可移动出发点，点击可选择出发点",roomDoors:"请从开放一侧的门进入"},
+   organisedBy:"主办",parking:"停车场",sendRoute:"发送到我的手机或邮箱",sendSub:"我们会将此路线以PDF发送，包含3D视图、平面图和路线指引。",send:"发送",dlPdf:"下载PDF",making:"正在生成PDF…",sentEmail:"已发送，请查收邮件。",sentPhone:"已发送，请查看短信。",sentOk:"完成。",dlDone:"PDF已下载。",badEmail:"请输入完整的邮箱地址。",badPhone:"请输入带国家代码的电话号码。",noSend:"发送功能尚未开通。请扫描二维码或下载PDF。",sendFail:"发送失败，请重试或扫描二维码。",jMap:"地图控制",jcMove:"移动 · 旋转",jcZoom:"缩放",jcTilt:"倾斜",jUp:"上移",jDown:"下移",jLeft:"左移",jRight:"右移",jIn:"放大",jOut:"缩小",jRotL:"向左转",jRotR:"向右转",jFlat:"俯视",j3d:"倾斜为3D",jRing:"拖动圆环旋转地图",tapToAdd:"点击地图上的任意展位，即可加入路线。",alreadyIn:n=>`${n} 已在路线中`,dragHint:"拖动可移动出发点，点击可选择出发点",roomDoors:"请从开放一侧的门进入"},
  ar:{search:"ابحث عن العارضين",exhibitors:"العارضون",categories:"القطاعات",facilities:"الصالات",sponsors:"الرعاة",
    exSub:n=>`${n} شركة`,catSub:n=>`${n} قطاعات`,sectors:"القطاعات",facSub:"كبار الزوار، المؤتمرات، الصحافة",spSub:"شركاء المعرض",
    nearest:"الأقرب إليك",youAreHere:"أنت هنا",showRoute:"أرني الطريق",endRoute:"إنهاء المسار",stand:"الجناح",hall:"القاعة",area:"المساحة",walk:"المشي",
@@ -1047,7 +1075,7 @@ const T = {
    startFrom:"نقطة البداية",change:"تغيير",pickTitle:"من أين تبدأ؟",pickSub:"تُحسب الاتجاهات وزمن المشي من النقطة التي تختارها.",
    pickMap:"نقطة على الخريطة",pickMapSub:"اضغط على مكانك أو اسحب علامة «أنت هنا»",tapWhere:"اضغط على الخريطة حيث تقف",cancel:"إلغاء",
    thisScreen:"هذه الشاشة",screens:"شاشات المعلومات",near:n=>`بجوار ${n}`,mapPoint:"الموقع المختار",startSet:n=>`البداية من ${n}`,notHere:"هذه النقطة ليست على ممر. اضغط على ممر أو جناح.",
-   organisedBy:"تنظيم",jMap:"التحكم في الخريطة",jcMove:"تحريك · تدوير",jcZoom:"تكبير",jcTilt:"إمالة",jUp:"تحريك لأعلى",jDown:"تحريك لأسفل",jLeft:"تحريك لليسار",jRight:"تحريك لليمين",jIn:"تكبير",jOut:"تصغير",jRotL:"دوران لليسار",jRotR:"دوران لليمين",jFlat:"عرض من أعلى",j3d:"إمالة ثلاثية الأبعاد",jRing:"اسحب الحلقة لتدوير الخريطة",tapToAdd:"اضغط على أي جناح في الخريطة لإضافته كمحطة.",alreadyIn:n=>`${n} موجود بالفعل في مسارك`,dragHint:"اسحب لتحريك نقطة البداية، أو اضغط لاختيارها",roomDoors:"الدخول من الأبواب في الجانب المفتوح"}
+   organisedBy:"تنظيم",parking:"مواقف السيارات",sendRoute:"أرسل إلى هاتفي أو بريدي",sendSub:"نرسل هذا المسار كملف PDF يتضمن عرضًا ثلاثي الأبعاد وخريطة مسطحة والاتجاهات.",send:"إرسال",dlPdf:"تنزيل PDF",making:"جارٍ تجهيز الملف…",sentEmail:"تم الإرسال. راجع بريدك.",sentPhone:"تم الإرسال. راجع رسائلك.",sentOk:"تم.",dlDone:"تم تنزيل الملف.",badEmail:"أدخل بريدًا إلكترونيًا كاملًا.",badPhone:"أدخل رقم الهاتف مع رمز الدولة.",noSend:"الإرسال غير مفعّل بعد. امسح الرمز أو نزّل الملف.",sendFail:"تعذّر الإرسال. حاول مرة أخرى أو امسح الرمز.",jMap:"التحكم في الخريطة",jcMove:"تحريك · تدوير",jcZoom:"تكبير",jcTilt:"إمالة",jUp:"تحريك لأعلى",jDown:"تحريك لأسفل",jLeft:"تحريك لليسار",jRight:"تحريك لليمين",jIn:"تكبير",jOut:"تصغير",jRotL:"دوران لليسار",jRotR:"دوران لليمين",jFlat:"عرض من أعلى",j3d:"إمالة ثلاثية الأبعاد",jRing:"اسحب الحلقة لتدوير الخريطة",tapToAdd:"اضغط على أي جناح في الخريطة لإضافته كمحطة.",alreadyIn:n=>`${n} موجود بالفعل في مسارك`,dragHint:"اسحب لتحريك نقطة البداية، أو اضغط لاختيارها",roomDoors:"الدخول من الأبواب في الجانب المفتوح"}
 };
 let LANG="en";
 const t=(k,...a)=>{const v=T[LANG][k]??T.en[k];return typeof v==="function"?v(...a):v};
@@ -1085,6 +1113,7 @@ const I = {
  globe:'<circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5s1.2-6.1 3.8-8.5Z" fill="none" stroke="currentColor" stroke-width="1.6"/>',
  person:'<circle cx="12" cy="8" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4.5 20c.9-3.9 3.9-6 7.5-6s6.6 2.1 7.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
  home:'<path d="M3.5 11 12 4l8.5 7M6 9.5V20h4.5v-5.5h3V20H18V9.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>',
+ park:'<rect x="3.5" y="3.5" width="17" height="17" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 17V7h3.4a3 3 0 0 1 0 6H9.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
  move:'<path d="M12 3v18M3 12h18M12 3 9.5 5.5M12 3l2.5 2.5M12 21l-2.5-2.5M12 21l2.5-2.5M3 12l2.5-2.5M3 12l2.5 2.5M21 12l-2.5-2.5M21 12l-2.5 2.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
  s_tel:'<path d="M12 10.5v10M8.5 20.5h7M12 10.5l-4 10M12 10.5l4 10M7.8 7.2a6 6 0 0 1 8.4 0M5.3 4.7a9.5 9.5 0 0 1 13.4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="9.6" r="1.4" fill="currentColor"/>',
  s_net:'<circle cx="12" cy="5" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="5" cy="18" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="19" cy="18" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M11 6.9 6.1 16M13 6.9l4.9 9.1M7.2 18h9.6" fill="none" stroke="currentColor" stroke-width="1.8"/>',
@@ -1380,7 +1409,7 @@ const C4_MODEL=(()=>{
 /* Venue footprint in plan points. Halls 1 & 2 and the concourse come from the Cairo ICT plan; Halls 3 & 4 (the west building)
    are placed from the EIEC site map, with Hall 4's doors from the Connecta plan. Walls are solid except at their doors,
    so every route goes through a real doorway. */
-const HY0=1801, HY1=4957, FRONT=5570, WALKY=5850;
+const HY0=1801, HY1=4957;
 const H3X0=-3472, H3X1=-893, H4X0=-5930, H4X1=-3472, H4Y0=3063; // Hall 4: 86.7 × 66.8 m
 const DOORS_W=[3692];                                                  // west building: Hall 4 ↔ Hall 3, Hall 3 ↔ outside (central doors only)
 const FRONT_DOORS={h4:[],h3:[]};                                        // Halls 3 & 4: front doors closed during the show
@@ -1389,7 +1418,8 @@ const WALKS=[ // walkable floor [x0,y0,x1,y1]
   [H3X0,HY0,H3X1,HY1],[H4X0,H4Y0,H4X1,HY1],
   [H4X0,HY1,H3X1,FRONT],[1092,HY1,3671,FRONT],[4630,HY1,7216,FRONT], // the pavement in front of the halls
   [H3X1,HY0,1092,WALKY],     // outdoor walkway between the two buildings
-  [H4X0,FRONT,7216,WALKY]];  // outdoor walkway along the front of all four halls, past the main entrance
+  [H4X0,FRONT,7216,WALKY],  // outdoor walkway along the front of all four halls, past the main entrance
+  ...PARKING.flatMap(q=>[[q.x,q.y,q.x+q.w,q.y+q.h],q.link,...(q.link2?[q.link2]:[])])];   // car parks and the paths to them
 const WALLS=[ // [x0,y0,x1,y1,doors along it]
   [3671,HY0,3671,FRONT,DOORS_Y],[4630,HY0,4630,FRONT,DOORS_Y],[1092,HY0,1092,HY1,[3721]],
   [H3X1,HY0,H3X1,HY1,DOORS_W],[H4X1,HY0,H4X1,HY1,DOORS_W],
@@ -1398,8 +1428,8 @@ const WALLS=[ // [x0,y0,x1,y1,doors along it]
   [3671,FRONT-5,4630,FRONT-5,[4184]],   // main entrance
   [H4X0,H4Y0,H4X1,H4Y0,[]]];   // Hall 4 north wall
 const CELL=1;
-const G={x0:wx(H4X0-40),z0:wz(1634)};
-G.w=Math.ceil((wx(7216+40)-G.x0)/CELL); G.h=Math.ceil((wz(WALKY+40)-G.z0)/CELL);
+const G={x0:wx(-11040),z0:wz(1634)};
+G.w=Math.ceil((wx(11840)-G.x0)/CELL); G.h=Math.ceil((wz(8240)-G.z0)/CELL);
 const walk=new Uint8Array(G.w*G.h);
 const inFloor=(X,Y)=>WALKS.some(r=>X>r[0]&&X<r[2]&&Y>r[1]&&Y<r[3]);
 function wallBlocks(X,Y){const b=PT*.75;
@@ -1619,6 +1649,21 @@ function buildVenue(){
   floorLogo("pfx"+L.logos,6560,5263,30,L.logoOp);
   floorLogo("aidc"+L.logos,(H3X0+H3X1)/2,5263,36,L.logoOp);
   floorLogo("connecta"+L.logos,(H4X0+H4X1)/2,5263,36,L.logoOp);
+  const asph=new THREE.MeshStandardMaterial({color:LOOK_ID==="day"?0x9aa3b2:0x1a2030,roughness:.95}), lineM=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.55});
+  const signM=new THREE.MeshBasicMaterial({color:0x1f6feb}), pTex=canvasTex(256,256,(g,w,h)=>{g.fillStyle="#1f6feb";g.fillRect(0,0,w,h);g.strokeStyle="#fff";g.lineWidth=14;g.strokeRect(14,14,w-28,h-28);g.fillStyle="#fff";g.font="900 190px 'Saira Semi Condensed',sans-serif";g.textAlign="center";g.textBaseline="middle";g.fillText("P",w/2,h/2+10);});
+  for(const q of PARKING){
+    for(const r of [[q.x,q.y,q.x+q.w,q.y+q.h],q.link,...(q.link2?[q.link2]:[])]){const s=slab(r[0],r[1],r[2],r[3],0); s.material=asph;}
+    const b=box(q.x,q.y,q.x+q.w,q.y+q.h), rows=Math.max(2,Math.floor(b.d/6.5)), along=b.w>b.d;
+    const n=Math.floor((along?b.w:b.d)/2.6), L2=along?b.d:b.w;   // bays 2.6 m wide, in double rows along the longer side
+    const g=new THREE.InstancedMesh(new THREE.PlaneGeometry(.12,5),lineM,n*Math.floor(L2/16)*2+4), M=new THREE.Matrix4(); let k=0;
+    for(let row=0;row+1<Math.floor(L2/16)*2+1&&k<g.count-n;row+=2)for(let i=0;i<n;i++){const u=-((along?b.w:b.d)/2)+i*2.6+1.3, v=-L2/2+8+row*8;
+      const m=new THREE.Matrix4().makeRotationX(-Math.PI/2); if(!along)m.premultiply(new THREE.Matrix4().makeRotationY(Math.PI/2));
+      m.setPosition(b.cx+(along?u:v),.03,b.cz+(along?v:u)); g.setMatrixAt(k++,m);}
+    g.count=k; venue.add(g);
+    const pl=new THREE.Mesh(new THREE.PlaneGeometry(14,14),new THREE.MeshBasicMaterial({map:pTex,transparent:true,opacity:.9})); pl.rotation.x=-Math.PI/2; pl.position.set(b.cx,.05,b.cz); venue.add(pl);
+    const pole=new THREE.Mesh(new THREE.CylinderGeometry(.18,.18,9,10),new THREE.MeshStandardMaterial({color:0xcfd6e3})); pole.position.set(b.cx,4.5,b.cz-b.d/2+3); venue.add(pole);
+    const sg=new THREE.Mesh(new THREE.BoxGeometry(4,4,.25),[signM,signM,signM,signM,new THREE.MeshBasicMaterial({map:pTex}),new THREE.MeshBasicMaterial({map:pTex})]); sg.position.set(b.cx,9.5,b.cz-b.d/2+3); venue.add(sg);
+    floorText(q.cap,"",q.x+q.w/2,q.y+q.h/2+380,12,"#ffffff");}
 }
 
 /* Expo logos laid into the floor in front of each hall, quiet enough to read as part of the venue */
@@ -2163,7 +2208,7 @@ function back(){const prev=HISTORY.pop()||"home"; if(VIEW==="detail"){SELECTED=n
 const named=()=>PLACES.filter(p=>p.type==="booth");
 const distOf=p=>{const g=goalFor(p);return isFinite(g.dist)?g.dist:null;};
 
-const facIcon=p=>p.type==="entr"?"door":p.kind==="conf"?"conf":p.kind==="press"||p.kind==="stage"?"mic":p.kind==="zone"?"grid":"sofa";
+const facIcon=p=>p.kind==="parking"?"park":p.type==="entr"?"door":p.kind==="conf"?"conf":p.kind==="press"||p.kind==="stage"?"mic":p.kind==="zone"?"grid":"sofa";
 function logoBox(p,cls="lg"){
   if(p.type==="fac"||p.type==="entr")return `<div class="${cls} fac" style="--c:var(--route)">${svg(facIcon(p))}</div>`;
   if(!p.logo)return `<div class="${cls} tba"><span class="mono">${p.id}</span></div>`;
@@ -2230,8 +2275,8 @@ function renderList(ctx,push){
     chips=hallChips(hs)+`<button class="cta ghost addall" id="addAll">${svg("route")}${t("addAll",items.length)}</button>`;HL={cat:ctx.cat,hall:hs};}
   else if(ctx.kind==="cats"){title=t("categories");HL=null;
     body=`<div class="cats">${Object.entries(CATS).map(([k,c])=>`<button class="cat" data-cat="${k}" style="--c:${c.c}"><span class="cat-ic">${svg("s_"+k)}</span><b>${esc(L(c))}</b><span><i></i>${t("exSub",named().filter(b=>b.cat===k).length)}</span></button>`).join("")}</div>`;}
-  else if(ctx.kind==="fac"){title=t("facilities");const f=PLACES.filter(p=>p.type==="fac"),e=PLACES.filter(p=>p.type==="entr");HL={ids:new Set(f.map(p=>p.id))};
-    body=`<div class="eyebrow"><span>${t("rooms")}</span></div><div class="list">${f.map(rowHTML).join("")}</div><div class="eyebrow"><span>${t("entrances")}</span></div><div class="list">${e.map(rowHTML).join("")}</div>`;}
+  else if(ctx.kind==="fac"){title=t("facilities");const f=PLACES.filter(p=>p.type==="fac"&&p.kind!=="parking"),e=PLACES.filter(p=>p.type==="entr"),pk=PLACES.filter(p=>p.kind==="parking");HL={ids:new Set(f.map(p=>p.id))};
+    body=`<div class="eyebrow"><span>${t("rooms")}</span></div><div class="list">${f.map(rowHTML).join("")}</div><div class="eyebrow"><span>${t("entrances")}</span></div><div class="list">${e.map(rowHTML).join("")}</div><div class="eyebrow"><span>${t("parking")}</span></div><div class="list">${pk.map(rowHTML).join("")}</div>`;}
   else if(ctx.kind==="sp"){title=t("tierAll");const sp=named().filter(b=>b.sponsor);HL={ids:new Set(sp.map(b=>b.id))};
     body=TIERS.map(tr=>{const xs=sp.filter(b=>b.sponsor===tr);if(!xs.length)return"";return `<div class="eyebrow"><span>${esc(tierName(tr))}</span></div><div class="list">${xs.map(rowHTML).join("")}</div>`;}).join("")
       +`<div class="eyebrow"><span>${esc(tierName("Digital Payment Partner"))}</span></div><p class="foot" style="margin:0">Mastercard</p>`;}
@@ -2301,6 +2346,87 @@ function buildKbd(){
     fillResults();});
 }
 
+
+/* ---------- the route as a PDF: 3D view, flat view, directions and the phone QR; sent by email or text message ---------- */
+let ROUTE_DOC=null;
+const sendBtnHTML=()=>`<button class="cta sendbtn" data-sendroute>${svg("mail")}<span>${esc(t("sendRoute"))}</span></button>`;
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-sendroute]"); if(b){e.stopPropagation(); openSend();}});
+function snapRoute(polar,W,H){ // render the route from a chosen angle into an image, then put the camera back
+  if(!ROUTE_DOC||!ROUTE_DOC.pts.length)return null;
+  const xs=ROUTE_DOC.pts.map(q=>q.x), zs=ROUTE_DOC.pts.map(q=>q.z), pad=14;
+  const box={x0:Math.min(...xs)-pad,x1:Math.max(...xs)+pad,z0:Math.min(...zs)-pad,z1:Math.max(...zs)+pad,h:polar<.1?0:6};
+  const keep={pos:camera.position.clone(),tgt:controls.target.clone(),asp:camera.aspect,size:renderer.getSize(new THREE.Vector2()),pr:renderer.getPixelRatio()};
+  const tags=[...stage.querySelectorAll(".tag")];
+  renderer.setPixelRatio(1); renderer.setSize(W,H,false); camera.aspect=W/H; camera.updateProjectionMatrix();
+  const r=solveFit(box,polar,FACE[heading()],W,H,{l:24,r:24,t:24,b:24},camera.fov);
+  camera.position.set(r.pos.x,r.pos.y,r.pos.z); controls.target.set(r.target.x,0,r.target.z); camera.lookAt(controls.target); camera.updateMatrixWorld();
+  you.visible=true; renderer.render(scene,camera); const url=renderer.domElement.toDataURL("image/jpeg",.88);
+  renderer.setPixelRatio(keep.pr); renderer.setSize(keep.size.x,keep.size.y,false); camera.aspect=keep.asp; camera.updateProjectionMatrix();
+  camera.position.copy(keep.pos); controls.target.copy(keep.tgt); camera.lookAt(controls.target); resize();
+  return url;}
+function wrapText(g,text,maxW){const words=String(text).split(/\s+/), lines=[]; let cur="";
+  for(const w of words){const tryL=cur?cur+" "+w:w; if(g.measureText(tryL).width>maxW&&cur){lines.push(cur);cur=w;} else cur=tryL;} if(cur)lines.push(cur); return lines;}
+async function routePDF(){
+  const D=ROUTE_DOC; if(!D)return null;
+  const img=src=>new Promise(r=>{const i=new Image(); i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src;});
+  const [i3,i2]=await Promise.all([img(snapRoute(.8,1400,900)),img(snapRoute(.001,1400,900))]);
+  // one A4 page drawn on a canvas, so every language and font prints as on screen
+  const W=1240,H=1754,M=70,c=document.createElement("canvas"); c.width=W; c.height=H; const g=c.getContext("2d"), rtl=LANG==="ar";
+  g.fillStyle="#fff"; g.fillRect(0,0,W,H); g.direction=rtl?"rtl":"ltr"; const X=x=>rtl?W-x:x; g.textAlign=rtl?"right":"left";
+  const ink="#0b1430", mut="#5d6a86", acc="#0a66ff";
+  g.fillStyle=ink; g.font="800 46px 'Saira Semi Condensed','Cairo','Noto Sans SC',sans-serif"; g.fillText(D.title,X(M),M+40);
+  g.font="500 24px 'IBM Plex Sans','Cairo','Noto Sans SC',sans-serif"; g.fillStyle=mut;
+  g.fillText(`${t("startFrom")}: ${originLabel()}  ·  ${t("aboutWalk",Math.round(D.len),walkMin(D.len))}`,X(M),M+84);
+  g.fillText(`Cairo ICT 2026 · ${t("venue")}`,X(M),M+118);
+  const iw=(W-M*2-30)/2, ih=iw*900/1400, iy=M+150;
+  [[i3,"3D"],[i2,t("jFlat")]].forEach(([im,lab],k)=>{const x=M+k*(iw+30); if(im)g.drawImage(im,x,iy,iw,ih); g.strokeStyle="#d5dbe7"; g.lineWidth=2; g.strokeRect(x,iy,iw,ih);
+    g.fillStyle="rgba(11,20,48,.75)"; g.fillRect(x+12,iy+12,g.measureText(lab).width+28,40); g.fillStyle="#fff"; g.textAlign="left"; g.font="700 22px 'Saira Semi Condensed',sans-serif"; g.fillText(lab,x+26,iy+40); g.textAlign=rtl?"right":"left";});
+  let y=iy+ih+70;
+  g.fillStyle=acc; g.font="700 26px 'Saira Semi Condensed','Cairo',sans-serif"; g.fillText((D.steps?t("steps"):t("stops")).toUpperCase(),X(M),y); y+=20;
+  const qrSize=230, textW=W-M*2-qrSize-40, items=D.steps?D.steps.map(s=>[s.text,s.sub]):D.stops.map(s=>[s.name,s.sub]);
+  items.forEach(([a,b],i)=>{ if(y>H-140)return; y+=46;
+    g.fillStyle=acc; g.beginPath(); g.arc(X(M+18),y-10,18,0,7); g.fill(); g.fillStyle="#fff"; g.textAlign="center"; g.font="700 20px 'Saira Semi Condensed',sans-serif"; g.fillText(String(i+1),X(M+18),y-3);
+    g.textAlign=rtl?"right":"left"; g.fillStyle=ink; g.font="600 26px 'IBM Plex Sans','Cairo','Noto Sans SC',sans-serif";
+    wrapText(g,a,textW-60).forEach((ln,j)=>{if(j)y+=34; g.fillText(ln,X(M+52),y);});
+    if(b){y+=30; g.fillStyle=mut; g.font="500 21px 'IBM Plex Sans','Cairo','Noto Sans SC',sans-serif"; g.fillText(b,X(M+52),y);}});
+  if(D.link){try{const q=qrcode(0,"M"); q.addData(D.link); q.make(); const n=q.getModuleCount(), cell=Math.floor(qrSize/n), qx=rtl?M:W-M-n*cell, qy=iy+ih+60;
+    g.fillStyle="#000"; for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))g.fillRect(qx+k*cell,qy+r*cell,cell,cell);
+    g.fillStyle=mut; g.textAlign="center"; g.font="500 19px 'IBM Plex Sans','Cairo',sans-serif"; wrapText(g,t("scan"),n*cell+20).forEach((ln,j)=>g.fillText(ln,qx+n*cell/2,qy+n*cell+32+j*24)); g.textAlign=rtl?"right":"left";}catch(e){}}
+  g.fillStyle=mut; g.font="500 18px 'IBM Plex Sans',sans-serif"; g.fillText(new Intl.DateTimeFormat(LANG==="ar"?"ar-EG":LANG==="zh"?"zh-CN":"en-GB",{dateStyle:"medium",timeStyle:"short",timeZone:CFG.hours.tz}).format(new Date()),X(M),H-50);
+  if(!window.jspdf)await new Promise((res,rej)=>{const s=document.createElement("script"); s.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"; s.onload=res; s.onerror=rej; document.head.appendChild(s);});
+  const pdf=new window.jspdf.jsPDF({unit:"pt",format:"a4"}); pdf.addImage(c.toDataURL("image/jpeg",.9),"JPEG",0,0,595.28,841.89);
+  return pdf.output("blob");}
+const blobB64=b=>new Promise(r=>{const f=new FileReader(); f.onload=()=>r(String(f.result).split(",")[1]); f.readAsDataURL(b);});
+function pdfName(){return `Cairo-ICT-route-${(ROUTE_DOC.title||"route").replace(/[^\w؀-ۿ一-鿿]+/g,"-").slice(0,40)}.pdf`;}
+function openSend(){ if(!ROUTE_DOC)return; let o=$("sendBox"); if(!o){o=document.createElement("div");o.id="sendBox";$("app").appendChild(o);}
+  const S={ch:"email",val:""}; o.hidden=false; o.dir=LANG==="ar"?"rtl":"ltr";
+  const keys=()=>S.ch==="phone"?["123","456","789","+0⌫"]:["1234567890","qwertyuiop","asdfghjkl","zxcvbnm⌫","@._-"];
+  const paint=(msg,ok)=>{o.innerHTML=`<div class="box glass sendcard" role="dialog" aria-modal="true" aria-label="${esc(t("sendRoute"))}">
+     <div class="sp-head"><h3>${t("sendRoute")}</h3><button class="icon-btn" data-sx aria-label="${t("close")}">${svg("close")}</button></div>
+     <p>${t("sendSub")}</p>
+     <div class="seg2" role="tablist"><button role="tab" data-ch="email" aria-selected="${S.ch==="email"}">${svg("mail")}${t("cEmail")}</button><button role="tab" data-ch="phone" aria-selected="${S.ch==="phone"}">${svg("phone")}${t("cPhone")}</button></div>
+     <input id="sendTo" class="sendin" dir="ltr" inputmode="${S.ch==="phone"?"tel":"email"}" autocomplete="off" placeholder="${S.ch==="phone"?"+20 1xx xxx xxxx":"name@example.com"}" value="${esc(S.val)}">
+     ${useOSK()&&!ON_PHONE()?`<div class="kbd sendkbd">${keys().map(r=>`<div class="kr">${[...r].map(ch=>`<button data-sk="${ch}">${ch==="⌫"?svg("bksp"):ch}</button>`).join("")}</div>`).join("")}</div>`:""}
+     ${msg?`<div class="sendmsg ${ok?"ok":""}">${msg}</div>`:""}
+     <div class="sendacts"><button class="cta ghost" data-dl>${svg("route")}${t("dlPdf")}</button><button class="cta" data-go style="--hc:var(--route)">${svg("mail")}${t("send")}</button></div></div>`;
+    const inp=$("sendTo"); inp.oninput=()=>{S.val=inp.value;}; inp.onkeydown=e=>{if(e.key==="Enter")go();};
+    o.querySelector("[data-sx]").onclick=()=>{o.hidden=true;}; o.onclick=e=>{if(e.target===o)o.hidden=true;};
+    o.querySelectorAll("[data-ch]").forEach(b=>b.onclick=()=>{S.ch=b.dataset.ch; S.val=""; paint();});
+    o.querySelectorAll("[data-sk]").forEach(b=>b.onclick=()=>{const k=b.dataset.sk; S.val=k==="⌫"?S.val.slice(0,-1):(S.val+k).slice(0,60); inp.value=S.val;});
+    o.querySelector("[data-dl]").onclick=dl; o.querySelector("[data-go]").onclick=go;
+    if(!useOSK()||ON_PHONE())setTimeout(()=>inp.focus(),50);};
+  const valid=()=>S.ch==="email"?/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(S.val.trim()):/^\+?\d{8,15}$/.test(S.val.replace(/[\s-]/g,""));
+  const dl=async()=>{paint(t("making")); const b=await routePDF(); if(!b){paint(t("sendFail"));return;}
+    const f=new File([b],pdfName(),{type:"application/pdf"});
+    if(ON_PHONE()&&navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:ROUTE_DOC.title});paint(t("sentOk"),1);return;}catch(e){}}
+    const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=f.name; document.body.appendChild(a); a.click(); a.remove(); paint(t("dlDone"),1);};
+  const go=async()=>{ if(!valid()){paint(t(S.ch==="email"?"badEmail":"badPhone"));return;}
+    if(!CFG.sendUrl){paint(t("noSend"));return;}
+    paint(t("making")); try{const b=await routePDF();
+      const r=await fetch(CFG.sendUrl,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({channel:S.ch,to:S.val.trim(),filename:pdfName(),pdf:await blobB64(b),link:ROUTE_DOC.link,lang:LANG})});
+      if(!r.ok)throw 0; paint(t(S.ch==="email"?"sentEmail":"sentPhone"),1);}catch(e){paint(t("sendFail"));}};
+  paint();}
+
 /* a computer keyboard types into the search too: into the on-screen-keyboard search, or, from anywhere on the map, it opens search with the first letter */
 const kbdOpen=()=>{const k=$("kbd"); return !!(k&&k.offsetParent);};
 addEventListener("keydown",e=>{
@@ -2365,7 +2491,8 @@ function startRoute(p){
   $("routeOut").innerHTML=`${fromRowHTML()}<div class="eyebrow" style="margin-bottom:12px"><span>${t("steps")}</span><span>${t("aboutWalk",m,walkMin(r.len))}</span></div>
     <p class="hint tapadd">${svg("plus")}${t("tapToAdd")}</p>
     <ol class="steps">${steps.map(s=>`<li><span class="ic">${svg(s.ic)}</span><p>${esc(s.text)}${s.sub?`<small>${esc(s.sub)}</small>`:""}</p></li>`).join("")}</ol>
-`; showMapQR(qrSvg,t("takePhone"),t("scan"));
+`; ROUTE_DOC={title:placeName(p),stops:[{name:placeName(p),sub:p.type==="booth"||p.type==="tba"?`${t("stand")} ${p.id} · ${hallName(p.hall)}`:hallName(p.hall)}],len:r.len,pts:r.pts,steps,link:share};
+  showMapQR(qrSvg,t("takePhone"),t("scan"));
   $("goBtn").hidden=true; $("endBtn").hidden=false;
   const chip=$("routeChip");
   chip.innerHTML=`<div class="rc-meta"><b>${esc(placeName(p))}</b><span>${esc(originLabel())} → ${p.type==="booth"||p.type==="tba"?p.id:esc(hallName(p.hall==="cor"?"cor":p.hall))}</span></div>
@@ -2546,6 +2673,7 @@ function openPlan(push=true){
   views.plan.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{togglePlan(b.dataset.rm);});
   $("planClear").onclick=()=>{PLAN=[];clearRoute();clearPlanTags();HL=null;applyHighlight();back();renderPlanBar();};
   if(push)show("plan"); else show("plan",false);
+  ROUTE_DOC={title:t("myRoute"),stops:PLAN_ORDER.map((id,i)=>({name:placeName(BY_ID[id]),sub:`${legs[i]?t("mins",walkMin(legs[i].len))+" · "+Math.round(legs[i].len)+" "+t("m"):""}`})),len:total,pts:all,steps:null,link:share};
   showMapQR(qrSvg,t("takePlan"),t("scanPlan")); placeMapQR();
   // map: one continuous walk through every stop, numbered in order
   HL={ids:new Set(PLAN)}; applyHighlight(); syncLegend();
@@ -2559,9 +2687,9 @@ function openPlan(push=true){
 
 /* the take-it-with-you QR sits on the map where it is seen straight away; on narrow screens it goes to the top of the page instead */
 function showMapQR(qr,title,sub){const el=$("mapQR"); if(!qr||ON_PHONE()){el.hidden=true;return;}
-  el.innerHTML=`<div class="mq-code">${qr}</div><div class="mq-txt"><b>${esc(title)}</b><span>${esc(sub)}</span></div>`; el.hidden=false;
+  el.innerHTML=`<div class="mq-code">${qr}</div><div class="mq-txt"><b>${esc(title)}</b><span>${esc(sub)}</span></div>${sendBtnHTML()}`; el.hidden=false;
   const narrow=stage.clientWidth<560||innerHeight>innerWidth||$("app").classList.contains("reach"); // portrait screens: the QR goes in the panel so it never covers the route
-  if(narrow){el.hidden=true; const ro=VIEW==="detail"&&$("routeOut"), host=ro||(views[VIEW]&&views[VIEW].querySelector(".scroll")); if(host){const q=document.createElement("div");q.className="qr "+(ro?"qr-after":"qr-top");q.innerHTML=`<div class="code">${qr}</div><div><b>${esc(title)}</b><span>${esc(sub)}</span></div>`;ro?host.append(q):host.prepend(q);}}}
+  if(narrow){el.hidden=true; const ro=VIEW==="detail"&&$("routeOut"), host=ro||(views[VIEW]&&views[VIEW].querySelector(".scroll")); if(host){const q=document.createElement("div");q.className="qr "+(ro?"qr-after":"qr-top");q.innerHTML=`<div class="code">${qr}</div><div><b>${esc(title)}</b><span>${esc(sub)}</span>${sendBtnHTML()}</div>`;ro?host.append(q):host.prepend(q);}}}
 function renderAttractQR(){const el=$("attractQR"); if(!el)return; el.hidden=false;
   const lk=phoneLink("get");
   el.innerHTML=`<div class="qh">${svg("phone")}Take the map with you</div><div class="qs"><div class="c">${lk?qrSvgOf(lk):`<div class="nolink">${t("noLink")}</div>`}</div></div>
@@ -2680,7 +2808,7 @@ function setLivePosition(planX,planY,headingDeg){
 }
 /* ---------- starting point: the visitor can start from an entrance, another screen, a stand or any spot on the map ---------- */
 function originLabel(){const o=ORIGIN; if(!o)return L(CFG.kiosks[KIOSK]); if(o.k)return L(CFG.kiosks[o.k]);
-  if(o.id){const p=BY_ID[o.id]; return p.type==="entr"?L(p):t("near",placeName(p));}
+  if(o.id){const p=BY_ID[o.id]; return p.type==="entr"||p.kind==="parking"?L(p):t("near",placeName(p));}
   return `${t("mapPoint")} · ${hallFull(regionAt(o.x,o.z))}`;}
 const fromRowHTML=()=>`<div class="fromrow"><span class="ic">${svg("locate")}</span><div><small>${t("startFrom")}</small><b>${esc(originLabel())}</b></div><button class="cta ghost" data-chgstart>${t("change")}</button></div>`;
 function setOrigin(o){
@@ -2688,7 +2816,7 @@ function setOrigin(o){
   if(!o||(o.k&&o.k===KIOSK))setKiosk(KIOSK);
   else{let x,z;
     if(o.k){const k=CFG.kiosks[o.k];x=wx(k.x);z=wz(k.y);}
-    else if(o.id){const p=BY_ID[o.id]; if(p.type==="entr"){x=wx(p.x);z=wz(p.y);} else {const g=bestCell(p,DIST); if(g.cell<0)return; const c=cellCenter(g.cell);x=c.x;z=c.z;}}
+    else if(o.id){const p=BY_ID[o.id]; if(p.type==="entr"){x=wx(p.x);z=wz(p.y);} else if(p.kind==="parking"){const c=center(p);x=c.x;z=c.z;} else {const g=bestCell(p,DIST); if(g.cell<0)return; const c=cellCenter(g.cell);x=c.x;z=c.z;}}
     else{x=o.x;z=o.z;}
     const k=nearestWalk(x,z,40); if(k<0){toast(t("notHere"));return;}
     ORIGIN=o; KPOS={x,z}; you.position.set(x,0,z); START=k; dijkstra(START); for(const g in GOAL)delete GOAL[g];}
@@ -2704,6 +2832,7 @@ function openStartPicker(){endPickMode(); let o=$("startPick"); if(!o){o=documen
   o.innerHTML=`<div class="box glass sp-box" role="dialog" aria-modal="true" aria-label="${esc(t("pickTitle"))}"><div class="sp-head"><h3>${t("pickTitle")}</h3><button class="icon-btn" data-spx aria-label="${t("close")}">${svg("close")}</button></div><p>${t("pickSub")}</p>
     <div class="sp-list">${row("data-spmap","pin",t("pickMap"),t("pickMapSub"),cur&&cur.pt)}
     ${ON_PHONE()?"":row(`data-spk="${KIOSK}"`,"locate",t("thisScreen"),L(CFG.kiosks[KIOSK]),!cur)}
+    <div class="eyebrow"><span>${t("parking")}</span></div>${PARKING.map(q=>row(`data-spid="${q.id}"`,"park",L(q),"",cur&&cur.id===q.id)).join("")}
     <div class="eyebrow"><span>${t("entrances")}</span></div>${ENTR.map(e=>row(`data-spid="${e.id}"`,"door",L(e),hallName(e.hall),cur&&cur.id===e.id)).join("")}
     <div class="eyebrow"><span>${t("screens")}</span></div>${Object.entries(CFG.kiosks).filter(([k])=>ON_PHONE()||k!==KIOSK).map(([k,v])=>row(`data-spk="${k}"`,"locate",L(v),"",here(k))).join("")}</div></div>`;
   o.onclick=e=>{if(e.target===o)o.hidden=true;};
@@ -2865,7 +2994,7 @@ function placeStacked(items){const vis=[],placed=[];
     for(let k=0;k<12;k++){const y1=v.y-26-lift,y0=y1-v.h; const hit=placed.find(r=>v.x-v.w/2<r.x1+6&&v.x+v.w/2>r.x0-6&&y0<r.y1+4&&y1>r.y0-4); if(!hit)break; lift=v.y-26-(hit.y0-4);}
     placed.push({x0:v.x-v.w/2,x1:v.x+v.w/2,y0:v.y-26-lift-v.h,y1:v.y-26-lift});
     v.el.style.opacity=1; v.el.lastChild.style.height=(26+lift)+"px"; v.el.style.transform=`translate(${v.x}px,${v.y}px) translate(-50%,-100%)`;}}
-const BOUND={x0:wx(H4X0-200),x1:wx(7400),z0:wz(1500),z1:wz(WALKY+150)};
+const BOUND={x0:wx(-11200),x1:wx(12000),z0:wz(1500),z1:wz(8400)};
 function loop(now){
   requestAnimationFrame(loop);
   stepInertia();

@@ -10,6 +10,7 @@ const FILES = {
   "three.min.js": "node_modules/three/build/three.min.js",
   "OrbitControls.js": "node_modules/three/examples/js/controls/OrbitControls.js",
   "qrcode": "node_modules/qrcode-generator/qrcode.js",
+  "jspdf": "node_modules/jspdf/dist/jspdf.umd.min.js",
 };
 const HTML = readFileSync("expo-navigator.html", "utf8");
 mkdirSync("r", { recursive: true });
