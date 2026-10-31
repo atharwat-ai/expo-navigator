@@ -400,6 +400,7 @@ html[data-lang=zh] .eyebrow,html[data-lang=zh] .tb-cell small,html[data-lang=zh]
 .lb-row svg{grid-row:1/span 2;grid-column:2;width:24px;height:24px;color:var(--route)}
 .conftile.islive{box-shadow:inset 0 0 0 2px #ff3b5c;background:linear-gradient(120deg,rgba(255,59,92,.2),var(--ink-2))}
 .tag.livetag{pointer-events:auto;cursor:pointer;z-index:4}
+.tag.zonetag{pointer-events:auto;cursor:pointer;z-index:4;background:none;border:0;padding:0}.tag.zonetag .card{background:var(--zc);color:#fff;border-color:rgba(255,255,255,.7);font-size:15px;letter-spacing:.06em;text-transform:uppercase;padding:6px 12px}.tag.zonetag .stem{background:linear-gradient(var(--zc),transparent)}.tag.zonetag:hover .card{transform:scale(1.06)}
 .tag.livetag .card{background:#ff3b5c;color:#fff;border-color:#ff3b5c;font-size:14px;max-width:300px;gap:8px;align-items:center;padding:6px 12px}
 .tag.livetag .card span{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
 .tag.livetag .stem{background:linear-gradient(#ff3b5c,transparent)}
@@ -2785,7 +2786,15 @@ function openSession(sid){
 /* ---------- My route: several stops, one walk ---------- */
 let PLAN=[], PLAN_ORDER=[], planTags=[];
 /* tapping a stand on the map makes it a stop and shows the walking route at once; every further tap adds another stop */
+/* Connecta's zones: a floating label over each; a click on the label or the zone zooms in, centres it and opens its page */
+const ZONES=[["F-KHAYAL","#e5242b"],["F-CPLAY","#2f7bff"],["H4-02","#ff2d3d"],["H4-03","#36c3d8"],["F-CINNO","#8b5cf6"]];
+const zoneTags=ZONES.map(([id,c])=>{const el=document.createElement("button"); el.className="tag zonetag"; el.style.setProperty("--zc",c); el._p=BY_ID[id];
+  el.addEventListener("pointerdown",e=>e.stopPropagation()); el.onclick=e=>{e.stopPropagation(); zoomZone(id);}; stage.appendChild(el); return el;});
+function syncZoneTags(){zoneTags.forEach(el=>{const p=el._p; el.innerHTML=`<div class="card">${esc(placeName(p).replace(/^Cairo Khayal · .*/,"Cairo Khayal"))}</div><div class="stem"></div>`; el.setAttribute("aria-label",placeName(p));});}
+function zoomZone(id){const p=BY_ID[id]; if(!p)return; openDetail(id); pin.visible=false; tagSel.hidden=true;
+  setTimeout(()=>fitBounds(wx(p.x),wz(p.y),wx(p.x+p.w),wz(p.y+p.h),{h:4,polar:.78,dur:1000}),0);}
 function tapStand(id){const p=BY_ID[id]; if(!p)return;
+  if(ZONES.some(z=>z[0]===id)){zoomZone(id);return;}
   if(p.type==="entr"){openDetail(id,{fromMap:true});return;}
   if(VIEW==="detail"&&ROUTE_FOR&&!PLAN.includes(ROUTE_FOR))PLAN.push(ROUTE_FOR);
   if(PLAN.includes(id)){ if(VIEW==="plan"){toast(t("alreadyIn",placeName(p)));return;} }
@@ -2927,7 +2936,7 @@ function setLang(l){LANG=l;
   $("langBtn").innerHTML=`${svg("globe")}<span>${{en:"EN",ar:"ع",zh:"中"}[l]}</span>`;
   $("langMenu").querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-current",b.dataset.lang===l));
   $("reachBtn").setAttribute("aria-label",t("reach"));
-  renderHallSeg(); syncLegend(); renderHome(); tick(); syncJoy();
+  renderHallSeg(); syncLegend(); renderHome(); tick(); syncJoy(); syncZoneTags();
   if(VIEW==="list"&&LISTCTX){if(LISTCTX.kind==="agenda")openAgenda(false);else renderList(LISTCTX,false);}
   if(VIEW==="search")renderSearch(false);
   if(VIEW==="detail"&&SELECTED){const keep=ROUTE_FOR;openDetail(SELECTED.id,{route:!!keep});}
@@ -3188,6 +3197,7 @@ function loop(now){
   document.querySelector(".compass .needle").style.transform=`rotate(${az*180/Math.PI}deg)`;
   renderer.render(scene,camera);
   place(tagYou,{x:KPOS.x,y:0,z:KPOS.z},3);
+  for(const el of zoneTags){const p=el._p; place(el,{x:wx(p.x+p.w/2),y:4,z:wz(p.y+p.h/2)},2); el.style.display=SELECTED&&SELECTED.id===p.id?"none":"";}
   for(const el of Object.values(liveTags)){const p=el._p,c=center(p),g=boothObj[p.id];place(el,{x:c.x,y:(g?g.userData.H*g.scale.y:0),z:c.z},2);}
   placeStacked(planTags.map(el=>{const p=el._p,c=center(p),g=boothObj[p.id];return {el,pos:{x:c.x,y:(g?g.userData.H*g.scale.y:0),z:c.z},yOff:2.5};}));
   if(!tagSel.hidden&&SELECTED){const c=center(SELECTED);place(tagSel,{x:c.x,y:(boothObj[SELECTED.id]?boothObj[SELECTED.id].userData.H:0)+.5,z:c.z},8.2);}
