@@ -2246,9 +2246,9 @@ function homeHall(){const r=regionAt(KPOS.x,KPOS.z); return r==="h3"?"aidc":r===
 function goHome(){fitBounds(KPOS.x-55,KPOS.z-45,KPOS.x+55,KPOS.z+45,{h:0});}
 
 /* ---------- map gestures, modelled on Google Maps for mobile ----------
-   one finger drag: pan with fling · pinch: zoom around the fingers · twist: rotate · two fingers up/down: tilt
+   one finger drag on the floor: pan with fling · one finger drag on a stand, wall or other object: orbit around the point grabbed · pinch: zoom around the fingers · twist: rotate · two fingers up/down: tilt
    double tap: zoom in · two-finger tap: zoom out · double tap then drag up/down: one-finger zoom
-   mouse: drag to pan, wheel to zoom at the pointer, right-drag or ctrl-drag to rotate and tilt · tap the compass to face north again */
+   mouse: drag the floor to pan, drag an object to orbit around it, wheel to zoom at the pointer, right-drag or ctrl-drag to rotate and tilt · tap the compass to face north again */
 const ray=new THREE.Raycaster(), ndc=new THREE.Vector2(), GROUND=new THREE.Plane(new THREE.Vector3(0,1,0),0);
 const cv=renderer.domElement, SPH=new THREE.Spherical(), OFF=new THREE.Vector3(), TMP=new THREE.Vector3();
 let inertia=null;
@@ -2264,6 +2264,19 @@ function pinTo(G,x,y){ if(!G)return; const H=groundAt2(x,y); if(H)shift(G.x-H.x,
 function zoomAt(f,x,y){const G=groundAt2(x,y); readSph(); SPH.radius*=f; writeSph(); pinTo(G,x,y);}
 function rotateAt(dTheta,x,y){const G=groundAt2(x,y); readSph(); SPH.theta+=dTheta; writeSph(); pinTo(G,x,y);}
 function tiltBy(dPhi,x,y){if(viewMode==="2d")return; const G=groundAt2(x,y); readSph(); SPH.phi+=dPhi; writeSph(); pinTo(G,x,y);}
+/* the first visible solid object under (x,y), standing clear of the floor; null when the pointer is on the ground */
+function objectAt(x,y){camera.updateMatrixWorld(); ray.setFromCamera(toNdc(x,y),camera);
+  const shown=o=>{for(;o;o=o.parent)if(!o.visible)return false; return true;};
+  for(const h of ray.intersectObject(scene,true)){const o=h.object, m=Array.isArray(o.material)?o.material[0]:o.material;
+    if(!o.isMesh||!m||m.visible===false||(m.transparent&&m.opacity<.5)||!shown(o))continue;
+    return h.point.y>.25?h.point.clone():null;}
+  return null;}
+/* turn the view around a vertical axis through P (P stays put on screen), and tilt about it */
+function orbitAround(P,dTheta,dPhi,x,y){
+  if(dTheta){const c=Math.cos(dTheta), s=Math.sin(dTheta);
+    for(const v of [camera.position,controls.target]){const ox=v.x-P.x, oz=v.z-P.z; v.x=P.x+ox*c+oz*s; v.z=P.z-ox*s+oz*c;}
+    camera.lookAt(controls.target); camera.updateMatrixWorld();}
+  if(dPhi)tiltBy(dPhi,x,y);}
 function animZoom(f,x,y,dur=280){const t0=performance.now(); let done=0; inertia=null; fly=null;
   const step=now=>{const k=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-k,3), want=Math.pow(f,e); zoomAt(want/Math.pow(f,done),x,y); done=e; if(k<1)requestAnimationFrame(step);}; requestAnimationFrame(step);}
 
@@ -2280,7 +2293,8 @@ cv.addEventListener("pointerdown",e=>{
     const now=performance.now();
     const dbl=lastTap&&now-lastTap.t<300&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<40;
     if(dbl){clearTimeout(tapTimer); G1={mode:"dz",y:e.clientY,ax:e.clientX,ay:e.clientY,moved:false}; lastTap=null;}
-    else G1={mode:"pan",G:groundAt2(e.clientX,e.clientY),moved:false,trail:[{x:e.clientX,y:e.clientY,t:now}]};
+    else{const O=objectAt(e.clientX,e.clientY);
+      G1=O?{mode:"orbit",O,px:e.clientX,py:e.clientY,moved:false}:{mode:"pan",G:groundAt2(e.clientX,e.clientY),moved:false,trail:[{x:e.clientX,y:e.clientY,t:now}]};}
   } else if(P.size===2){
     G1=null; const [a,b]=[...P.values()];
     G2={d0:Math.hypot(a.x-b.x,a.y-b.y),a0:Math.atan2(b.y-a.y,b.x-a.x),c0:centroid(),last:{d:Math.hypot(a.x-b.x,a.y-b.y),a:Math.atan2(b.y-a.y,b.x-a.x),c:centroid()},mode:null,rotOn:false,t0:performance.now(),moved:false};
@@ -2295,6 +2309,9 @@ cv.addEventListener("pointermove",e=>{
     if(Math.hypot(e.clientX-p.x0,e.clientY-p.y0)>8)G1.moved=true;
     if(G1.mode==="pan"&&G1.G){const H=groundAt2(e.clientX,e.clientY); if(H)shift(G1.G.x-H.x,G1.G.z-H.z);
       G1.trail.push({x:e.clientX,y:e.clientY,t:performance.now()}); if(G1.trail.length>6)G1.trail.shift();}
+    else if(G1.mode==="orbit"){const dx=e.clientX-G1.px, dy=e.clientY-G1.py; G1.px=e.clientX; G1.py=e.clientY;
+      if(G1.moved){camera.updateMatrixWorld(); const v=G1.O.clone().project(camera), r=cv.getBoundingClientRect();
+        orbitAround(G1.O,-dx*.008,-dy*.005,r.left+(v.x+1)/2*r.width,r.top+(1-v.y)/2*r.height);}}
     else if(G1.mode==="dz"){const dy=e.clientY-G1.y; G1.y=e.clientY; if(dy)zoomAt(Math.exp(-dy*.008),G1.ax,G1.ay);}
   } else if(P.size===2&&G2){
     const [a,b]=[...P.values()], d=Math.hypot(a.x-b.x,a.y-b.y), ang=Math.atan2(b.y-a.y,b.x-a.x), c=centroid(), L=G2.last;
@@ -2329,7 +2346,7 @@ function endPointer(e){
     if(G1.mode==="dz"){ if(!G1.moved)animZoom(.5,p.x,p.y); G1=null; return; }
     if(!G1.moved&&now-p.t0<500){ // tap: wait briefly to see if it becomes a double tap
       lastTap={x:p.x,y:p.y,t:now}; clearTimeout(tapTimer); const x=p.x,y=p.y; tapTimer=setTimeout(()=>{pickAt(x,y);},260);
-    } else if(G1.trail.length>1){ // fling
+    } else if(G1.trail&&G1.trail.length>1){ // fling
       const a=G1.trail[0], z=G1.trail[G1.trail.length-1], dt=Math.max(16,z.t-a.t);
       if(now-z.t<80){const A=groundAt2(a.x,a.y),Z=groundAt2(z.x,z.y); if(A&&Z){const k=16/dt; inertia={vx:-(Z.x-A.x)*k,vz:-(Z.z-A.z)*k};}}
     }
