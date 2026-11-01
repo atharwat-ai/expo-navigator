@@ -59,7 +59,7 @@ which are now replaced by npm.
 - Taking a route away: the kiosk shows a QR code; on the phone, "Save or share as PDF" builds the route PDF (3D + flat view,
   directions, QR) and hands it to the phone's share sheet / download. (`CFG.sendUrl` and the send form remain in the code, unused.)
 - Car parks P1–P4 (`PARKING`) are placed from the EIEC satellite view; positions are approximate.
-- `AGENDA` conference sessions are sample data (the round tables are real); `CONTACTS` is empty.
+- `AGENDA` holds the tentative conference agenda (45 sessions, rooms A–E) plus the round tables. Rooms C, D and E (`ROOM_TBC`) are not on the map yet. `CONTACTS` is empty.
 - Hall 4 (Connecta) is the 86.7 × 66.8 m full-hall model (`C4_DATA`, `C4_ARENAS`, artwork in `C4_ART`) at the south end of the west
   building; companies keep their names and logos at the plan's stands. iScore is not on that plan and sits between NBE and Orange.
   Cairo Khayal (`KHAYAL`, art in `C4_ART_KH`) and the Connecta zones follow the Khayal 26 / Connecta plan of 31 Oct; Connecta Play is scaled to 18 × 45 m
