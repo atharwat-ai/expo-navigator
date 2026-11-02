@@ -401,6 +401,7 @@ html[data-lang=zh] .eyebrow,html[data-lang=zh] .tb-cell small,html[data-lang=zh]
 .conftile.islive{box-shadow:inset 0 0 0 2px #ff3b5c;background:linear-gradient(120deg,rgba(255,59,92,.2),var(--ink-2))}
 .tag.livetag{pointer-events:auto;cursor:pointer;z-index:4}
 .tag.zonetag{pointer-events:auto;cursor:pointer;z-index:4;background:none;border:0;padding:0}.tag.zonetag .card{background:var(--zc);color:#fff;border-color:rgba(255,255,255,.7);font-size:15px;letter-spacing:.06em;text-transform:uppercase;padding:6px 12px}.tag.zonetag .stem{background:linear-gradient(var(--zc),transparent)}.tag.zonetag:hover .card{transform:scale(1.06)}
+.tag.roomtag{pointer-events:auto;cursor:pointer;z-index:4;background:none;border:0;padding:0}.tag.roomtag .card{font-size:14px;padding:5px 11px 6px 9px;gap:7px;align-items:center;box-shadow:inset 4px 0 0 var(--rc),0 8px 20px rgba(0,0,0,.4)}.tag.roomtag .card i{width:9px;height:9px;border-radius:50%;background:var(--rc);flex:none}.tag.roomtag .stem{height:18px;background:linear-gradient(var(--rc),transparent)}.tag.roomtag:hover .card{transform:scale(1.05)}
 .tag.livetag .card{background:#ff3b5c;color:#fff;border-color:#ff3b5c;font-size:14px;max-width:300px;gap:8px;align-items:center;padding:6px 12px}
 .tag.livetag .card span{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
 .tag.livetag .stem{background:linear-gradient(#ff3b5c,transparent)}
@@ -2885,7 +2886,13 @@ let PLAN=[], PLAN_ORDER=[], planTags=[];
 const ZONES=[["F-KHAYAL","#e5242b"],["F-CPLAY","#2f7bff"],["H4-02","#ff2d3d"],["H4-03","#36c3d8"],["F-CINNO","#8b5cf6"]];
 const zoneTags=ZONES.map(([id,c])=>{const el=document.createElement("button"); el.className="tag zonetag"; el.style.setProperty("--zc",c); el._p=BY_ID[id];
   el.addEventListener("pointerdown",e=>e.stopPropagation()); el.onclick=e=>{e.stopPropagation(); zoomZone(id);}; stage.appendChild(el); return el;});
-function syncZoneTags(){zoneTags.forEach(el=>{const p=el._p; el.innerHTML=`<div class="card">${esc(placeName(p).replace(/^Cairo Khayal · .*/,"Cairo Khayal"))}</div><div class="stem"></div>`; el.setAttribute("aria-label",placeName(p));});}
+/* labels on the conference rooms and lounges; tapping one works like tapping the room itself */
+const ROOM_TAGS=[...new Map(FAC.concat(CONNECTA_FAC).map(p=>[p.id,p])).values()].filter(p=>p.kind==="conf"||p.kind==="lounge").map(p=>{const el=document.createElement("button"); el.className="tag roomtag";
+  el.style.setProperty("--rc",p.kind==="conf"?"#2f6dff":"#d8b46a"); el._p=BY_ID[p.id]||p;
+  el.addEventListener("pointerdown",e=>e.stopPropagation()); el.onclick=e=>{e.stopPropagation(); tapStand(p.id);}; stage.appendChild(el); return el;});
+function syncZoneTags(){ROOM_TAGS.forEach(el=>{const p=el._p, parts=placeName(p).split(" · "), nm=/^(Cairo Khayal|القاهرة خيال|开罗幻想)$/.test(parts[0])?parts[parts.length-1]:parts[0];
+    el.innerHTML=`<div class="card"><i></i>${esc(nm)}</div><div class="stem"></div>`; el.setAttribute("aria-label",placeName(p));});
+  zoneTags.forEach(el=>{const p=el._p; el.innerHTML=`<div class="card">${esc(placeName(p).replace(/^Cairo Khayal · .*/,"Cairo Khayal"))}</div><div class="stem"></div>`; el.setAttribute("aria-label",placeName(p));});}
 function zoomZone(id){const p=BY_ID[id]; if(!p)return; openDetail(id); pin.visible=false; tagSel.hidden=true;
   setTimeout(()=>fitBounds(wx(p.x),wz(p.y),wx(p.x+p.w),wz(p.y+p.h),{h:4,polar:.78,dur:1000}),0);}
 function tapStand(id){const p=BY_ID[id]; if(!p)return;
@@ -3295,7 +3302,8 @@ function loop(now){
   place(tagYou,{x:KPOS.x,y:0,z:KPOS.z},3);
   for(const el of zoneTags){const p=el._p; place(el,{x:wx(p.x+p.w/2),y:4,z:wz(p.y+p.h/2)},2); el.style.display=SELECTED&&SELECTED.id===p.id?"none":"";}
   for(const el of Object.values(liveTags)){const p=el._p,c=center(p),g=boothObj[p.id];place(el,{x:c.x,y:(g?g.userData.H*g.scale.y:0),z:c.z},2);}
-  placeStacked(planTags.map(el=>{const p=el._p,c=center(p),g=boothObj[p.id];return {el,pos:{x:c.x,y:(g?g.userData.H*g.scale.y:0),z:c.z},yOff:2.5};}));
+  for(const el of ROOM_TAGS){const id=el._p.id; el.hidden=(SELECTED&&SELECTED.id===id)||PLAN.includes(id);}
+  placeStacked(planTags.concat(ROOM_TAGS.filter(el=>!el.hidden)).map(el=>{const p=el._p,c=center(p),g=boothObj[p.id];return {el,pos:{x:c.x,y:(g?g.userData.H*g.scale.y:p.model?3:0),z:c.z},yOff:2.5};}));
   if(!tagSel.hidden&&SELECTED){const c=center(SELECTED);place(tagSel,{x:c.x,y:(boothObj[SELECTED.id]?boothObj[SELECTED.id].userData.H:0)+.5,z:c.z},8.2);}
 }
 
