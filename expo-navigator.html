@@ -1430,7 +1430,7 @@ const C4_MODEL=(()=>{
      booths, screening pods and 6F, the closed Sound Stage room (56 seats) at the east, and the entrance passage by the kinetic screen. ---- */
   const blocks=[], labels=[], kinetic=[];
   { const X=x=>x*.985, Z=z=>z+.8, R=(x0,x1,z0,z1)=>[X(x0),X(x1),Z(z0),Z(z1)];
-    const BOOTH="#707683", BODY="#4b505b", GREY="#474c57", BLK="#07080b", STG="#14161c", SEAT="#16181e";
+    const BLK="#07080b", BOOTH=BLK, BODY="#4b505b", GREY=BLK, STG="#14161c", SEAT="#16181e";
     const BX=(r,y0,y1,col)=>boxes.push([r[0],r[1],r[2],r[3],y0,y1,col]);
     const W=(x1,z1,x2,z2,h,t,col,y0=0)=>{const r=z1===z2?R(Math.min(x1,x2),Math.max(x1,x2),z1-t/2,z1+t/2):R(x1-t/2,x1+t/2,Math.min(z1,z2),Math.max(z1,z2)); BX(r,y0,y0+h,col); return r;};
     // floors: grid, carpets for the auditorium and the sound stage room
@@ -1460,8 +1460,8 @@ const C4_MODEL=(()=>{
       const fz=Z(front)+(open==="S"?.07:-.07);
       faces.push(open==="S"?{text:nm,a:[X(x0),fz],b:[X(x1),fz],H:.6,y0:2.9,pieces:[[0,X(x1)-X(x0),2.9,3.5]]}:{text:nm,a:[X(x1),fz],b:[X(x0),fz],H:.6,y0:2.9,pieces:[[0,X(x1)-X(x0),2.9,3.5]]});});
     // screening pods and 6F
-    W(41,14,43.2,14,2.4,.15,BODY); W(43.2,14,43.2,16.2,2.4,.15,BODY); W(70.2,14,72.3,14,2.4,.15,BODY); W(72.3,14,72.3,16.2,2.4,.15,BODY);
-    W(37,.9,37,3,2.4,.15,BODY); W(37,3,39.2,3,2.4,.15,BODY); W(69.7,9,69.7,12,2.4,.15,BODY); W(69.2,9.1,70.2,9.1,2.4,.2,BODY);
+    W(41,14,43.2,14,2.4,.15,BLK); W(43.2,14,43.2,16.2,2.4,.15,BLK); W(70.2,14,72.3,14,2.4,.15,BLK); W(72.3,14,72.3,16.2,2.4,.15,BLK);
+    W(37,.9,37,3,2.4,.15,BLK); W(37,3,39.2,3,2.4,.15,BLK); W(69.7,9,69.7,12,2.4,.15,BLK); W(69.2,9.1,70.2,9.1,2.4,.2,BLK);
     // Sound Stage room: grey divider, black west wall with a double door in a red frame (the leaves do not block the route)
     W(70.1,8.85,88,8.85,6,.5,GREY); W(69.975,0,69.975,3.1,6,.25,BLK); W(69.975,5.5,69.975,8.6,6,.25,BLK); W(69.975,3.1,69.975,5.5,3.4,.25,BLK,2.6); W(69.975,8.6,69.975,9.1,6,.25,GREY);
     BX(R(69.8,69.86,3.11,4.29),0,2.6,"nb:#1d2027"); BX(R(69.8,69.86,4.31,5.49),0,2.6,"nb:#1d2027");
@@ -1471,7 +1471,8 @@ const C4_MODEL=(()=>{
     // entrance passage from Hall 3: vestibule walls, the kinetic screen, counter and holo box
     W(77.5,12.4,82.6,12.4,4.5,.5,GREY); W(77.5,12.4,77.5,17,4.5,.5,GREY); W(82.3,12.4,82.3,21.9,4.5,.5,GREY); W(82.3,21.9,88,21.9,4.5,.5,GREY);
     W(84.35,13.4,84.35,16.4,1.1,.7,BODY); W(85.6,9.55,88,9.55,2.4,.9,BLK);
-    face("kh:logo",82.554,21.9,82.554,12.4,4.5);   // logo banner behind the counter
+    face("kh:logo",82.554,21.9,82.554,12.4,4.5);
+    BX(R(87.9,87.99,8.6,15.1),0,6,BLK);   // the hall's east wall inside the passage, black like the rest   // logo banner behind the counter
     kinetic.push({x1:X(87.96),z:Z(21.65),cols:18,rows:15,tile:.3});   // the kinetic screen on the end wall
     // red frame round the door from Hall 3, over the passage
     boxes.push([86.55,86.85,19.05,19.35,0,4,"nb:#c8191c"],[86.55,86.85,22.55,22.85,0,4,"nb:#c8191c"],[86.55,86.85,19.05,22.85,4,4.4,"nb:#c8191c"]);
