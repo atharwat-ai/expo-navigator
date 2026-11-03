@@ -2166,7 +2166,10 @@ function buildConnecta(){
     list.forEach((c,i)=>im.setMatrixAt(i,M.compose(new THREE.Vector3(ox+c[0],(c[3]+c[4])/2,oz+c[1]),Q,new THREE.Vector3(c[2],Math.max(.01,c[4]-c[3]),c[2]))));
     im.castShadow=true; im.receiveShadow=true; grp.add(im);}
   // floor inlays (zone footprints lowest)
-  C4_MODEL.inlays.forEach(([x0,x1,z0,z1,col],i)=>{const h=col==="#22324a"?.02:.03+(i%3)*.004;
+  // floor inlays: each sits one step above any larger inlay it overlaps, so no two overlapping colours share a height
+  const lvl=new Map(), byArea=C4_MODEL.inlays.map((q,i)=>i).sort((a,b)=>{const A=C4_MODEL.inlays[a],B=C4_MODEL.inlays[b]; return (B[1]-B[0])*(B[3]-B[2])-(A[1]-A[0])*(A[3]-A[2]);});
+  byArea.forEach(i=>{const [x0,x1,z0,z1]=C4_MODEL.inlays[i]; let l=0; for(const [j,lj] of lvl){const q=C4_MODEL.inlays[j]; if(q[0]<x1-.01&&x0<q[1]-.01&&q[2]<z1-.01&&z0<q[3]-.01)l=Math.max(l,lj+1);} lvl.set(i,l);});
+  C4_MODEL.inlays.forEach(([x0,x1,z0,z1,col],i)=>{const h=.02+lvl.get(i)*.01;
     const m=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,h,z1-z0),new THREE.MeshStandardMaterial({color:new THREE.Color(col||"#2b3443").multiplyScalar(col==="#d4222c"?.9:.6),roughness:.9}));
     m.position.set(ox+(x0+x1)/2,h/2+.01,oz+(z0+z1)/2); m.receiveShadow=true; grp.add(m);});
   // printed faces and LED screens
@@ -3309,7 +3312,9 @@ function loop(now){
   if(fly){const k=Math.min(1,(now-fly.t0)/fly.dur),e=ease(k);camera.position.lerpVectors(fly.p0,fly.p1,e);controls.target.lerpVectors(fly.t0v,fly.t1,e);if(k>=1)fly=null;}
   controls.target.x=THREE.MathUtils.clamp(controls.target.x,BOUND.x0,BOUND.x1); controls.target.z=THREE.MathUtils.clamp(controls.target.z,BOUND.z0,BOUND.z1); controls.target.y=0;
   controls.update();
-  {const dc=camera.position.distanceTo(controls.target); scene.fog.near=dc+120; scene.fog.far=dc+700;}
+  {const dc=camera.position.distanceTo(controls.target); scene.fog.near=dc+120; scene.fog.far=dc+700;
+   // near plane follows the zoom so depth precision holds when zoomed out (thin floor layers otherwise flicker)
+   const nr=THREE.MathUtils.clamp(dc*.12,1,120); if(Math.abs(camera.near-nr)>nr*.05){camera.near=nr; camera.updateProjectionMatrix();}}
   const s=(now/1000);
   const r=you.userData.ring; const ph=(s%1.6)/1.6; r.scale.setScalar(1+ph*2.2); r.material.opacity=.7*(1-ph);
   if(pin.visible){pin.userData.head.position.y=5.4+Math.sin(s*3)*.5;pin.userData.tip.position.y=2.9+Math.sin(s*3)*.5;const q=(s%1.4)/1.4;pin.userData.ring.scale.setScalar(1+q*1.8);pin.userData.ring.material.opacity=.8*(1-q);}
