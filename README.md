@@ -60,6 +60,7 @@ which are now replaced by npm.
   directions, QR) and hands it to the phone's share sheet / download. (`CFG.sendUrl` and the send form remain in the code, unused.)
 - Car parks P1–P4 (`PARKING`) are placed from the EIEC satellite view; positions are approximate.
 - `AGENDA` holds the tentative conference agenda (47 sessions, rooms A–E, from the 1 November version) plus the round tables. Rooms C, D and E (`ROOM_TBC`) are not on the map yet. `CONTACTS` is empty.
+- `SPONSORS` lists each show's sponsors and partners (Cairo ICT, Pafix, Connecta, plus Forbes Middle East as media partner for all shows), from the official sponsor sheets. Partners with a stand link to it by id; the rest carry a logo from `SPONSOR_LOGOS`. Stand pages list every tier a company holds.
 - Hall 4 (Connecta) is the 86.7 × 66.8 m full-hall model (`C4_DATA`, `C4_ARENAS`, artwork in `C4_ART`) at the south end of the west
   building; companies keep their names and logos at the plan's stands. iScore is not on that plan and sits between NBE and Orange.
   Cairo Khayal (`KHAYAL`, art in `C4_ART_KH`) and the Connecta zones follow the Khayal 26 / Connecta plan of 31 Oct; Connecta Play is scaled to 18 × 45 m
