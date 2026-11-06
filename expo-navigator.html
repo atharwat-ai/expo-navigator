@@ -2953,7 +2953,7 @@ const ZONES=[["F-KHAYAL","#e5242b"],["F-CPLAY","#2f7bff"],["H4-02","#ff2d3d"],["
 const zoneTags=ZONES.map(([id,c])=>{const el=document.createElement("button"); el.className="tag zonetag"; el.style.setProperty("--zc",c); el._p=BY_ID[id];
   el.addEventListener("pointerdown",e=>e.stopPropagation()); el.onclick=e=>{e.stopPropagation(); zoomZone(id);}; stage.appendChild(el); return el;});
 /* labels on the conference rooms and lounges; tapping one works like tapping the room itself */
-const ROOM_TAGS=[...new Map(FAC.concat(CONNECTA_FAC).map(p=>[p.id,p])).values()].filter(p=>p.kind==="conf"||p.kind==="lounge"||p.kind==="wc").map(p=>{const el=document.createElement("button"); el.className="tag roomtag";
+const ROOM_TAGS=[...new Map(FAC.concat(CONNECTA_FAC).map(p=>[p.id,p])).values()].filter(p=>p.kind==="conf"||p.kind==="lounge").map(p=>{const el=document.createElement("button"); el.className="tag roomtag";
   el.style.setProperty("--rc",p.kind==="conf"?"#2f6dff":p.kind==="wc"?"#16b3c9":"#d8b46a"); el._p=BY_ID[p.id]||p;
   el.addEventListener("pointerdown",e=>e.stopPropagation()); el.onclick=e=>{e.stopPropagation(); tapStand(p.id);}; stage.appendChild(el); return el;});
 function syncZoneTags(){ROOM_TAGS.forEach(el=>{const p=el._p, parts=placeName(p).split(" · "), nm=/^(Cairo Khayal|القاهرة خيال|开罗幻想)$/.test(parts[0])?parts[parts.length-1]:parts[0];
