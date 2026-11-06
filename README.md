@@ -61,6 +61,7 @@ which are now replaced by npm.
 - Car parks P1–P4 (`PARKING`) are placed from the EIEC satellite view; positions are approximate.
 - Halls 1–3 follow the final logo floor plans (Nov 2026): Hall 3 (AIDC²) has 58 stands, AIDC² Conference Rooms A–C, the MIDAR VIP Lounge and two cafés; Hall 2 gained the names on stands 02, 06, 08, 10, 14, 41, 49 (EMS) and a new stand H2-51 (Pulse by Solutions).
 - `AGENDA` holds the tentative conference agenda (47 sessions, rooms A–E, from the 1 November version) plus the round tables. Rooms C, D and E (`ROOM_TBC`) are not on the map yet. `CONTACTS` is empty.
+- QR links from a kiosk carry `.pdf`: the phone opens the route with a one-tap card for the visitor guide PDF (`routePDF`): page 1 the place, its stand facts and sponsor tiers, 3D and flat route maps, directions and a QR back to the route; page 2 opening hours, the two nearest toilets by walking distance, the sessions in a conference room, the visitor's saved sessions and any contacts.
 - `SPONSORS` lists each show's sponsors and partners (Cairo ICT, Pafix, Connecta, plus Forbes Middle East as media partner for all shows), from the official sponsor sheets. Partners with a stand link to it by id; the rest carry a logo from `SPONSOR_LOGOS`. Stand pages list every tier a company holds.
 - Hall 4 (Connecta) is the 86.7 × 66.8 m full-hall model (`C4_DATA`, `C4_ARENAS`, artwork in `C4_ART`) at the south end of the west
   building; companies keep their names and logos at the plan's stands. iScore is not on that plan and sits between NBE and Orange.
