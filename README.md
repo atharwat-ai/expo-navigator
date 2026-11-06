@@ -54,7 +54,7 @@ which are now replaced by npm.
 
 - `CFG.publicUrl` points at the claude.ai artifact https://claude.ai/artifact/VpUe9qimNPX1Nnv3pmVDbg. Set it to the real hosted address (e.g. `https://map.cairoict.com/`)
   or leave it blank so the page uses its own address.
-- `CFG.previewUrl` is a temporary placeholder (`example.com`).
+- The map is hosted on GitHub Pages at https://atharwat-ai.github.io/expo-navigator/ (`CFG.publicUrl`), the address every QR code opens. After a change, run `scripts/publish_pages.sh` to rebuild `dist/index.html` and publish it to the `gh-pages` branch. A claude.ai artifact link cannot carry a route to a phone (the viewer does not pass the `#…` part of the link to the page), so QR codes must never point at the artifact.
 - `CFG.apps` / `CFG.appLink` are empty until the iOS/Android apps ship.
 - Taking a route away: the kiosk shows a QR code; on the phone, "Save or share as PDF" builds the route PDF (3D + flat view,
   directions, QR) and hands it to the phone's share sheet / download. (`CFG.sendUrl` and the send form remain in the code, unused.)
