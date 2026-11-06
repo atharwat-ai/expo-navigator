@@ -902,6 +902,7 @@ AGENDA.sessions.push(...[
    Open the page with #kiosk-<id> (e.g. #kiosk-h1c) on each screen.
    Staff menu: press and hold the event logo for 2 seconds.          */
 const CFG = {
+  agenda: false,             // conferences: off until the final agenda arrives (AGENDA keeps the data). true brings back the home tile, room sessions, live labels, reminders and the PDF sections
   idleSeconds: 75,
   look: "midnight",
   previewUrl: "https://example.com/cairo-ict-map",   // TEMPORARY: lets the QR codes show while the map has no web address. Clear it (or set publicUrl) when finalised.
@@ -2758,10 +2759,10 @@ async function routePDF(){
   if(dest){const wcs=PLACES.filter(q=>q.kind==="wc").map(q=>({q,d:legDist(dest.id,q.id)})).filter(w=>isFinite(w.d)).sort((a,b)=>a.d-b.d).slice(0,2);   // by walking distance through real doors
     if(wcs.length){head(t("wcNear")); wcs.forEach(({q,d})=>para(`${placeName(q)}  ·  ${t("aboutM",Math.round(d/5)*5)}`,F(500,24),ink));}}
   const sesLine=x=>`${fmtDay(x.day)} · ${x.start}–${x.end}   ${x.title}`;
-  places.filter(q=>q.kind==="conf").forEach(q=>{const xs=AGENDA.sessions.filter(x=>x.room===q.id).sort((a,b)=>(a.day+a.start).localeCompare(b.day+b.start));
+  if(CFG.agenda)places.filter(q=>q.kind==="conf").forEach(q=>{const xs=AGENDA.sessions.filter(x=>x.room===q.id).sort((a,b)=>(a.day+a.start).localeCompare(b.day+b.start));
     if(xs.length){head(`${t("sesHere")} · ${placeName(q)}`); xs.forEach(x=>para(sesLine(x),F(500,22),ink,0,30));}});
   const mine=AGENDA.sessions.filter(x=>REM.has(x.id)).sort((a,b)=>(a.day+a.start).localeCompare(b.day+b.start));
-  if(mine.length){head(t("yourRem")); mine.forEach(x=>{const r=roomOf(x.room); para(sesLine(x)+(r?`  ·  ${placeName(r)}`:""),F(500,22),ink,0,30);});}
+  if(CFG.agenda&&mine.length){head(t("yourRem")); mine.forEach(x=>{const r=roomOf(x.room); para(sesLine(x)+(r?`  ·  ${placeName(r)}`:""),F(500,22),ink,0,30);});}
   places.forEach(q=>{const c=CONTACTS[q.id]; if(!c)return; head(`${t("contact")} · ${placeName(q)}`); [c.person,c.phone,c.email,c.web].filter(Boolean).forEach(v=>para(v,F(500,24),ink));});
   g.fillStyle=mut; g.font=F(500,18); g.fillText(new Intl.DateTimeFormat(LANG==="ar"?"ar-EG":LANG==="zh"?"zh-CN":"en-GB",{dateStyle:"medium",timeStyle:"short",timeZone:CFG.hours.tz}).format(new Date()),X(M),H-76);
   if(!window.jspdf)await new Promise((res,rej)=>{const s=document.createElement("script"); s.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"; s.onload=res; s.onerror=rej; document.head.appendChild(s);});
@@ -2924,7 +2925,7 @@ function mapBase(){ if(CFG.publicUrl)return CFG.publicUrl.replace(/#.*$/,"");
   if(CFG.previewUrl){document.documentElement.classList.add("qrpreview");return CFG.previewUrl;} return ""; }
 /* every QR opens the map in the phone's browser, already set up for this visitor: their route or sessions, the kiosk they stood at, their language and look */
 function phoneLink(token){const b=mapBase(); if(!b)return null; return b+"#"+[token,"kiosk-"+KIOSK,"lang-"+LANG,"look-"+LOOK_ID,"phone"].filter(Boolean).join(".");}
-function renderRemBar(){const rb=$("rembar"); if(!rb)return;
+function renderRemBar(){const rb=$("rembar"); if(!rb)return; if(!CFG.agenda){rb.hidden=true;return;}
   const xs=[...REM].map(id=>AGENDA.sessions.find(s=>s.id===id)).filter(Boolean);
   if(!xs.length||VIEW!=="list"||!LISTCTX||LISTCTX.kind!=="agenda"){rb.hidden=true;return;}
   rb.hidden=false;
@@ -2938,12 +2939,12 @@ function openRemQR(){const ids=[...REM]; const lb=$("lightbox"); lb.hidden=false
   lb.querySelector(".lb-x").onclick=()=>{lb.hidden=true;};}
 /* phone: show an alert inside the page when a saved session is about to start */
 let remShown=new Set();
-function remCheck(){ if(!ON_PHONE()||!REM.size)return; const today=cairoDate(), n=nowMin();
+function remCheck(){ if(!CFG.agenda||!ON_PHONE()||!REM.size)return; const today=cairoDate(), n=nowMin();
   for(const id of REM){const x=AGENDA.sessions.find(s=>s.id===id); if(!x||x.day!==today||remShown.has(id))continue; const d=hm(x.start)-n;
     if(d<=15&&d>=-5){remShown.add(id); const el=$("remAlert"); el.hidden=false;
       el.innerHTML=`<span class="rb-ic">${svg("bellOn")}</span><div><b>${d>0?t("startsIn",d):t("liveNow")}</b><span>${esc(x.title)} · ${esc(L(roomOf(x.room)))}</span></div><button class="cta" id="remGo" style="--hc:var(--route)">${svg("route")}${t("showRoute")}</button><button class="icon-btn" id="remX" aria-label="${t("close")}">${svg("close")}</button>`;
       $("remGo").onclick=()=>{el.hidden=true;openSession(x.id);setTimeout(()=>{const g=$("goBtn");g&&g.click();},50);}; $("remX").onclick=()=>{el.hidden=true;}; break;}}}
-function confTileHTML(){
+function confTileHTML(){ if(!CFG.agenda)return "";
   const today=cairoDate(); const list=AGENDA.sessions.filter(x=>x.day===today).sort((a,b)=>hm(a.start)-hm(b.start));
   const live=list.find(x=>sesStatus(x)==="live"), next=list.find(x=>["soon","later"].includes(sesStatus(x)));
   const pick=live||next; const sub=pick?`<span class="ct-live ${live?"on":""}">${live?`<i class="dot"></i>${t("liveNow")}`:t("nextAt",fmt12(pick.start))}</span>${esc(pick.title)}`:t("confSub",AGENDA.sessions.length);
@@ -2956,7 +2957,7 @@ function sesRowHTML(x,withDay){const st=sesStatus(x),tr=TRACKS[x.track]||{c:"var
         <b>${esc(x.title)}</b><span><i></i>${esc(L(tr))} · ${esc(L(roomOf(x.room)))}</span></div></button>
       ${st==="past"?"":`<button class="bellb" data-rem="${x.id}" aria-pressed="${on}" aria-label="${t("remBtn")}">${svg(on?"bellOn":"bell")}</button>`}</li>`;}
 function bindRem(root){root.querySelectorAll("[data-rem]").forEach(b=>b.onclick=e=>{e.stopPropagation();toggleRem(b.dataset.rem);});}
-function liveSessions(){const today=cairoDate();return AGENDA.sessions.filter(x=>x.day===today&&sesStatus(x)==="live");}
+function liveSessions(){if(!CFG.agenda)return []; const today=cairoDate();return AGENDA.sessions.filter(x=>x.day===today&&sesStatus(x)==="live");}
 function liveBannerHTML(){const xs=liveSessions(); if(!xs.length)return "";
   return `<div class="livebanner"><div class="lb-h"><i class="dot"></i>${t("happeningNow")}</div>${xs.map(x=>`<button class="lb-row" data-ses="${x.id}"><b>${esc(x.title)}</b><span>${esc(L(roomOf(x.room)))} · ${t("until",fmt12(x.end))}</span>${svg("route")}</button>`).join("")}</div>`;}
 function sessionHTML(x){const st=sesStatus(x),tr=TRACKS[x.track]||{c:"var(--muted)"};
@@ -2972,7 +2973,7 @@ function sessionHTML(x){const st=sesStatus(x),tr=TRACKS[x.track]||{c:"var(--mute
     ${sesStatus(x)==="past"?"":`<button class="bellb wide" data-rem="${x.id}" aria-pressed="${REM.has(x.id)}">${svg(REM.has(x.id)?"bellOn":"bell")}<span>${t(REM.has(x.id)?"remOnBtn":"remBtn")}</span></button>
     <div class="qr qr-cal"><div class="code">${qrSvgOf(veventText(x))}</div><div><b>${t("calTitle")}</b><span>${t("calSub")}</span></div></div>`}
   </div>`;}
-function roomAgendaHTML(p){const today=cairoDate(); const xs=AGENDA.sessions.filter(x=>x.room===p.id&&x.day===(AGENDA.days.includes(today)?today:AGENDA.days[0])).sort((a,b)=>hm(a.start)-hm(b.start));
+function roomAgendaHTML(p){ if(!CFG.agenda)return "";const today=cairoDate(); const xs=AGENDA.sessions.filter(x=>x.room===p.id&&x.day===(AGENDA.days.includes(today)?today:AGENDA.days[0])).sort((a,b)=>hm(a.start)-hm(b.start));
   if(!xs.length)return "";
   return `<div class="eyebrow"><span>${t("inThisRoom")}</span></div><ol class="agenda">${xs.map(x=>sesRowHTML(x,false)).join("")}</ol>`;}
 function openAgenda(push=true){
@@ -3464,7 +3465,7 @@ function loop(now){
   camera.position.copy(camFor({x:0,z:0},360,.95,heading())); controls.target.set(0,0,0);
   fitHall(homeHall());
   $("loading").style.opacity=0; setTimeout(()=>$("loading").remove(),600);
-  if(goto==="__rem"){CFG.idleSeconds=Infinity;loadRem();saveRem();AG.room="mine";openAgenda();}
+  if(goto==="__rem"&&CFG.agenda){CFG.idleSeconds=Infinity;loadRem();saveRem();AG.room="mine";openAgenda();}
   else if(goto==="__plan"&&PLAN.length){CFG.idleSeconds=Infinity;openPlan();}
   else if(goto&&BY_ID[goto]){CFG.idleSeconds=Infinity;openDetail(goto,{route:true});}
   if(GETAPP)setTimeout(showGetApp,400);
