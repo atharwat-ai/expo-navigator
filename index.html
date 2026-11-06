@@ -3100,7 +3100,6 @@ function showMapQR(qr,title,sub){const el=$("mapQR"); if(!qr||ON_PHONE()){el.hid
 function renderAttractQR(){const el=$("attractQR"); if(!el)return; el.hidden=false;
   const lk=phoneLink("get");
   el.innerHTML=`<div class="qh">${svg("phone")}Take the map with you</div><div class="qs"><div class="c">${lk?qrSvgOf(lk):`<div class="nolink">${t("noLink")}</div>`}</div></div>
-   <div class="plat"><span>Web</span><span>iOS</span><span>Android</span><span>macOS</span></div>
    <div class="ql"><span lang="ar">امسح لفتح الخريطة على أي جهاز</span><span lang="zh">扫码，在任意设备打开</span></div>`;}
 let GETAPP=false;
 function showGetApp(){
@@ -3471,7 +3470,7 @@ function loop(now){
   if(goto==="__rem"&&CFG.agenda){CFG.idleSeconds=Infinity;loadRem();saveRem();AG.room="mine";openAgenda();}
   else if(goto==="__plan"&&PLAN.length){CFG.idleSeconds=Infinity;openPlan();}
   else if(goto&&BY_ID[goto]){CFG.idleSeconds=Infinity;openDetail(goto,{route:true});}
-  if(GETAPP)setTimeout(showGetApp,400);
+  if(GETAPP&&(CFG.appLink||Object.values(CFG.apps||{}).some(Boolean)))setTimeout(showGetApp,400);   // the app chooser only once there are apps to offer
   if(ON_PHONE())document.documentElement.classList.add("onphone"); placeJoy();
   syncLiveTags(); if(ON_PHONE()){loadRem();remCheck();if(goto!=="__plan"){loadPlan();renderPlanBar();}} renderAttractQR();
   requestAnimationFrame(loop);
