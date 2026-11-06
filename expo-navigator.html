@@ -618,8 +618,10 @@ html.reach #stage #attract .at-acts,html.reach #stage #attract .at-qr{display:no
 html.reach #stage #attract b{font-size:clamp(20px,2vw,30px)}html.reach #stage #attract .ar{font-size:clamp(17px,1.7vw,24px)}
 html.reach .touch{width:64px;height:64px}html.reach .touch span{width:32px;height:32px}
 
-/* portrait kiosks and phones: map on top, panel as a bottom sheet */
-@media (orientation:portrait), (max-width:900px){
+/* portrait screens (kiosks, tablets, phones held upright): map on top, panel as a bottom sheet.
+   Landscape screens of every size keep the panel at the side; the layout follows the device as it turns. */
+@media (orientation:landscape) and (max-width:900px){#app{grid-template-columns:1fr clamp(280px,40vw,360px)}}
+@media (orientation:portrait){
   #app{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(0,46%)}
   #panel{border-left:0;border-top:1px solid var(--line)}
   [dir=rtl] #panel{border-right:0}
@@ -3324,7 +3326,10 @@ const ZOOM=()=>parseFloat(getComputedStyle($("app")).zoom)||1;
 function resize(){setTimeout(()=>{if(typeof placeJoy==="function")placeJoy();},0);stageW=Math.max(1,stage.clientWidth);stageH=Math.max(1,stage.clientHeight);
   renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.75)*ZOOM()); renderer.setSize(stageW,stageH,false);camera.aspect=stageW/stageH;camera.updateProjectionMatrix();}
 new ResizeObserver(()=>{if(VIEW==="home")fitHome();}).observe(document.getElementById("views"));
-let refitT; new ResizeObserver(()=>{resize(); clearTimeout(refitT); refitT=setTimeout(()=>{ if(!ROUTE_FOR&&VIEW!=="plan"&&!SELECTED&&typeof fitHall==="function"&&LASTFIT)fitHall(HALLSEL==="all"?homeHall():HALLSEL); },250);}).observe(stage);
+let refitT; new ResizeObserver(()=>{resize(); clearTimeout(refitT); refitT=setTimeout(()=>{ if(!LASTFIT)return;
+  if(!ROUTE_FOR&&VIEW!=="plan"&&!SELECTED&&typeof fitHall==="function")fitHall(HALLSEL==="all"?homeHall():HALLSEL);
+  else if(Math.abs(LASTFIT.W-stageW)>40||Math.abs(LASTFIT.H-stageH)>40){const b=LASTFIT.box; fitBounds(b.x0,b.z0,b.x1,b.z1,{h:b.h,polar:LASTFIT.polar,dur:500});}   // turned or resized with a route or stand on screen: frame it again
+},250);}).observe(stage);
 const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 const v3=new THREE.Vector3();
 function place(el,pos,yOff){v3.set(pos.x,pos.y+yOff,pos.z).project(camera);
