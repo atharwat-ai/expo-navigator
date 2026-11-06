@@ -406,6 +406,7 @@ html[data-lang=zh] .eyebrow,html[data-lang=zh] .tb-cell small,html[data-lang=zh]
 .tag.livetag{pointer-events:auto;cursor:pointer;z-index:4}
 .tag.zonetag{pointer-events:auto;cursor:pointer;z-index:4;background:none;border:0;padding:0}.tag.zonetag .card{background:var(--zc);color:#fff;border-color:rgba(255,255,255,.7);font-size:15px;letter-spacing:.06em;text-transform:uppercase;padding:6px 12px}.tag.zonetag .stem{background:linear-gradient(var(--zc),transparent)}.tag.zonetag:hover .card{transform:scale(1.06)}
 .tag.roomtag{pointer-events:auto;cursor:pointer;z-index:4;background:none;border:0;padding:0}.tag.roomtag .card{font-size:14px;padding:5px 11px 6px 9px;gap:7px;align-items:center;box-shadow:inset 4px 0 0 var(--rc),0 8px 20px rgba(0,0,0,.4)}.tag.roomtag .card i{width:9px;height:9px;border-radius:50%;background:var(--rc);flex:none}.tag.roomtag .stem{height:18px;background:linear-gradient(var(--rc),transparent)}.tag.roomtag:hover .card{transform:scale(1.05)}
+#pdfView{position:fixed;inset:0;z-index:60;background:rgba(5,10,23,.94);display:grid;grid-template-rows:auto minmax(0,1fr) auto;padding:max(10px,env(safe-area-inset-top,0px)) 12px max(10px,env(safe-area-inset-bottom,0px))}#pdfView .pv-top{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#fff;padding:4px 4px 10px}#pdfView .pv-top b{font-family:var(--f-display);font-size:20px}#pdfView .pv-top .icon-btn{color:#fff}#pdfView .pv-pages{overflow:auto;display:flex;flex-direction:column;align-items:center;gap:12px;padding:4px 0 12px;overscroll-behavior:contain}#pdfView .pv-pages img{width:min(100%,820px);height:auto;border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.5);background:#fff}#pdfView .pv-bar{display:flex;gap:10px;justify-content:center;padding-top:10px}#pdfView .pv-bar .cta{width:auto;flex:1;max-width:320px;min-height:54px;font-size:18px}
 .pdfoffer{position:absolute;z-index:12;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:12px;box-shadow:inset 0 0 0 2px var(--route),var(--shadow)}.pdfoffer b{display:block;font-family:var(--f-display);font-size:18px}.pdfoffer span{display:block;font-size:13px;color:var(--muted);line-height:1.35}.pdfoffer .cta{width:auto;min-height:48px;padding:0 14px;font-size:16px}.pdfoffer .cta span{color:inherit;font-size:16px}@media (max-width:480px){.pdfoffer{grid-template-columns:minmax(0,1fr) auto}.pdfoffer>div{grid-column:1/-1}}
 .tag.livetag .card{background:#ff3b5c;color:#fff;border-color:#ff3b5c;font-size:14px;max-width:300px;gap:8px;align-items:center;padding:6px 12px}
 .tag.livetag .card span{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
@@ -1036,7 +1037,7 @@ const T = {
    nearest:"Closest to you",youAreHere:"You are here",showRoute:"Show me the way",endRoute:"End route",stand:"Stand",hall:"Hall",area:"Area",walk:"Walk",
    min:"min",m:"m",allHalls:"All halls",soon:"Soon",back:"Back",found:n=>`${n} found`,
    noResults:"No match yet. Try a company name, a stand number such as H1-12, or a topic like banking.",
-   pdfReady:"Your visitor guide is ready",pdfReadyTxt:"Route, maps, stand details, opening hours, nearest toilets and your sessions, in one PDF.",gtk:"Good to know",hoursT:"Opening hours",wcNear:"Nearest toilets",sesHere:"Sessions in this room",yourRem:"Your saved sessions",aboutM:n=>`about ${n} m away`,showDays:"7–10 November 2026 · EIEC, New Cairo",details:"Details",
+   viewPdf:"Open as PDF",savePdfBtn:"Save PDF",sharePdf:"Share",pdfTitle:"Your visitor guide",pdfReady:"Your visitor guide is ready",pdfReadyTxt:"Route, maps, stand details, opening hours, nearest toilets and your sessions, in one PDF.",gtk:"Good to know",hoursT:"Opening hours",wcNear:"Nearest toilets",sesHere:"Sessions in this room",yourRem:"Your saved sessions",aboutM:n=>`about ${n} m away`,showDays:"7–10 November 2026 · EIEC, New Cairo",details:"Details",
    takePhone:"Take the route with you",scan:"Scan with your phone camera to open this route on your phone, then save it as a PDF or share it.",
    steps:"Directions",tba:"Exhibitor to be announced",entrances:"Entrances",rooms:"Lounges, rooms & press",
    date:"7 – 10 November 2026",venue:"Egypt International Exhibition Center · New Cairo",tagline:"<b>AI in Action</b> · Turning intelligence into impact",
@@ -1069,7 +1070,7 @@ const T = {
    nearest:"离您最近",youAreHere:"您在这里",showRoute:"带我去",endRoute:"结束导航",stand:"展位",hall:"展馆",area:"面积",walk:"步行",
    min:"分钟",m:"米",allHalls:"全部展馆",soon:"即将开放",back:"返回",found:n=>`找到 ${n} 个`,
    noResults:"暂无结果。请尝试公司名称、展位号（如 H1-12）或主题（如 银行）。",
-   pdfReady:"您的参观指南已就绪",pdfReadyTxt:"路线、地图、展位信息、开放时间、最近的洗手间和您的会议，尽在一份PDF中。",gtk:"实用信息",hoursT:"开放时间",wcNear:"最近的洗手间",sesHere:"本会议室的会议",yourRem:"您收藏的会议",aboutM:n=>`约 ${n} 米`,showDays:"2026年11月7–10日 · 埃及国际展览中心，新开罗",details:"详情",
+   viewPdf:"以PDF打开",savePdfBtn:"保存PDF",sharePdf:"分享",pdfTitle:"您的参观指南",pdfReady:"您的参观指南已就绪",pdfReadyTxt:"路线、地图、展位信息、开放时间、最近的洗手间和您的会议，尽在一份PDF中。",gtk:"实用信息",hoursT:"开放时间",wcNear:"最近的洗手间",sesHere:"本会议室的会议",yourRem:"您收藏的会议",aboutM:n=>`约 ${n} 米`,showDays:"2026年11月7–10日 · 埃及国际展览中心，新开罗",details:"详情",
    takePhone:"把路线带走",scan:"用手机相机扫码，在手机上打开此路线，并可保存为PDF或分享。",
    steps:"路线指引",tba:"展商待公布",entrances:"入口",rooms:"休息室、会议室与媒体中心",
    date:"2026年11月7日至10日",venue:"埃及国际展览中心 · 新开罗",tagline:"<b>AI in Action</b>",
@@ -1102,7 +1103,7 @@ const T = {
    nearest:"الأقرب إليك",youAreHere:"أنت هنا",showRoute:"أرني الطريق",endRoute:"إنهاء المسار",stand:"الجناح",hall:"القاعة",area:"المساحة",walk:"المشي",
    min:"د",m:"م",allHalls:"كل القاعات",soon:"قريبًا",back:"رجوع",found:n=>`${n} نتيجة`,
    noResults:"لا توجد نتائج بعد. جرّب اسم شركة أو رقم جناح مثل H1-12 أو مجالًا مثل البنوك.",
-   pdfReady:"دليل زيارتك جاهز",pdfReadyTxt:"المسار والخرائط وبيانات الجناح ومواعيد العمل وأقرب دورات مياه وجلساتك في ملف PDF واحد.",gtk:"معلومات مفيدة",hoursT:"مواعيد العمل",wcNear:"أقرب دورات المياه",sesHere:"الجلسات في هذه القاعة",yourRem:"جلساتك المحفوظة",aboutM:n=>`على بعد نحو ${n} م`,showDays:"7–10 نوفمبر 2026 · مركز مصر للمعارض الدولية، القاهرة الجديدة",details:"التفاصيل",
+   viewPdf:"افتح كملف PDF",savePdfBtn:"احفظ PDF",sharePdf:"مشاركة",pdfTitle:"دليل زيارتك",pdfReady:"دليل زيارتك جاهز",pdfReadyTxt:"المسار والخرائط وبيانات الجناح ومواعيد العمل وأقرب دورات مياه وجلساتك في ملف PDF واحد.",gtk:"معلومات مفيدة",hoursT:"مواعيد العمل",wcNear:"أقرب دورات المياه",sesHere:"الجلسات في هذه القاعة",yourRem:"جلساتك المحفوظة",aboutM:n=>`على بعد نحو ${n} م`,showDays:"7–10 نوفمبر 2026 · مركز مصر للمعارض الدولية، القاهرة الجديدة",details:"التفاصيل",
    takePhone:"خذ المسار معك",scan:"امسح الرمز بكاميرا هاتفك لفتح المسار على هاتفك، ثم احفظه كملف PDF أو شاركه.",
    steps:"الاتجاهات",tba:"سيتم الإعلان عن العارض",entrances:"المداخل",rooms:"الصالات والقاعات والصحافة",
    date:"٧ – ١٠ نوفمبر ٢٠٢٦",venue:"مركز مصر الدولي للمعارض · القاهرة الجديدة",tagline:"<b>AI in Action</b>",
@@ -2672,8 +2673,26 @@ function buildKbd(){
 
 /* ---------- the route as a PDF: 3D view, flat view, directions and the phone QR; sent by email or text message ---------- */
 let ROUTE_DOC=null;
-const sendBtnHTML=()=>ON_PHONE()?`<button class="cta sendbtn phonepdf" data-sendroute>${svg("phone")}<span>${esc(t("savePdf"))}</span></button>`:"";
-document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-sendroute]"); if(b){e.stopPropagation(); savePDF(b);}});
+const sendBtnHTML=()=>ON_PHONE()?`<button class="cta sendbtn phonepdf" data-sendroute>${svg("phone")}<span>${esc(t("viewPdf"))}</span></button>`:"";
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-sendroute]"); if(b){e.stopPropagation(); openPDFView(b);}});
+/* the visitor guide opens first, page by page, with Save (and Share where the phone offers it) underneath */
+let PDF_PAGES=[];
+async function openPDFView(btn){ if(!ROUTE_DOC)return; const lab=btn.querySelector("span"), was=lab.textContent; lab.textContent=t("making"); btn.disabled=true;
+  let blob=null; try{blob=await routePDF();}catch(e){toast(t("sendFail"));} lab.textContent=was; btn.disabled=false; if(!blob)return;
+  const f=new File([blob],pdfName(),{type:"application/pdf"}), canShare=!!(navigator.canShare&&navigator.canShare({files:[f]}));
+  const o=document.createElement("div"); o.id="pdfView"; o.setAttribute("role","dialog"); o.setAttribute("aria-modal","true"); o.setAttribute("aria-label",t("pdfTitle"));
+  o.innerHTML=`<div class="pv-top"><b>${esc(t("pdfTitle"))}</b><button class="icon-btn" data-pvx aria-label="${esc(t("close"))}">${svg("close")}</button></div>
+    <div class="pv-pages">${PDF_PAGES.map((u,i)=>`<img src="${u}" alt="${esc(t("pdfTitle"))} ${i+1}">`).join("")}</div>
+    <div class="pv-bar"><button class="cta" data-pvsave>${svg("route")}<span>${esc(t("savePdfBtn"))}</span></button>${canShare?`<button class="cta ghost" data-pvshare>${svg("phone")}<span>${esc(t("sharePdf"))}</span></button>`:""}</div>`;
+  document.body.appendChild(o); const close=()=>o.remove();
+  o.querySelector("[data-pvx]").onclick=close; o.addEventListener("keydown",e=>{if(e.key==="Escape")close();});
+  o.querySelector("[data-pvsave]").onclick=()=>saveBlob(blob,f.name);
+  const sh=o.querySelector("[data-pvshare]"); if(sh)sh.onclick=()=>navigator.share({files:[f],title:ROUTE_DOC.title}).catch(()=>{});
+  o.querySelector("[data-pvx]").focus();}
+async function saveBlob(blob,name){
+  let dlc=null; try{dlc=window.claude&&window.claude.use?await Promise.race([window.claude.use("downloads"),new Promise(r=>setTimeout(()=>r(null),1500))]):null;}catch(e){}
+  if(dlc){await dlc.save({filename:name,data:blob}).catch(()=>{});return;}
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),60000);}
 function snapRoute(polar,W,H){ // render the route from a chosen angle into an image, then put the camera back
   if(!ROUTE_DOC||!ROUTE_DOC.pts.length)return null;
   const xs=ROUTE_DOC.pts.map(q=>q.x), zs=ROUTE_DOC.pts.map(q=>q.z), pad=14;
@@ -2750,7 +2769,7 @@ async function routePDF(){
   g.fillStyle=mut; g.font=F(500,18); g.fillText(new Intl.DateTimeFormat(LANG==="ar"?"ar-EG":LANG==="zh"?"zh-CN":"en-GB",{dateStyle:"medium",timeStyle:"short",timeZone:CFG.hours.tz}).format(new Date()),X(M),H-76);
   if(!window.jspdf)await new Promise((res,rej)=>{const s=document.createElement("script"); s.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"; s.onload=res; s.onerror=rej; document.head.appendChild(s);});
   const pdf=new window.jspdf.jsPDF({unit:"pt",format:"a4"});
-  pages.forEach((c,k)=>{if(k)pdf.addPage(); pdf.addImage(c.toDataURL("image/jpeg",.9),"JPEG",0,0,595.28,841.89);});
+  PDF_PAGES=pages.map(c=>c.toDataURL("image/jpeg",.9)); PDF_PAGES.forEach((u,k)=>{if(k)pdf.addPage(); pdf.addImage(u,"JPEG",0,0,595.28,841.89);});
   return pdf.output("blob");}
 const blobB64=b=>new Promise(r=>{const f=new FileReader(); f.onload=()=>r(String(f.result).split(",")[1]); f.readAsDataURL(b);});
 function pdfName(){return `Cairo-ICT-route-${(ROUTE_DOC.title||"route").replace(/[^\w؀-ۿ一-鿿]+/g,"-").slice(0,40)}.pdf`;}
@@ -2907,7 +2926,7 @@ function mapBase(){ if(CFG.publicUrl)return CFG.publicUrl.replace(/#.*$/,"");
   if(hosted)return location.origin+location.pathname;
   if(CFG.previewUrl){document.documentElement.classList.add("qrpreview");return CFG.previewUrl;} return ""; }
 /* every QR opens the map in the phone's browser, already set up for this visitor: their route or sessions, the kiosk they stood at, their language and look */
-function phoneLink(token){const b=mapBase(); if(!b)return null; return b+"#"+[token,"kiosk-"+KIOSK,"lang-"+LANG,"look-"+LOOK_ID,"phone",/^(go_|plan_)/.test(token||"")?"pdf":""].filter(Boolean).join(".");}
+function phoneLink(token){const b=mapBase(); if(!b)return null; return b+"#"+[token,"kiosk-"+KIOSK,"lang-"+LANG,"look-"+LOOK_ID,"phone"].filter(Boolean).join(".");}
 function renderRemBar(){const rb=$("rembar"); if(!rb)return;
   const xs=[...REM].map(id=>AGENDA.sessions.find(s=>s.id===id)).filter(Boolean);
   if(!xs.length||VIEW!=="list"||!LISTCTX||LISTCTX.kind!=="agenda"){rb.hidden=true;return;}
@@ -3452,7 +3471,6 @@ function loop(now){
   else if(goto==="__plan"&&PLAN.length){CFG.idleSeconds=Infinity;openPlan();}
   else if(goto&&BY_ID[goto]){CFG.idleSeconds=Infinity;openDetail(goto,{route:true});}
   if(GETAPP)setTimeout(showGetApp,400);
-  if(PDF_OFFER&&ROUTE_DOC)setTimeout(offerPDF,900);
   if(ON_PHONE())document.documentElement.classList.add("onphone"); placeJoy();
   syncLiveTags(); if(ON_PHONE()){loadRem();remCheck();if(goto!=="__plan"){loadPlan();renderPlanBar();}} renderAttractQR();
   requestAnimationFrame(loop);
